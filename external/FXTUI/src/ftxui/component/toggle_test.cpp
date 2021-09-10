@@ -1,0 +1,155 @@
+#include <gtest/gtest-message.h>  // for Message
+#include <gtest/gtest-test-part.h>  // for TestPartResult, SuiteApiResolver, TestFactoryImpl
+#include <functional>               // for function
+#include <memory>  // for __shared_ptr_access, shared_ptr, allocator
+#include <string>  // for string, basic_string
+#include <vector>  // for vector
+
+#include "ftxui/component/captured_mouse.hpp"     // for ftxui
+#include "ftxui/component/component.hpp"          // for Toggle
+#include "ftxui/component/component_base.hpp"     // for ComponentBase
+#include "ftxui/component/component_options.hpp"  // for ToggleOption
+#include "ftxui/component/event.hpp"  // for Event, Event::ArrowLeft, Event::ArrowRight, Event::Return, Event::Tab, Event::TabReverse
+#include "gtest/gtest_pred_impl.h"  // for AssertionResult, EXPECT_EQ, Test, EXPECT_TRUE, EXPECT_FALSE, TEST
+
+using namespace ftxui;
+
+TEST(ToggleTest, leftRightArrow) {
+  std::vector<std::string> entries = {"On", "Off"};
+  int selected = 0;
+  auto toggle = Toggle(&entries, &selected);
+
+  // With arrow key.
+  EXPECT_EQ(selected, 0);
+  toggle->OnEvent(Event::ArrowRight);
+  EXPECT_EQ(selected, 1);
+  toggle->OnEvent(Event::ArrowRight);
+  EXPECT_EQ(selected, 1);
+  toggle->OnEvent(Event::ArrowLeft);
+  EXPECT_EQ(selected, 0);
+  toggle->OnEvent(Event::ArrowLeft);
+  EXPECT_EQ(selected, 0);
+
+  // With vim like characters.
+  EXPECT_EQ(selected, 0);
+  toggle->OnEvent(Event::Character('l'));
+  EXPECT_EQ(selected, 1);
+  toggle->OnEvent(Event::Character('l'));
+  EXPECT_EQ(selected, 1);
+  toggle->OnEvent(Event::Character('h'));
+  EXPECT_EQ(selected, 0);
+  toggle->OnEvent(Event::Character('h'));
+  EXPECT_EQ(selected, 0);
+
+  // With more entries
+  entries = {"1", "2", "3"};
+  EXPECT_EQ(selected, 0);
+  toggle->OnEvent(Event::ArrowRight);
+  EXPECT_EQ(selected, 1);
+  toggle->OnEvent(Event::ArrowRight);
+  EXPECT_EQ(selected, 2);
+  toggle->OnEvent(Event::ArrowRight);
+  EXPECT_EQ(selected, 2);
+  toggle->OnEvent(Event::ArrowLeft);
+  EXPECT_EQ(selected, 1);
+  toggle->OnEvent(Event::ArrowLeft);
+  EXPECT_EQ(selected, 0);
+  toggle->OnEvent(Event::ArrowLeft);
+  EXPECT_EQ(selected, 0);
+}
+
+TEST(ToggleTest, Tab) {
+  std::vector<std::string> entries = {"1", "2", "3"};
+  int selected = 0;
+  auto toggle = Toggle(&entries, &selected);
+
+  EXPECT_EQ(selected, 0);
+  toggle->OnEvent(Event::Tab);
+  EXPECT_EQ(selected, 1);
+  toggle->OnEvent(Event::Tab);
+  EXPECT_EQ(selected, 2);
+  toggle->OnEvent(Event::Tab);
+  EXPECT_EQ(selected, 0);
+  toggle->OnEvent(Event::Tab);
+  EXPECT_EQ(selected, 1);
+  toggle->OnEvent(Event::Tab);
+  EXPECT_EQ(selected, 2);
+  toggle->OnEvent(Event::TabReverse);
+  EXPECT_EQ(selected, 1);
+  toggle->OnEvent(Event::TabReverse);
+  EXPECT_EQ(selected, 0);
+  toggle->OnEvent(Event::TabReverse);
+  EXPECT_EQ(selected, 2);
+  toggle->OnEvent(Event::TabReverse);
+  EXPECT_EQ(selected, 1);
+  toggle->OnEvent(Event::TabReverse);
+}
+
+TEST(ToggleTest, OnChange) {
+  std::vector<std::string> entries = {"1", "2", "3"};
+  int selected = 0;
+  int counter = 0;
+  auto option = ToggleOption();
+  option.on_change = [&] { counter++; };
+
+  auto toggle = Toggle(&entries, &selected, &option);
+
+  EXPECT_FALSE(toggle->OnEvent(Event::ArrowLeft));  // Reached far left.
+  EXPECT_EQ(counter, 0);
+
+  EXPECT_TRUE(toggle->OnEvent(Event::ArrowRight));  // [0] -> [1]
+  EXPECT_EQ(counter, 1);
+  EXPECT_TRUE(toggle->OnEvent(Event::ArrowRight));  // [1] -> [2]
+  EXPECT_EQ(counter, 2);
+
+  EXPECT_FALSE(toggle->OnEvent(Event::ArrowRight));  // Reached far right.
+  EXPECT_EQ(counter, 2);
+
+  EXPECT_TRUE(toggle->OnEvent(Event::ArrowLeft));  // [2] -> [1]
+  EXPECT_EQ(counter, 3);
+  EXPECT_TRUE(toggle->OnEvent(Event::ArrowLeft));  // [1] -> [0]
+  EXPECT_EQ(counter, 4);
+
+  EXPECT_FALSE(toggle->OnEvent(Event::ArrowLeft));  // Reached far left.
+  EXPECT_EQ(counter, 4);
+}
+
+TEST(ToggleTest, OnEnter) {
+  std::vector<std::string> entries = {"1", "2", "3"};
+  int selected = 0;
+  int counter = 0;
+
+  auto option = ToggleOption();
+  option.on_enter = [&] { counter++; };
+  auto toggle = Toggle(&entries, &selected, &option);
+
+  EXPECT_FALSE(toggle->OnEvent(Event::ArrowLeft));  // Reached far left.
+  EXPECT_TRUE(toggle->OnEvent(Event::Return));
+  EXPECT_EQ(counter, 1);
+
+  EXPECT_TRUE(toggle->OnEvent(Event::ArrowRight));  // [0] -> [1]
+  EXPECT_TRUE(toggle->OnEvent(Event::Return));
+  EXPECT_EQ(counter, 2);
+  EXPECT_TRUE(toggle->OnEvent(Event::ArrowRight));  // [1] -> [2]
+  EXPECT_TRUE(toggle->OnEvent(Event::Return));
+  EXPECT_EQ(counter, 3);
+
+  EXPECT_FALSE(toggle->OnEvent(Event::ArrowRight));  // Reached far right.
+  EXPECT_TRUE(toggle->OnEvent(Event::Return));
+  EXPECT_EQ(counter, 4);
+
+  EXPECT_TRUE(toggle->OnEvent(Event::ArrowLeft));  // [2] -> [1]
+  EXPECT_TRUE(toggle->OnEvent(Event::Return));
+  EXPECT_EQ(counter, 5);
+  EXPECT_TRUE(toggle->OnEvent(Event::ArrowLeft));  // [1] -> [0]
+  EXPECT_TRUE(toggle->OnEvent(Event::Return));
+  EXPECT_EQ(counter, 6);
+
+  EXPECT_FALSE(toggle->OnEvent(Event::ArrowLeft));  // Reached far left.
+  EXPECT_TRUE(toggle->OnEvent(Event::Return));
+  EXPECT_EQ(counter, 7);
+}
+
+// Copyright 2020 Arthur Sonzogni. All rights reserved.
+// Use of this source code is governed by the MIT license that can be found in
+// the LICENSE file.

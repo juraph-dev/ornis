@@ -1,0 +1,31 @@
+version: "{branch}-build-{build}"
+
+branches:
+  only:
+    - master
+
+os:
+  - Visual Studio 2017
+
+init:
+  - git config --global core.autocrlf input
+
+install:
+  - git submodule update --init --recursive
+
+platform:
+  - Win32
+  - x64
+
+configuration:
+  - Debug
+  - Release
+
+before_build:
+  - mkdir build && cd build
+  - cmake -A%PLATFORM% -DBUILD_TESTS=ON -DGEN_DOCS=OFF ..
+
+build_script:
+  - cmake --build . --config %CONFIGURATION% -- %MSBUILD_ARGS% # Build the code
+  - ctest -C %CONFIGURATION% # Run tests
+  - cmake --build . --config %CONFIGURATION% --target INSTALL -- %MSBUILD_ARGS% # Install the necessary files

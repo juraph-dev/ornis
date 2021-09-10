@@ -1,0 +1,99 @@
+language: cpp
+
+sudo: required
+
+branches:
+  only:
+    - master
+    - coverity_scan
+
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   secure: "veAdPtCJipVm1byxjBdwEAmFrTkvPeQTFh2+F+HGoCpzKJloQA3r7TcUSvkw3VKCSdc7fim6YKei3w57N9lR8wjlOdM+HScWims4i9n9t7zFQCbsaOuxxK7nmoFDuRx/9HPoi4px7famfhqRbYDQKcX4wX4XWeO5Ic364oGfXSc5loKSiu40ruseEeSAAyf96QYRRYvfbg2ifQTPTc1mMrE7KXDtyRQPnIWMHE3vFGdmcekqjRuVotUHbkoTZOElnA5dfXIctfJfDIv6ZMF1fLOcqoGqQrBiGqNtZvGZf0vGjmqwURZZOCkmIeBroyQSlneB6uhkes52vjbYMs+3NF7Y7D1kyPFiMaoK4WfjlQ5Z9k6JoBupkOhMLwyklxkks/scZXuI+H0V285fl2E5tdiowCBXn68J5yn1RjiAOLOS20oExLhPwd5cNsUKOmrWbNBlvEq37MKTVyBfu0h2gCVF3xo+H3b2RLzgn39hKppSK0iReVEfOmzhk6yP5QUBZUjemruJeZFp0CG3On8EdUQgIY9gOsFBoAsYkm6ahwvNSdL3Am8zpQMBBjS/WqJ3nNaPKQWqqL4eWG2y4cItjrRiIlczNh+LsJEP5vescEdiF+fx0hpCBy0B7LrOLUn7bGcPSOPV3XmqPesK5HaDE1bwgZ1ZjebdioTHfk+YHEs="
+
+matrix:
+  include:
+    # Coverity Scan (Linux Debug)
+    - os: linux
+      compiler: gcc
+      before_install:
+        - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+            - cmake
+        coverity_scan:
+          project:
+            name: "arnavb/cpp14-project-template"
+            description: "A cross-platform C++14 project template"
+          notification_email: arnavborborah11@gmail.com
+          build_command_prepend: "cov-configure --comptype gcc --compiler g++-5 --template && cmake -DCMAKE_CXX_COMPILER=g++-5 -DGEN_DOCS=OFF ."
+          build_command: "cmake --build ."
+          branch_pattern: coverity_scan
+      if: branch = coverity_scan
+      before_script: echo "Coverity Scan"
+      script: echo "Coverity Scan"
+    # Code coverage (Linux Debug)
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+            - cmake
+            - lcov
+      before_script:
+        - mkdir -p build && cd build
+        - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=g++-5 -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON -DGEN_DOCS=OFF ..
+      script:
+        - cmake --build . -- -j2
+        - cmake --build . --target coverage
+      after_success:
+        - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+      if: branch != coverity_scan
+    # Linux Release
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+            - cmake
+      env:
+        - MATRIX_EVAL="COMPILER=g++-5 && BUILD_TYPE=Release"
+      if: branch != coverity_scan
+    # OSX Debug
+    - os: osx
+      osx_image: xcode9.2 
+      compiler: clang
+      env:
+        - MATRIX_EVAL="COMPILER=clang++ && BUILD_TYPE=Debug"
+      if: branch != coverity_scan
+    # OSX Release
+    - os: osx
+      osx_image: xcode9.2 
+      compiler: clang
+      env:
+        - MATRIX_EVAL="COMPILER=clang++ && BUILD_TYPE=Release"
+      if: branch != coverity_scan
+
+before_install:
+  - eval "${MATRIX_EVAL}"
+
+before_script:
+  - mkdir -p build && cd build
+  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_COMPILER=$COMPILER -DBUILD_TESTS=ON -DGEN_DOCS=OFF ..
+
+script:
+  - cmake --build . -- -j2 # Build the code
+  - ctest --output-on-failure
+  - sudo cmake --build . --target install # Install the necessary files

@@ -1,0 +1,6 @@
+[submodule "external/TermOx"]
+	path = external/TermOx
+	url = https://github.com/a-n-t-h-o-n-y/TermOx.git
+[submodule "external/FXTUI"]
+	path = external/FXTUI
+	url = https://github.com/ArthurSonzogni/FTXUI

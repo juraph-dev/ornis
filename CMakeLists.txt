@@ -45,7 +45,8 @@ if (ENABLE_COVERAGE AND NOT CMAKE_CONFIGURATION_TYPES)
     setup_target_for_coverage(NAME coverage EXECUTABLE ctest DEPENDENCIES coverage)
 else (ENABLE_COVERAGE AND NOT CMAKE_CONFIGURATION_TYPES)
     if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
+        # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra ")
         set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
         set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
     elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -60,7 +61,7 @@ set(LIBRARY_SOURCES
     src/node_monitor.cpp
 )
 
-add_subdirectory(external/FXTUI)
+add_subdirectory(external/FTXUI)
 
 add_library(Project-Name-lib ${LIBRARY_SOURCES}) # A library
 set_target_properties(Project-Name-lib PROPERTIES PREFIX "") # Remove the lib prefix

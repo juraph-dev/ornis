@@ -59,9 +59,10 @@ set(LIBRARY_SOURCES
     src/factorial.cpp
     src/hello_world.cpp
     src/node_monitor.cpp
+    src/topic_monitor.cpp
 )
 
-add_subdirectory(external/FTXUI)
+add_subdirectory(external/ftxui)
 
 add_library(Project-Name-lib ${LIBRARY_SOURCES}) # A library
 set_target_properties(Project-Name-lib PROPERTIES PREFIX "") # Remove the lib prefix

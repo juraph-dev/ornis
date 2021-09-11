@@ -15,7 +15,8 @@ Ui::~Ui() {
   }
 }
 
-void Ui::setValues(const std::map<std::string, std::string> values) {
+void Ui::setValues(
+    const std::map<std::string, std::vector<std::string>> values) {
 
   object_information_ = values;
   redraw_flag_ = true;
@@ -23,16 +24,20 @@ void Ui::setValues(const std::map<std::string, std::string> values) {
 
 void Ui::renderDisplay() {
 
-  // system("clear");
+  system("clear");
+
   // Object monitor will reach out to ui, and update the values in its array
   // This will require an atomic bool. This bool will indicate to the ui that
   // the interface needs to be re-drawn. This bool will also be flagged if the
   // terminal dimensions change
 
   Elements monitors;
-  for (const auto &[key, value] : object_information_) {
-    auto content = (hbox({text(value), text(L"3") | bold}) |
-                color(Color::Green));
+  for (const auto &[key, value_vector] : object_information_) {
+    Elements items;
+    for (const auto &item : value_vector) {
+      items.push_back(hbox({text(item) | bold}) | color(Color::Green));
+    }
+    auto content = vbox({items});
     monitors.push_back(window(text(key), content));
   }
   auto summary = [&] {
@@ -54,8 +59,7 @@ void Ui::renderDisplay() {
                         }),
                         hbox({
                             monitors,
-                        }),
-                        hbox({text(L"- queue:  ")})});
+                        })});
 
   document = document | size(WIDTH, LESS_THAN, term_width_);
 

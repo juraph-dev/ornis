@@ -2,19 +2,22 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "Rostui/node_monitor.hpp"
+#include "Rostui/topic_monitor.hpp"
 
-NodeMonitor::NodeMonitor() {}
-NodeMonitor::~NodeMonitor() {}
 
-void NodeMonitor::spin() {
+TopicMonitor::TopicMonitor(){}
+TopicMonitor::~TopicMonitor(){}
+
+
+void TopicMonitor::spin() {
   while (true) {
     updateValue();
     sleep(2);
   }
 };
 
-void NodeMonitor::updateValue() {
+
+void TopicMonitor::updateValue() {
 
   std::istringstream t_value(callConsole(ros1_cmd_string_));
 

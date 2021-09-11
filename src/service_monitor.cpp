@@ -2,19 +2,19 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "Rostui/topic_monitor.hpp"
+#include "Rostui/service_monitor.hpp"
 
-TopicMonitor::TopicMonitor() {}
-TopicMonitor::~TopicMonitor() {}
+ServiceMonitor::ServiceMonitor() {}
+ServiceMonitor::~ServiceMonitor() {}
 
-void TopicMonitor::spin() {
+void ServiceMonitor::spin() {
   while (true) {
     updateValue();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 };
 
-void TopicMonitor::updateValue() {
+void ServiceMonitor::updateValue() {
 
   std::istringstream t_value(callConsole(ros1_cmd_string_));
 

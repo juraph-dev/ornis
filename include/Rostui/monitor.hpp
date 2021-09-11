@@ -32,8 +32,7 @@ protected:
   std::string callConsole(const std::string cmd) {
     char buffer[128];
     std::string result = "";
-    // std::string cmd_pipe = cmd + " 2>/dev/null ";
-    std::string cmd_pipe = cmd + " 2>&1";
+    const std::string cmd_pipe = cmd + " 2>&1";
     FILE *pipe = popen(cmd_pipe.c_str(), "r");
     if (!pipe)
       throw std::runtime_error("popen() failed!");

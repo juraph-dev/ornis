@@ -18,6 +18,7 @@ void ObjectController::updateMonitors() {
 
   nodeMonitor_.getValue(monitor_info["Nodes"]);
   topicMonitor_.getValue(monitor_info["Topics"]);
+  serviceMonitor_.getValue(monitor_info["Services"]);
 
   if (monitor_info["Nodes"].size()){
     ui_.setValues(monitor_info);
@@ -36,6 +37,6 @@ void ObjectController::spin() {
 
   while (run_) {
     updateMonitors();
-    sleep(1);
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 }

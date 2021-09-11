@@ -10,7 +10,7 @@ NodeMonitor::~NodeMonitor() {}
 void NodeMonitor::spin() {
   while (true) {
     updateValue();
-    sleep(2);
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 };
 
@@ -29,8 +29,7 @@ void NodeMonitor::updateValue() {
     data_mutex_.lock();
     latest_value_ = t_vec;
     data_mutex_.unlock();
-  }
-  else{
+  } else {
     data_mutex_.lock();
     latest_value_.clear();
     data_mutex_.unlock();

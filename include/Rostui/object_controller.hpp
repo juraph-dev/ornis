@@ -6,6 +6,7 @@
 #include "Rostui/ui.hpp"
 #include "Rostui/node_monitor.hpp"
 #include "Rostui/topic_monitor.hpp"
+#include "Rostui/service_monitor.hpp"
 
 class ObjectController {
 public:
@@ -35,6 +36,7 @@ private:
   // header)
   NodeMonitor nodeMonitor_;
   TopicMonitor topicMonitor_;
+  ServiceMonitor serviceMonitor_;
 
   // Default connecting nodelet information. Sent when monitors are not yet
   // initialised

@@ -35,27 +35,22 @@ void Ui::renderDisplay() {
   for (const auto &[key, value_vector] : object_information_) {
     Elements items;
     for (const auto &item : value_vector) {
-      items.push_back(hbox({text(item) | bold}) | color(Color::Green));
+      items.push_back(hbox({text(item)}));
     }
     auto content = vbox({items});
-    monitors.push_back(window(text(key), content));
+    monitors.push_back(window(text(key), content) | flex);
   }
-  auto summary = [&] {
+
+  auto title_bar = [&] {
     Elements t;
-    t.push_back(hbox({text(L"- done:   "), text(L"3") | bold}) |
+    t.push_back(hbox({text(L"Insert fancy data here") | bold}) |
                 color(Color::Green));
-    t.push_back(hbox({text(L"- active:   "), text(L"3") | bold}) |
-                color(Color::RedLight));
-    t.push_back(hbox({text(L"- queue:   "), text(L"3") | bold}) |
-                color(Color::Red));
     auto content = vbox({t});
-    return window(text("Window title"), content);
+    return window(text("rosTUI"), content);
   };
 
   auto document = vbox({hbox({
-                            summary(),
-                            summary(),
-                            summary(),
+                            title_bar() | flex,
                         }),
                         hbox({
                             monitors,
@@ -84,6 +79,6 @@ void Ui::spin() {
       // conflicts with the redraw flag. Maybe add a mutex
       redraw_flag_ = false;
     }
-    sleep(1);
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }
 }

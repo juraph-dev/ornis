@@ -60,6 +60,7 @@ set(LIBRARY_SOURCES
     src/hello_world.cpp
     src/node_monitor.cpp
     src/topic_monitor.cpp
+    src/service_monitor.cpp
 )
 
 add_subdirectory(external/ftxui)

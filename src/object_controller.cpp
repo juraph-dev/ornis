@@ -38,5 +38,9 @@ void ObjectController::spin() {
   while (run_) {
     updateMonitors();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    if (ui_.screen_loop_finished_)
+    {
+      run_ = false;
+    }
   }
 }

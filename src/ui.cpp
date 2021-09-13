@@ -5,6 +5,7 @@ using namespace ftxui;
 Ui::Ui() {
   // Set re-draw required on startup
   redraw_flag_ = true;
+  screen_loop_finished_ = false;
   thread_ = new std::thread([this]() { spin(); });
 }
 
@@ -22,7 +23,7 @@ void Ui::setValues(
   redraw_flag_ = true;
 }
 
-void Ui::renderDisplay() {
+void Ui::renderMonitors() {
 
   system("clear");
 
@@ -31,54 +32,76 @@ void Ui::renderDisplay() {
   // the interface needs to be re-drawn. This bool will also be flagged if the
   // terminal dimensions change
 
-  Elements monitors;
-  for (const auto &[key, value_vector] : object_information_) {
-    Elements items;
-    for (const auto &item : value_vector) {
-      items.push_back(hbox({text(item)}));
-    }
-    auto content = vbox({items});
-    monitors.push_back(window(text(key), content) | flex);
-  }
-
   auto title_bar = [&] {
     Elements t;
-    t.push_back(hbox({text(L"Insert fancy data here") | bold}) |
-                color(Color::Green));
+    t.push_back(hbox({text(L"[o]ptions") | bold}) | color(Color::Green));
     auto content = vbox({t});
     return window(text("rosTUI"), content);
   };
 
-  auto document = vbox({hbox({
-                            title_bar() | flex,
-                        }),
-                        hbox({
-                            monitors,
-                        })});
+  auto button_option = ButtonOption();
 
-  document = document | size(WIDTH, LESS_THAN, term_width_);
+  auto menu_global = Container::Horizontal({Button(
+      "[o]ptions", [&] { title_bar(); }, button_option)});
 
-  auto screen = Screen::Create(Dimension::Full(), Dimension::Fit(document));
-  Render(screen, document);
+  auto monitors_window = Renderer([&] {
+    Elements monitors;
+    for (const auto &[key, value_vector] : object_information_) {
+      Elements items;
+      for (const auto &item : value_vector) {
+        items.push_back(hbox({text(item)}));
+      }
+      auto content = vbox({items});
+      monitors.push_back(window(text(key), content) | flex);
+    }
 
-  std::cout << screen.ToString() << std::endl;
+    return window(text("monitors"), hbox({monitors}));
+  });
+
+  // document = document | size(WIDTH, LESS_THAN, term_width_);
+  auto global = Container::Vertical({
+      menu_global,
+      monitors_window,
+  });
+
+  auto screen = ScreenInteractive::TerminalOutput();
+  // screen = CatchEvent([&](Event event) {
+  //   keys.push_back(event);
+  //   return true;
+  // });
+
+  bool refresh_ui_continue = true;
+  std::thread refresh_ui([&] {
+    while (refresh_ui_continue) {
+      struct winsize w;
+      ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+      if (term_width_ != w.ws_col) {
+        term_width_ = w.ws_col;
+        redraw_flag_ = true;
+      }
+
+      if (redraw_flag_) {
+        screen.PostEvent(Event::Custom);
+        redraw_flag_ = false;
+      }
+
+      using namespace std::chrono_literals;
+      std::this_thread::sleep_for(0.05s);
+    }
+  });
+
+  screen.Loop(global);
+
+  refresh_ui_continue = false;
+  refresh_ui.join();
+  screen_loop_finished_ = true;
+
 }
+
+void Ui::renderOptions() {}
 
 void Ui::spin() {
 
-  // get terminal width
-  struct winsize w;
-  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+  renderMonitors();
 
-  term_width_ = w.ws_col;
-
-  while (true) {
-    if (redraw_flag_) {
-      renderDisplay();
-      // FIXME Think a bit more carefully about this, can potentially get access
-      // conflicts with the redraw flag. Maybe add a mutex
-      redraw_flag_ = false;
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-  }
 }

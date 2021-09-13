@@ -9,6 +9,6 @@ target_include_directories(doctest INTERFACE
 )
 
 add_executable(test_runner test_runner.cpp ${TEST_SOURCES})
-target_link_libraries(test_runner Project-Name-lib doctest)
+target_link_libraries(test_runner rostui-lib doctest)
 
 add_test(all_tests test_runner)

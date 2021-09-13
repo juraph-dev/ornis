@@ -65,12 +65,12 @@ set(LIBRARY_SOURCES
 
 add_subdirectory(external/ftxui)
 
-add_library(Project-Name-lib ${LIBRARY_SOURCES}) # A library
-set_target_properties(Project-Name-lib PROPERTIES PREFIX "") # Remove the lib prefix
-target_include_directories(Project-Name-lib PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include)
+add_library(rostui-lib ${LIBRARY_SOURCES}) # A library
+set_target_properties(rostui-lib PROPERTIES PREFIX "") # Remove the lib prefix
+target_include_directories(rostui-lib PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include)
 
 add_executable(Rostui src/main.cpp src/ui.cpp src/object_controller.cpp) # The main executable
-target_link_libraries(Rostui PUBLIC Project-Name-lib
+target_link_libraries(Rostui PUBLIC rostui-lib
   PRIVATE ftxui::screen
   PRIVATE ftxui::dom
   PRIVATE ftxui::component # Not needed for this example.
@@ -88,7 +88,7 @@ endif (BUILD_TESTS)
 
 # Install the built library and executable into the appropriate directory
 install(TARGETS Rostui DESTINATION bin)
-install(TARGETS Project-Name-lib
+install(TARGETS rostui-lib
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin

@@ -36,17 +36,24 @@ void Ui::renderMonitors() {
   // the interface needs to be re-drawn. This bool will also be flagged if the
   // terminal dimensions change
 
-  auto title_bar = [&] {
-    Elements t;
-    t.push_back(hbox({text(L"[o]ptions") | bold}) | color(Color::Green));
-    auto content = vbox({t});
-    return window(text("rosTUI"), content);
-  };
-
   auto button_option = ButtonOption();
+  button_option.border = false;
+  auto buttons = Container::Horizontal({
+      Button(
+          "[o]ptions", [&] {}, &button_option),
+      Button(
+          "[h]elp", [&] {}, &button_option),
+  });
 
-  auto menu_global = Container::Horizontal({Button(
-      "[o]ptions", [&] { title_bar(); }, button_option)});
+  // Modify the way to render them on screen:
+  auto title_bar = Renderer(buttons, [&] {
+    return vbox({
+        text("rosTUI") | bold | hcenter,
+        separator(),
+        buttons->Render() | hcenter,
+        separator(),
+    });
+  });
 
   auto monitors_window = Renderer([&] {
     Elements monitors;
@@ -62,16 +69,10 @@ void Ui::renderMonitors() {
     return window(text("monitors"), hbox({monitors}));
   });
 
-  // document = document | size(WIDTH, LESS_THAN, term_width_);
   auto global = Container::Vertical({
-      menu_global,
+      title_bar,
       monitors_window,
   });
-
-  // screen = CatchEvent([&](Event event) {
-  //   keys.push_back(event);
-  //   return true;
-  // });
 
   std::thread refresh_ui([&] {
     using namespace std::chrono_literals;

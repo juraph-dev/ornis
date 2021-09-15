@@ -56,8 +56,6 @@ else (ENABLE_COVERAGE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif (ENABLE_COVERAGE AND NOT CMAKE_CONFIGURATION_TYPES)
 
 set(LIBRARY_SOURCES
-    src/factorial.cpp
-    src/hello_world.cpp
     src/node_monitor.cpp
     src/topic_monitor.cpp
     src/service_monitor.cpp

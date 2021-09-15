@@ -2,17 +2,21 @@
 
 using namespace ftxui;
 
-Ui::Ui() {
-  // Set re-draw required on startup
-  redraw_flag_ = true;
-  screen_loop_finished_ = false;
-  thread_ = new std::thread([this]() { spin(); });
+Ui::Ui() : redraw_flag_(true), screen_loop_(true) {
+  content_thread_ = new std::thread([this]() { spin(); });
+  screen_thread_ = new std::thread([this]() { refreshUi(); });
 }
 
 Ui::~Ui() {
-  if (thread_ != nullptr) {
-    thread_->join();
-    delete thread_;
+  screen_loop_ = false;
+  if (content_thread_ != nullptr) {
+    content_thread_->join();
+    delete content_thread_;
+  }
+
+  if (screen_thread_ != nullptr) {
+    screen_thread_->join();
+    delete screen_thread_;
   }
 }
 
@@ -64,44 +68,37 @@ void Ui::renderMonitors() {
       monitors_window,
   });
 
-  auto screen = ScreenInteractive::TerminalOutput();
   // screen = CatchEvent([&](Event event) {
   //   keys.push_back(event);
   //   return true;
   // });
 
-  bool refresh_ui_continue = true;
   std::thread refresh_ui([&] {
-    while (refresh_ui_continue) {
-      struct winsize w;
-      ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-      if (term_width_ != w.ws_col) {
-        term_width_ = w.ws_col;
-        redraw_flag_ = true;
-      }
-
-      if (redraw_flag_) {
-        screen.PostEvent(Event::Custom);
-        redraw_flag_ = false;
-      }
-
-      using namespace std::chrono_literals;
-      std::this_thread::sleep_for(0.05s);
-    }
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(0.05s);
   });
 
-  screen.Loop(global);
+  screen_.Loop(global);
 
-  refresh_ui_continue = false;
-  refresh_ui.join();
-  screen_loop_finished_ = true;
+  // refresh_ui_continue = false;
+  // refresh_ui.join();
+  // delete *refresh_ui;
+  // screen_loop_finished_ = true;
+}
 
+void Ui::refreshUi() {
+  while (screen_loop_) {
+    if (redraw_flag_) {
+      // Post an event to update the display
+      screen_.PostEvent(Event::Custom);
+      redraw_flag_ = false;
+    }
+
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(0.05s);
+  }
 }
 
 void Ui::renderOptions() {}
 
-void Ui::spin() {
-
-  renderMonitors();
-
-}
+void Ui::spin() { renderMonitors(); }

@@ -25,7 +25,7 @@ public:
   // Re-draw flag, for updated value, or changed console dimensions
   std::atomic_bool redraw_flag_;
 
-  bool screen_loop_finished_;
+  std::atomic_bool screen_loop_;
 
 private:
   // Stores the width of the terminal at startup. Used for scaling the ui
@@ -33,13 +33,17 @@ private:
 
   void renderMonitors();
   void renderOptions();
+  void refreshUi();
 
   // Primary loop function
   void spin();
 
-  std::thread *thread_;
+  std::thread *content_thread_;
+  std::thread *screen_thread_;
 
   std::map<std::string, std::vector<std::string>> object_information_;
+
+  ftxui::ScreenInteractive screen_ = ftxui::ScreenInteractive::TerminalOutput();
 };
 
 #endif // UI_H_

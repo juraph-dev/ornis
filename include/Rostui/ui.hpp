@@ -14,11 +14,16 @@
 #include "ftxui/component/screen_interactive.hpp"
 #include "ftxui/dom/elements.hpp"
 
+enum CurrentWindow {
+  MONITORS = 0,
+  OPTIONS = 1,
+  HELP = 2,
+};
+
 class Ui {
 public:
   Ui();
   ~Ui();
-
 
   void setValues(const std::map<std::string, std::vector<std::string>> values);
 
@@ -31,9 +36,12 @@ private:
   // Stores the width of the terminal at startup. Used for scaling the ui
   uint term_width_;
 
+  CurrentWindow current_window_;
+
   void renderMonitors();
   void renderOptions();
   void refreshUi();
+  void signalHandler(int sig);
 
   // Primary loop function
   void spin();
@@ -44,6 +52,8 @@ private:
   std::map<std::string, std::vector<std::string>> object_information_;
 
   ftxui::ScreenInteractive screen_ = ftxui::ScreenInteractive::TerminalOutput();
+
+  std::mutex data_mutex_;
 };
 
 #endif // UI_H_

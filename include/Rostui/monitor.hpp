@@ -12,7 +12,7 @@
 
 class Monitor {
 public:
-  Monitor() {
+  Monitor() : spin_(true){
     thread_ = new std::thread([this]() { spin(); });
   }
   ~Monitor() {
@@ -27,6 +27,8 @@ public:
     value = latest_value_;
     data_mutex_.unlock();
   }
+
+  std::atomic<bool> spin_;
 
 protected:
   std::string callConsole(const std::string cmd) {
@@ -50,6 +52,7 @@ protected:
   std::mutex data_mutex_;
 
   std::vector<std::string> latest_value_;
+
 
 private:
   virtual void spin() = 0;

@@ -25,9 +25,8 @@ public:
   void updateMonitors();
 
 private:
-  bool run_;
 
-  std::thread ui_thread_;
+  Ui ui_;
 
   // Storage map for storing the latest data from the monitors
   std::map<std::string, std::vector<std::string>> monitor_state_;
@@ -43,7 +42,6 @@ private:
   std::map<std::string, std::vector<std::string>> default_ui_view_ = {
       {"Nodes", {"Loading", "..."}}};
 
-  Ui ui_;
 };
 
 #endif // OBJECT_CONTROLLER_H_

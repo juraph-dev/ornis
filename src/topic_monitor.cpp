@@ -8,7 +8,7 @@ TopicMonitor::TopicMonitor() {}
 TopicMonitor::~TopicMonitor() {}
 
 void TopicMonitor::spin() {
-  while (true) {
+  while (spin_) {
     updateValue();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }

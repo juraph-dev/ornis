@@ -1,8 +1,9 @@
+
 #include "Rostui/ui.hpp"
 
 using namespace ftxui;
 
-Ui::Ui() : redraw_flag_(true), screen_loop_(true) {
+Ui::Ui() : redraw_flag_(true), screen_loop_(true), current_window_(MONITORS) {
   content_thread_ = new std::thread([this]() { spin(); });
   screen_thread_ = new std::thread([this]() { refreshUi(); });
 }
@@ -23,26 +24,31 @@ Ui::~Ui() {
 void Ui::setValues(
     const std::map<std::string, std::vector<std::string>> values) {
 
+  data_mutex_.lock();
   object_information_ = values;
+  data_mutex_.unlock();
   redraw_flag_ = true;
 }
 
 void Ui::renderMonitors() {
 
-  system("clear");
+  // system("clear");
 
   // Object monitor will reach out to ui, and update the values in its array
   // This will require an atomic bool. This bool will indicate to the ui that
   // the interface needs to be re-drawn. This bool will also be flagged if the
   // terminal dimensions change
 
+  auto help_window = Renderer(
+      [&] { return window(text("HELP"), hbox({text("AAAAAAAAAAAACK")})); });
+
   auto button_option = ButtonOption();
   button_option.border = false;
   auto buttons = Container::Horizontal({
       Button(
-          "[o]ptions", [&] {}, &button_option),
+          "[o]ptions", [&] { current_window_ = HELP; }, &button_option),
       Button(
-          "[h]elp", [&] {}, &button_option),
+          "[h]elp", [&] { current_window_ = HELP; }, &button_option),
   });
 
   // Modify the way to render them on screen:
@@ -56,6 +62,7 @@ void Ui::renderMonitors() {
   });
 
   auto monitors_window = Renderer([&] {
+    data_mutex_.lock();
     Elements monitors;
     for (const auto &[key, value_vector] : object_information_) {
       Elements items;
@@ -65,29 +72,36 @@ void Ui::renderMonitors() {
       auto content = vbox({items});
       monitors.push_back(window(text(key), content) | flex);
     }
+    data_mutex_.unlock();
 
     return window(text("monitors"), hbox({monitors}));
   });
 
-  auto global = Container::Vertical({
-      title_bar,
-      monitors_window,
-  });
+  auto global = Container::Vertical({title_bar});
 
-  std::thread refresh_ui([&] {
-    using namespace std::chrono_literals;
-    std::this_thread::sleep_for(0.05s);
-  });
+  switch (current_window_) {
+  case MONITORS:
+    global = Container::Vertical({
+        title_bar,
+        monitors_window,
+    });
+    break;
+  case HELP:
+    global = Container::Vertical({help_window});
+    break;
+  case OPTIONS:
+    break;
+  default:
+    global = Container::Vertical({help_window});
+    break;
+  }
 
   screen_.Loop(global);
-
-  // refresh_ui_continue = false;
-  // refresh_ui.join();
-  // delete *refresh_ui;
-  // screen_loop_finished_ = true;
+  screen_loop_ = false;
 }
 
 void Ui::refreshUi() {
+
   while (screen_loop_) {
     if (redraw_flag_) {
       // Post an event to update the display

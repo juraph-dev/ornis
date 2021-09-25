@@ -4,7 +4,11 @@
 
 ObjectController::ObjectController() {}
 
-ObjectController::~ObjectController() {}
+ObjectController::~ObjectController() {
+nodeMonitor_.spin_ = false;
+topicMonitor_.spin_ = false;
+serviceMonitor_.spin_ = false;
+}
 
 void ObjectController::initialiseUserInterface() {
   ui_.setValues(default_ui_view_);
@@ -20,10 +24,9 @@ void ObjectController::updateMonitors() {
   topicMonitor_.getValue(monitor_info["Topics"]);
   serviceMonitor_.getValue(monitor_info["Services"]);
 
-  if (monitor_info["Nodes"].size()){
+  if (monitor_info["Nodes"].size()) {
     ui_.setValues(monitor_info);
-  }
-  else {
+  } else {
     ui_.setValues(default_ui_view_);
   }
 }
@@ -33,14 +36,9 @@ void ObjectController::spin() {
   initialiseUserInterface();
   initialiseMonitors();
 
-  run_ = true;
-
-  while (run_) {
+  while (ui_.screen_loop_) {
     updateMonitors();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    if (!ui_.screen_loop_)
-    {
-      run_ = false;
-    }
   }
+
 }

@@ -3,7 +3,9 @@
 
 using namespace ftxui;
 
-Ui::Ui() : redraw_flag_(true), screen_loop_(true), current_window_(MONITORS) {
+Ui::Ui()
+    : redraw_flag_(true), screen_loop_(true),
+      current_window_(CurrentWindow::MONITORS) {
   content_thread_ = new std::thread([this]() { spin(); });
   screen_thread_ = new std::thread([this]() { refreshUi(); });
 }
@@ -42,13 +44,20 @@ void Ui::renderMonitors() {
   auto help_window = Renderer(
       [&] { return window(text("HELP"), hbox({text("AAAAAAAAAAAACK")})); });
 
+  auto update_window = [&](CurrentWindow new_window) {
+    current_window_ = new_window;
+  };
   auto button_option = ButtonOption();
   button_option.border = false;
   auto buttons = Container::Horizontal({
       Button(
-          "[o]ptions", [&] { current_window_ = HELP; }, &button_option),
+          "[m]onitors", [&] { update_window(MONITORS); }, &button_option),
       Button(
-          "[h]elp", [&] { current_window_ = HELP; }, &button_option),
+          "[o]ptions", [&] { update_window(HELP); }, &button_option),
+      Button(
+          "[h]elp", [&] { update_window(HELP); }, &button_option),
+      Button(
+          "[q]uit", [&] { screen_.ExitLoopClosure(); screen_loop_ = false; }, &button_option),
   });
 
   // Modify the way to render them on screen:
@@ -78,25 +87,40 @@ void Ui::renderMonitors() {
   });
 
   auto global = Container::Vertical({title_bar});
+  // auto renderer = title_bar;
 
-  switch (current_window_) {
-  case MONITORS:
-    global = Container::Vertical({
-        title_bar,
-        monitors_window,
+  // switch (current_window_) {
+  // case MONITORS:
+  //   renderer = monitors_window;
+  //   // global = vbox({
+  //   //     title_bar,
+  //   //     monitors_window,
+  //   // });
+  //   break;
+  // case HELP:
+  //   renderer = help_window;
+  //   // global = Container::Vertical({title_bar, help_window});
+  //   break;
+  // case OPTIONS:
+  //   renderer = help_window;
+  //   break;
+  // default:
+  //   // global = Container::Vertical({title_bar, help_window});
+  //   break;
+  // }
+  auto renderer = Renderer(global, [&] {
+    if (current_window_ == MONITORS) {
+      return vbox({title_bar->Render(),
+                   separator(), monitors_window->Render() | frame}) |
+             border;
+    } else {
+      return vbox({title_bar->Render(),
+                   separator(), help_window->Render() | frame}) |
+             border;
+    }
     });
-    break;
-  case HELP:
-    global = Container::Vertical({help_window});
-    break;
-  case OPTIONS:
-    break;
-  default:
-    global = Container::Vertical({help_window});
-    break;
-  }
 
-  screen_.Loop(global);
+  screen_.Loop(renderer);
   screen_loop_ = false;
 }
 

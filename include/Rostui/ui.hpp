@@ -14,7 +14,7 @@
 #include "ftxui/component/screen_interactive.hpp"
 #include "ftxui/dom/elements.hpp"
 
-enum CurrentWindow {
+enum class CurrentWindow {
   MONITORS = 0,
   OPTIONS = 1,
   HELP = 2,

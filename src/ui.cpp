@@ -41,23 +41,37 @@ void Ui::renderMonitors() {
   // the interface needs to be re-drawn. This bool will also be flagged if the
   // terminal dimensions change
 
-  auto help_window = Renderer(
-      [&] { return window(text("HELP"), hbox({text("AAAAAAAAAAAACK")})); });
+  auto help_window =
+      Renderer([&] { return window(text("HELP"), hbox({text("Good luck")})); });
+
+  auto options_window = Renderer([&] {
+    return window(text("Options"),
+                  hbox({text("No configuration available yet")}));
+  });
 
   auto update_window = [&](CurrentWindow new_window) {
     current_window_ = new_window;
   };
+
   auto button_option = ButtonOption();
   button_option.border = false;
   auto buttons = Container::Horizontal({
       Button(
-          "[m]onitors", [&] { update_window(MONITORS); }, &button_option),
+          "[m]onitors", [&] { update_window(CurrentWindow::MONITORS); },
+          &button_option),
       Button(
-          "[o]ptions", [&] { update_window(HELP); }, &button_option),
+          "[o]ptions", [&] { update_window(CurrentWindow::OPTIONS); },
+          &button_option),
       Button(
-          "[h]elp", [&] { update_window(HELP); }, &button_option),
+          "[h]elp", [&] { update_window(CurrentWindow::HELP); },
+          &button_option),
       Button(
-          "[q]uit", [&] { screen_.ExitLoopClosure(); screen_loop_ = false; }, &button_option),
+          "[q]uit",
+          [&] {
+            screen_.ExitLoopClosure();
+            screen_loop_ = false;
+          },
+          &button_option),
   });
 
   // Modify the way to render them on screen:
@@ -66,7 +80,6 @@ void Ui::renderMonitors() {
         text("rosTUI") | bold | hcenter,
         separator(),
         buttons->Render() | hcenter,
-        separator(),
     });
   });
 
@@ -83,42 +96,23 @@ void Ui::renderMonitors() {
     }
     data_mutex_.unlock();
 
-    return window(text("monitors"), hbox({monitors}));
+    return window(text("Monitors"), hbox({monitors}));
   });
 
   auto global = Container::Vertical({title_bar});
-  // auto renderer = title_bar;
 
-  // switch (current_window_) {
-  // case MONITORS:
-  //   renderer = monitors_window;
-  //   // global = vbox({
-  //   //     title_bar,
-  //   //     monitors_window,
-  //   // });
-  //   break;
-  // case HELP:
-  //   renderer = help_window;
-  //   // global = Container::Vertical({title_bar, help_window});
-  //   break;
-  // case OPTIONS:
-  //   renderer = help_window;
-  //   break;
-  // default:
-  //   // global = Container::Vertical({title_bar, help_window});
-  //   break;
-  // }
   auto renderer = Renderer(global, [&] {
-    if (current_window_ == MONITORS) {
-      return vbox({title_bar->Render(),
-                   separator(), monitors_window->Render() | frame}) |
-             border;
-    } else {
-      return vbox({title_bar->Render(),
-                   separator(), help_window->Render() | frame}) |
-             border;
+    auto display_window =
+        vbox({title_bar->Render(), monitors_window->Render()});
+    if (current_window_ == CurrentWindow::OPTIONS) {
+      display_window = dbox(
+          {display_window, options_window->Render() | clear_under | center});
+    } else if (current_window_ == CurrentWindow::HELP) {
+      display_window =
+          dbox({display_window, help_window->Render() | clear_under | center});
     }
-    });
+    return display_window;
+  });
 
   screen_.Loop(renderer);
   screen_loop_ = false;

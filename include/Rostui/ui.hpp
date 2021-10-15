@@ -14,11 +14,13 @@
 #include "ftxui/component/screen_interactive.hpp"
 #include "ftxui/dom/elements.hpp"
 
-enum class CurrentWindow {
+namespace WindowEnum{
+enum Current{
   MONITORS = 0,
   OPTIONS = 1,
   HELP = 2,
 };
+}
 
 class Ui {
 public:
@@ -35,8 +37,6 @@ public:
 private:
   // Stores the width of the terminal at startup. Used for scaling the ui
   uint term_width_;
-
-  CurrentWindow current_window_;
 
   void renderMonitors();
   void renderOptions();

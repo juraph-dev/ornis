@@ -3,9 +3,7 @@
 
 using namespace ftxui;
 
-Ui::Ui()
-    : redraw_flag_(true), screen_loop_(true),
-      current_window_(CurrentWindow::MONITORS) {
+Ui::Ui() : redraw_flag_(true), screen_loop_(true) {
   content_thread_ = new std::thread([this]() { spin(); });
   screen_thread_ = new std::thread([this]() { refreshUi(); });
 }
@@ -34,36 +32,47 @@ void Ui::setValues(
 
 void Ui::renderMonitors() {
 
-  // system("clear");
-
   // Object monitor will reach out to ui, and update the values in its array
   // This will require an atomic bool. This bool will indicate to the ui that
   // the interface needs to be re-drawn. This bool will also be flagged if the
   // terminal dimensions change
 
-  auto help_window =
-      Renderer([&] { return window(text("HELP"), hbox({text("Good luck")})); });
-
-  auto options_window = Renderer([&] {
-    return window(text("Options"),
-                  hbox({text("No configuration available yet")}));
-  });
-
-  auto update_window = [&](CurrentWindow new_window) {
-    current_window_ = new_window;
-  };
+  // Used to determine which window is currently in focus
+  int depth = 0;
 
   auto button_option = ButtonOption();
+
+  auto update_window = [&](int new_depth) { depth = new_depth; };
+
+  // Duplicate close buttons, until I can figure out why two dialogues can't
+  // share the same button
+  auto close_options_window = Button(
+      "Close window", [&] { update_window(WindowEnum::Current::MONITORS); },
+      &button_option);
+  auto close_help_window = Button(
+      "Close window", [&] { update_window(WindowEnum::Current::MONITORS); },
+      &button_option);
+
+  auto options_window = Renderer(close_options_window, [&] {
+    return window(text("Options"), vbox(text("No configuration available yet"),
+                                        close_options_window->Render()));
+  });
+
+  auto help_window = Renderer(close_help_window, [&] {
+    return window(text("Help"), vbox(text("No Help"),
+                                        close_help_window->Render()));
+  });
+
   button_option.border = false;
   auto buttons = Container::Horizontal({
       Button(
-          "[m]onitors", [&] { update_window(CurrentWindow::MONITORS); },
+          "[m]onitors", [&] { update_window(WindowEnum::Current::MONITORS); },
           &button_option),
       Button(
-          "[o]ptions", [&] { update_window(CurrentWindow::OPTIONS); },
+          "[o]ptions", [&] { update_window(WindowEnum::Current::OPTIONS); },
           &button_option),
       Button(
-          "[h]elp", [&] { update_window(CurrentWindow::HELP); },
+          "[h]elp", [&] { update_window(WindowEnum::Current::HELP); },
           &button_option),
       Button(
           "[q]uit",
@@ -77,7 +86,7 @@ void Ui::renderMonitors() {
   // Modify the way to render them on screen:
   auto title_bar = Renderer(buttons, [&] {
     return vbox({
-        text("rosTUI") | bold | hcenter,
+        text("RosTUI") | bold | hcenter,
         separator(),
         buttons->Render() | hcenter,
     });
@@ -99,15 +108,16 @@ void Ui::renderMonitors() {
     return window(text("Monitors"), hbox({monitors}));
   });
 
-  auto global = Container::Vertical({title_bar});
+  auto global =
+      Container::Tab({title_bar, options_window, help_window}, &depth);
 
   auto renderer = Renderer(global, [&] {
     auto display_window =
         vbox({title_bar->Render(), monitors_window->Render()});
-    if (current_window_ == CurrentWindow::OPTIONS) {
+    if (depth == WindowEnum::Current::OPTIONS) {
       display_window = dbox(
           {display_window, options_window->Render() | clear_under | center});
-    } else if (current_window_ == CurrentWindow::HELP) {
+    } else if (depth == WindowEnum::Current::HELP) {
       display_window =
           dbox({display_window, help_window->Render() | clear_under | center});
     }

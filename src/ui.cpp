@@ -1,5 +1,6 @@
 
 #include "Rostui/ui.hpp"
+#include <csignal>
 
 using namespace ftxui;
 
@@ -78,7 +79,8 @@ void Ui::renderMonitors() {
           "[q]uit",
           [&] {
             screen_.ExitLoopClosure();
-            screen_loop_ = false;
+            std::raise(SIGTERM);
+            return;
           },
           &button_option),
   });
@@ -126,6 +128,7 @@ void Ui::renderMonitors() {
 
   screen_.Loop(renderer);
   screen_loop_ = false;
+  return;
 }
 
 void Ui::refreshUi() {

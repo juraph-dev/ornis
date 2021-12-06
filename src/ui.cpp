@@ -100,6 +100,8 @@ void Ui::renderMonitors() {
     for (const auto &[key, value_vector] : object_information_) {
       Elements items;
       for (const auto &item : value_vector) {
+        // NEED TO MODIFY THIS, SO THAT EACH ITEM
+        // IS LINKED TO A BUTTON, WHICH WILL DISPLAY INFORMATION ONCE PRESSED
         items.push_back(hbox({text(item)}));
       }
       auto content = vbox({items});

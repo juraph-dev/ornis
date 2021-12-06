@@ -43,7 +43,7 @@ private:
   void refreshUi();
   void signalHandler(int sig);
 
-  // Primary loop function
+  // Primary loop method
   void spin();
 
   std::thread *content_thread_;

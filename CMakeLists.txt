@@ -8,7 +8,7 @@ set(Project-Name_VERSION_PATCH 0)
 set(Project-Name_VERSION "${Project-Name_VERSION_MAJOR}.${Project-Name_VERSION_MINOR}.${Project-Name_VERSION_PATCH}")
 
 set(PROJ_NAME "Rostui") # PROJECT_NAME is a predefined variable
-set(PROJECT_DESCRIPTION "\"A cross-platform C++17 project template\"")
+set(PROJECT_DESCRIPTION "\"ROS terminal user interface\"")
 
 configure_file(include/Rostui/config.hpp.in
     ${CMAKE_BINARY_DIR}/include/Rostui/config.hpp
@@ -19,6 +19,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_COMPILER_ID "GNU")
 set(CMAKE_CXX_COMPILER_VERSION "10.1.0")
+
+# Use threads
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
+
+# Use Notcurses
+add_subdirectory(external/notcurses)
+# # find_package(notcurses REQUIRED)
+find_package(Notcurses 3.0.0 CONFIG)
+set_package_properties(Notcurses PROPERTIES TYPE REQUIRED)
+target_link_libraries(notcurses++)
 
 # Options
 option(BUILD_TESTS "Build test executable" OFF)
@@ -61,17 +73,18 @@ set(LIBRARY_SOURCES
     src/service_monitor.cpp
 )
 
-add_subdirectory(external/ftxui)
 
-add_library(rostui-lib ${LIBRARY_SOURCES}) # A library
+add_library(rostui-lib ${LIBRARY_SOURCES} "${Notcurses_LIBRARY_DIRS}") # A library
 set_target_properties(rostui-lib PROPERTIES PREFIX "") # Remove the lib prefix
-target_include_directories(rostui-lib PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include)
+target_include_directories(rostui-lib PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include ${Notcurses_INCLUDE_DIRS})
 
-add_executable(Rostui src/main.cpp src/ui.cpp src/object_controller.cpp) # The main executable
+add_executable(Rostui src/main.cpp src/ui.cpp src/object_controller.cpp) # The main executables
 target_link_libraries(Rostui PUBLIC rostui-lib
-  PRIVATE ftxui::screen
-  PRIVATE ftxui::dom
-  PRIVATE ftxui::component # Not needed for this example.
+    PRIVATE Threads::Threads
+    PRIVATE notcurses++
+  # PRIVATE ftxui::screen
+  # PRIVATE ftxui::dom
+  # PRIVATE ftxui::component # Not needed for this example.
     ) # Link our sources to the executable
 
 if (BUILD_TESTS)

@@ -28,7 +28,7 @@ public:
     data_mutex_.unlock();
   }
 
-  std::atomic<bool> spin_;
+  bool spin_;
 
 protected:
   std::string callConsole(const std::string cmd) {

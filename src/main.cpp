@@ -5,6 +5,7 @@
 #include "Rostui/node_monitor.hpp"
 #include "Rostui/object_controller.hpp"
 
+
 int main(int argc, char *argv[]) {
 
   // Print version information
@@ -15,7 +16,8 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  system("clear");
+  std::cout << "Rostui LAUNCHED" << std::endl;
+  // system("clear");
 
   ObjectController objectController;
   objectController.spin();

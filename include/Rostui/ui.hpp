@@ -3,16 +3,27 @@
 
 #include <iostream>
 #include <map>
+#include <thread>
+#include <mutex>
 #include <stdio.h>
 #include <string>
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <vector>
 
-#include "ftxui/component/component.hpp"
-#include "ftxui/component/event.hpp"
-#include "ftxui/component/screen_interactive.hpp"
-#include "ftxui/dom/elements.hpp"
+// #include <notcurses/notcurses.hh>
+// #include <notcurses/.h>
+
+// #include <notcurses>
+// #include <ncpp/NotCurses.hh>
+// #include <notcurses/notcurses.h>
+// #include <NotCurses.hh>
+// #include "ncpp/include/NotCurses.hh"
+#include "ncpp/NotCurses.hh"
+// #include "ftxui/component/component.hpp"
+// #include "ftxui/component/event.hpp"
+// #include "ftxui/component/screen_interactive.hpp"
+// #include "ftxui/dom/elements.hpp"
 
 namespace WindowEnum{
 enum Current{
@@ -30,9 +41,8 @@ public:
   void setValues(const std::map<std::string, std::vector<std::string>> values);
 
   // Re-draw flag, for updated value, or changed console dimensions
-  std::atomic_bool redraw_flag_;
-
-  std::atomic_bool screen_loop_;
+  bool redraw_flag_;
+  bool screen_loop_;
 
 private:
   // Stores the width of the terminal at startup. Used for scaling the ui
@@ -51,7 +61,7 @@ private:
 
   std::map<std::string, std::vector<std::string>> object_information_;
 
-  ftxui::ScreenInteractive screen_ = ftxui::ScreenInteractive::TerminalOutput();
+  // ftxui::ScreenInteractive screen_ = ftxui::ScreenInteractive::TerminalOutput();
 
   std::mutex data_mutex_;
 };

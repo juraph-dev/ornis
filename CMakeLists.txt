@@ -19,6 +19,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_COMPILER_ID "GNU")
 set(CMAKE_CXX_COMPILER_VERSION "10.1.0")
+set(NCPP_DIR "external/notcurses")
 
 # Use threads
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
@@ -26,10 +27,10 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
 # Use Notcurses
-add_subdirectory(external/notcurses)
+add_subdirectory(${NCPP_DIR})
 # # find_package(notcurses REQUIRED)
-find_package(Notcurses 3.0.0 CONFIG)
-set_package_properties(Notcurses PROPERTIES TYPE REQUIRED)
+find_package(notcurses 3.0.0 CONFIG)
+set_package_properties(notcurses PROPERTIES TYPE REQUIRED)
 target_link_libraries(notcurses++)
 
 # Options
@@ -76,13 +77,14 @@ set(LIBRARY_SOURCES
 
 add_library(rostui-lib ${LIBRARY_SOURCES} "${Notcurses_LIBRARY_DIRS}") # A library
 set_target_properties(rostui-lib PROPERTIES PREFIX "") # Remove the lib prefix
-target_include_directories(rostui-lib PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include ${Notcurses_INCLUDE_DIRS})
+target_include_directories(rostui-lib PUBLIC ${CMAKE_SOURCE_DIR}/include ${CMAKE_BINARY_DIR}/include ${NCPP_DIR}/include)
+
 
 add_executable(Rostui src/main.cpp src/ui.cpp src/object_controller.cpp) # The main executables
 target_link_libraries(Rostui PUBLIC rostui-lib
     PRIVATE Threads::Threads
     PRIVATE notcurses++
-  # PRIVATE ftxui::screen
+  # PRIVATE ftxui
   # PRIVATE ftxui::dom
   # PRIVATE ftxui::component # Not needed for this example.
     ) # Link our sources to the executable

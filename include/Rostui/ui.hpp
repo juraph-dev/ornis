@@ -11,19 +11,19 @@
 #include <unistd.h>
 #include <vector>
 
-// #include <notcurses/notcurses.hh>
-// #include <notcurses/.h>
-
-// #include <notcurses>
-// #include <ncpp/NotCurses.hh>
-// #include <notcurses/notcurses.h>
-// #include <NotCurses.hh>
-// #include "ncpp/include/NotCurses.hh"
 #include "ncpp/NotCurses.hh"
-// #include "ftxui/component/component.hpp"
-// #include "ftxui/component/event.hpp"
-// #include "ftxui/component/screen_interactive.hpp"
-// #include "ftxui/dom/elements.hpp"
+#include <ncpp/Menu.hh>
+#include <ncpp/Pile.hh>
+#include <ncpp/Plane.hh>
+#include <ncpp/Reel.hh>
+#include <ncpp/MultiSelector.hh>
+#include <ncpp/Selector.hh>
+#include <ncpp/Visual.hh>
+#include <ncpp/Direct.hh>
+#include <ncpp/Plot.hh>
+#include <ncpp/FDPlane.hh>
+#include <ncpp/Subproc.hh>
+#include <ncpp/Progbar.hh>
 
 namespace WindowEnum{
 enum Current{
@@ -64,6 +64,7 @@ private:
   // ftxui::ScreenInteractive screen_ = ftxui::ScreenInteractive::TerminalOutput();
 
   std::mutex data_mutex_;
+    
 };
 
 #endif // UI_H_

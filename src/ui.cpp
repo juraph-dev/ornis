@@ -2,7 +2,17 @@
 #include "Rostui/ui.hpp"
 #include <csignal>
 
-// using namespace ftxui;
+
+typedef struct tabletctx {
+  pthread_t tid;
+  struct ncreel* pr;
+  struct nctablet* t;
+  int lines;
+  unsigned rgb;
+  unsigned id;
+  struct tabletctx* next;
+  pthread_mutex_t lock;
+} tabletctx;
 
 Ui::Ui() : redraw_flag_(true), screen_loop_(true) {
   content_thread_ = new std::thread([this]() { spin(); });
@@ -35,7 +45,8 @@ void Ui::setValues(
 
 //   // Object monitor will reach out to ui, and update the values in its array
 //   // This will require an atomic bool. This bool will indicate to the ui that
-//   // the interface needs to be re-drawn. This bool will also be flagged if the
+//   // the interface needs to be re-drawn. This bool will also be flagged if
+//   the
 //   // terminal dimensions change
 
 //   // Used to determine which window is currently in focus
@@ -55,7 +66,8 @@ void Ui::setValues(
 //       &button_option);
 
 //   auto options_window = Renderer(close_options_window, [&] {
-//     return window(text("Options"), vbox(text("No configuration available yet"),
+//     return window(text("Options"), vbox(text("No configuration available
+//     yet"),
 //                                         close_options_window->Render()));
 //   });
 
@@ -67,8 +79,8 @@ void Ui::setValues(
 //   button_option.border = false;
 //   auto buttons = Container::Horizontal({
 //       Button(
-//           "[m]onitors", [&] { update_window(WindowEnum::Current::MONITORS); },
-//           &button_option),
+//           "[m]onitors", [&] { update_window(WindowEnum::Current::MONITORS);
+//           }, &button_option),
 //       Button(
 //           "[o]ptions", [&] { update_window(WindowEnum::Current::OPTIONS); },
 //           &button_option),
@@ -123,7 +135,8 @@ void Ui::setValues(
 //           {display_window, options_window->Render() | clear_under | center});
 //     } else if (depth == WindowEnum::Current::HELP) {
 //       display_window =
-//           dbox({display_window, help_window->Render() | clear_under | center});
+//           dbox({display_window, help_window->Render() | clear_under |
+//           center});
 //     }
 //     return display_window;
 //   });
@@ -133,7 +146,88 @@ void Ui::setValues(
 //   return;
 // }
 
+
+static int
+drawcb(struct nctablet* t, bool drawfromtop){
+  struct ncplane* p = nctablet_plane(t);
+  tabletctx* tctx = nctablet_userptr(t);
+  if(tctx == NULL){
+    return -1;
+  }
+  pthread_mutex_lock(&tctx->lock);
+  unsigned rgb = tctx->rgb;
+  int ll;
+  int maxy = ncplane_dim_y(p);
+  ll = tabletdraw(p, maxy, tctx, rgb);
+  ncplane_set_fg_rgb8(p, 242, 242, 242);
+  if(ll){
+    const int summaryy = drawfromtop ? 0 : ll - 1;
+    ncplane_on_styles(p, NCSTYLE_BOLD);
+    if(ncplane_printf_yx(p, summaryy, 0, "[#%u %d lines] ",
+                         tctx->id, tctx->lines) < 0){
+      pthread_mutex_unlock(&tctx->lock);
+      return -1;
+    }
+    ncplane_off_styles(p, NCSTYLE_BOLD);
+  }
+//fprintf(stderr, "  \\--> callback for %d, %d lines (%d/%d -> %d/%d) dir: %s wrote: %d\n", tctx->id, tctx->lines, begy, begx, maxy, maxx, cliptop ? "up" : "down", ll);
+  pthread_mutex_unlock(&tctx->lock);
+  return ll;
+}
+
 void Ui::refreshUi() {
+
+  // set the notcurses options
+	struct notcurses_options nopts = {
+		.flags =
+			NCOPTION_SUPPRESS_BANNERS // don't show version & performance info
+	};
+	// initialize notcurses, checking for errors
+	struct notcurses* nc = notcurses_core_init(&nopts, NULL);
+	if(nc == NULL){
+    std::cout << "UI Failed to initialise" << std::endl;
+	}
+
+  unsigned dimy, dimx;
+  struct ncplane* std = notcurses_stddim_yx(nc, &dimy, &dimx);
+  struct ncplane_options titlebar_opts = {
+    .y = 5,
+    .x = 5,
+    .rows = dimy - 12,
+    .cols = dimx - 16,
+  };
+  struct ncplane* titlebar_plane = ncplane_create(std, &titlebar_opts);
+
+  ncplane_printf_yx(std, 1, 2, "a, b, c create tablets, DEL deletes.");
+  ncplane_off_styles(std, NCSTYLE_BOLD | NCSTYLE_ITALIC);
+
+	// get a reference to the standard plane
+	struct ncplane* stdn = notcurses_stdplane(nc);
+
+	// write to the standard plane at the current cursor coordinates
+	ncplane_putstr_yx(stdn, -1, -1, "hello world");
+
+  nccell c = NCCELL_TRIVIAL_INITIALIZER;
+  char asd[2] = {'a'};
+  nccell_load(stdn, &c, asd);
+  ncplane_putc_yx(stdn, 10, 20, &c);
+
+  // Test creating an ncreel
+  ncreel_options nc_opts =
+    {
+    .bordermask = 0,
+    .borderchan = 0,
+    .tabletchan = 0,
+    .focusedchan = 0,
+    .flags = NCREEL_OPTION_INFINITESCROLL | NCREEL_OPTION_CIRCULAR,
+  };
+  struct ncreel* nr = ncreel_create(stdn, &nc_opts);
+  ncreel_add(nr, NULL, NULL, drawcb, tctx);
+// Create a test tablet, which is loaded onto the reel
+  // nctablet test_tablet = {};
+
+	// render the standard pile
+	notcurses_render(nc);
 
   while (screen_loop_) {
     if (redraw_flag_) {
@@ -145,8 +239,12 @@ void Ui::refreshUi() {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(0.05s);
   }
+	// stop notcurses, checking for errors
+	if (notcurses_stop(nc)) {
+    // ech Need to have this return error at some point
+	}
 }
 
 void Ui::renderOptions() {}
 
-void Ui::spin() { }
+void Ui::spin() {}

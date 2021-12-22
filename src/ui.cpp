@@ -147,33 +147,6 @@ void Ui::setValues(
 // }
 
 
-static int
-drawcb(struct nctablet* t, bool drawfromtop){
-  struct ncplane* p = nctablet_plane(t);
-  tabletctx* tctx = nctablet_userptr(t);
-  if(tctx == NULL){
-    return -1;
-  }
-  pthread_mutex_lock(&tctx->lock);
-  unsigned rgb = tctx->rgb;
-  int ll;
-  int maxy = ncplane_dim_y(p);
-  ll = tabletdraw(p, maxy, tctx, rgb);
-  ncplane_set_fg_rgb8(p, 242, 242, 242);
-  if(ll){
-    const int summaryy = drawfromtop ? 0 : ll - 1;
-    ncplane_on_styles(p, NCSTYLE_BOLD);
-    if(ncplane_printf_yx(p, summaryy, 0, "[#%u %d lines] ",
-                         tctx->id, tctx->lines) < 0){
-      pthread_mutex_unlock(&tctx->lock);
-      return -1;
-    }
-    ncplane_off_styles(p, NCSTYLE_BOLD);
-  }
-//fprintf(stderr, "  \\--> callback for %d, %d lines (%d/%d -> %d/%d) dir: %s wrote: %d\n", tctx->id, tctx->lines, begy, begx, maxy, maxx, cliptop ? "up" : "down", ll);
-  pthread_mutex_unlock(&tctx->lock);
-  return ll;
-}
 
 void Ui::refreshUi() {
 
@@ -222,7 +195,7 @@ void Ui::refreshUi() {
     .flags = NCREEL_OPTION_INFINITESCROLL | NCREEL_OPTION_CIRCULAR,
   };
   struct ncreel* nr = ncreel_create(stdn, &nc_opts);
-  ncreel_add(nr, NULL, NULL, drawcb, tctx);
+  // ncreel_add(nr, NULL, NULL, drawcb, tctx);
 // Create a test tablet, which is loaded onto the reel
   // nctablet test_tablet = {};
 

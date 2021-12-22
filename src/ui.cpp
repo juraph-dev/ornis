@@ -3,16 +3,6 @@
 #include <csignal>
 
 
-typedef struct tabletctx {
-  pthread_t tid;
-  struct ncreel* pr;
-  struct nctablet* t;
-  int lines;
-  unsigned rgb;
-  unsigned id;
-  struct tabletctx* next;
-  pthread_mutex_t lock;
-} tabletctx;
 
 Ui::Ui() : redraw_flag_(true), screen_loop_(true) {
   content_thread_ = new std::thread([this]() { spin(); });
@@ -146,16 +136,14 @@ void Ui::setValues(
 //   return;
 // }
 
-
 static int
 drawcb(struct nctablet* t, bool drawfromtop){
   struct ncplane* p = nctablet_plane(t);
-  tabletctx* tctx = nctablet_userptr(t);
+  void *tctx = nctablet_userptr(t);
   if(tctx == NULL){
     return -1;
   }
-  pthread_mutex_lock(&tctx->lock);
-  unsigned rgb = tctx->rgb;
+  unsigned rgb = 255;
   int ll;
   int maxy = ncplane_dim_y(p);
   ll = tabletdraw(p, maxy, tctx, rgb);
@@ -174,6 +162,34 @@ drawcb(struct nctablet* t, bool drawfromtop){
   pthread_mutex_unlock(&tctx->lock);
   return ll;
 }
+
+
+static int
+tabletdraw(struct ncplane* w, int maxy, nctablet* tctx, unsigned rgb){
+  char cchbuf[2];
+  nccell c = NCCELL_TRIVIAL_INITIALIZER;
+  int y;
+  int maxx = ncplane_dim_x(w) - 1;
+  // if(maxy > tctx->lines){
+  //   maxy = tctx->lines;
+  // }
+  for(y = 0 ; y < maxy ; ++y, rgb += 16){
+    snprintf(cchbuf, sizeof(cchbuf) / sizeof(*cchbuf), "%x", y % 16);
+    nccell_load(w, &c, cchbuf);
+    if(nccell_set_fg_rgb8(&c, (rgb >> 16u) % 0xffu, (rgb >> 8u) % 0xffu, rgb % 0xffu)){
+      return -1;
+    }
+    int x;
+    for(x = 0 ; x <= maxx ; ++x){
+      if(ncplane_putc_yx(w, y, x, &c) <= 0){
+        return -1;
+      }
+    }
+    nccell_release(w, &c);
+  }
+  return y;
+}
+
 
 void Ui::refreshUi() {
 
@@ -199,7 +215,6 @@ void Ui::refreshUi() {
   struct ncplane* titlebar_plane = ncplane_create(std, &titlebar_opts);
 
   ncplane_printf_yx(std, 1, 2, "a, b, c create tablets, DEL deletes.");
-  ncplane_off_styles(std, NCSTYLE_BOLD | NCSTYLE_ITALIC);
 
 	// get a reference to the standard plane
 	struct ncplane* stdn = notcurses_stdplane(nc);
@@ -212,6 +227,9 @@ void Ui::refreshUi() {
   nccell_load(stdn, &c, asd);
   ncplane_putc_yx(stdn, 10, 20, &c);
 
+  const std::string test_string = "this is an example of soem long text";
+  size_t test_size = (size_t)sizeof(test_string);
+  ncplane_puttext(stdn, 3, NCALIGN_CENTER, test_string.c_str(), &test_size);
   // Test creating an ncreel
   ncreel_options nc_opts =
     {
@@ -221,10 +239,11 @@ void Ui::refreshUi() {
     .focusedchan = 0,
     .flags = NCREEL_OPTION_INFINITESCROLL | NCREEL_OPTION_CIRCULAR,
   };
-  struct ncreel* nr = ncreel_create(stdn, &nc_opts);
-  ncreel_add(nr, NULL, NULL, drawcb, tctx);
+   struct ncreel* nr = ncreel_create(stdn, &nc_opts);
+  // ncreel_add(nr, NULL, NULL, drawcb, tctx);
 // Create a test tablet, which is loaded onto the reel
   // nctablet test_tablet = {};
+  nctablet *test_tablet = ncreel_add(nr, NULL, NULL, tabletcb cb, NULL);
 
 	// render the standard pile
 	notcurses_render(nc);

@@ -17,7 +17,7 @@ public:
   void spin();
 
   // Initialises the user interface
-  void initialiseUserInterface();
+  bool initialiseUserInterface();
   // Initialises all controllers
   void initialiseMonitors();
 

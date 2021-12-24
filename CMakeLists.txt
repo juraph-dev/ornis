@@ -21,6 +21,10 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 set(CMAKE_CXX_COMPILER_VERSION "10.1.0")
 set(NCPP_DIR "external/notcurses")
 
+# Set subdirectory variables
+# option(USE_POC OFF)
+option(USE_POC "Build small, uninstalled proof-of-concept binaries" OFF)
+
 # Use threads
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)

@@ -10,8 +10,13 @@ topicMonitor_.spin_ = false;
 serviceMonitor_.spin_ = false;
 }
 
-void ObjectController::initialiseUserInterface() {
+bool ObjectController::initialiseUserInterface() {
+  if (ui_.initialise())
+  {
+    return 1;
+}
   ui_.setValues(default_ui_view_);
+  return 0;
 }
 
 void ObjectController::initialiseMonitors() {}
@@ -24,6 +29,8 @@ void ObjectController::updateMonitors() {
   topicMonitor_.getValue(monitor_info["Topics"]);
   serviceMonitor_.getValue(monitor_info["Services"]);
 
+  // If we don't have any nodes, we're not going to have any topics or services,
+  // so populate the UI with a tempoary loading string
   if (monitor_info["Nodes"].size()) {
     ui_.setValues(monitor_info);
   } else {
@@ -33,8 +40,9 @@ void ObjectController::updateMonitors() {
 
 void ObjectController::spin() {
 
-  initialiseUserInterface();
+  if (!initialiseUserInterface()){
   initialiseMonitors();
+  }
 
   while (ui_.screen_loop_) {
     updateMonitors();

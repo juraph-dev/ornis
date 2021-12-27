@@ -3,10 +3,10 @@
 
 #include <map>
 
-#include "Rostui/ui.hpp"
 #include "Rostui/node_monitor.hpp"
-#include "Rostui/topic_monitor.hpp"
 #include "Rostui/service_monitor.hpp"
+#include "Rostui/topic_monitor.hpp"
+#include "Rostui/ui.hpp"
 
 class ObjectController {
 public:
@@ -25,7 +25,6 @@ public:
   void updateMonitors();
 
 private:
-
   Ui ui_;
 
   // Storage map for storing the latest data from the monitors
@@ -39,9 +38,12 @@ private:
 
   // Default connecting nodelet information. Sent when monitors are not yet
   // initialised
-  std::map<std::string, std::vector<std::string>> default_ui_view_ = {
-      {"Nodes", {"Loading", "..."}}};
+  const std::map<std::string, std::vector<std::string>> default_ui_view_ = {
+      {"Nodes", {"Loading..."}},
+      {"Topics", {"Loading..."}},
+      {"Services", {"Loading..."}},
 
+  };
 };
 
 #endif // OBJECT_CONTROLLER_H_

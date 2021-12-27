@@ -21,7 +21,7 @@ void TopicMonitor::updateValue() {
   if (t_value.rdbuf()->in_avail() != 0) {
     std::vector<std::string> t_vec;
     std::string t_string;
-    // Create object based on splitting by newline
+    // Create vector based on splitting by newline
     while (t_value.rdbuf()->in_avail() != 0) {
       std::getline(t_value, t_string, '\n');
       t_vec.push_back(t_string);

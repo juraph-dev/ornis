@@ -59,22 +59,22 @@ private:
   std::mutex data_mutex_;
 
   // Notcurses core
-  struct notcurses *notcurses_core_;
-  // UI standard plane
-  struct ncplane *backplane_;
-  // Monitor Reel plane
-  struct ncplane *topic_monitor_plane_;
-  struct ncplane *service_monitor_plane_;
-  struct ncplane *node_monitor_plane_;
-  // Monitor Reel
-  struct ncreel *node_monitor_reel_;
-  struct ncreel *topic_monitor_reel_;
-  struct ncreel *service_monitor_reel_;
+  std::unique_ptr<ncpp::NotCurses> notcurses_core_;
 
-  // Monitor objects
-  MonitorTablet *node_monitor_tablet_;
-  MonitorTablet *topic_monitor_tablet_;
-  MonitorTablet *service_monitor_tablet_;
+  /// Monitor interfaces
+  MonitorInterface node_monitor_interface_;
+  MonitorInterface topic_monitor_interface_;
+  MonitorInterface service_monitor_interface_;
+  // Monitor planes
+  std::shared_ptr<ncpp::Plane> node_monitor_plane_;
+  std::shared_ptr<ncpp::Plane> topic_monitor_plane_;
+  std::shared_ptr<ncpp::Plane> service_monitor_plane_;
+  // Monitor Selectors
+  std::shared_ptr<ncpp::Selector> node_monitor_selector_;
+  std::shared_ptr<ncpp::Selector> topic_monitor_selector_;
+  std::shared_ptr<ncpp::Selector> service_monitor_selector_;
+
+
 };
 
 #endif // UI_H_

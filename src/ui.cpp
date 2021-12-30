@@ -19,13 +19,13 @@ Ui::~Ui() {
 }
 
 bool Ui::initialise() {
-  // struct notcurses_options nopts = {
-  //     .flags =
-  //         NCOPTION_SUPPRESS_BANNERS // don't show version & performance info
-  // };
   struct notcurses_options nopts = {
-      .flags = NCOPTION_NO_ALTERNATE_SCREEN,
+      .flags =
+  NCOPTION_SUPPRESS_BANNERS // don't show version & performance info
   };
+  // struct notcurses_options nopts = {
+  //     .flags = NCOPTION_NO_ALTERNATE_SCREEN,
+  // };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);
   // notcurses_core_ = notcurses_core_init(&nopts, NULL);
@@ -56,10 +56,9 @@ bool Ui::initialise() {
       .cols = 3,
   };
 
-  auto selector_plane = std::make_shared<ncpp::Plane>(1, 1, 1, 16);
-  node_monitor_plane_ = std::make_shared<ncpp::Plane>(30, 30, 1, 16);
-  topic_monitor_plane_ = std::make_shared<ncpp::Plane>(10, 10, 10, 16);
-  service_monitor_plane_ = std::make_shared<ncpp::Plane>(20, 20, 15, 16);
+  node_monitor_plane_ = std::make_shared<ncpp::Plane>(1, 1, 1, 1);
+  topic_monitor_plane_ = std::make_shared<ncpp::Plane>(1, 1, 1, 40);
+  service_monitor_plane_ = std::make_shared<ncpp::Plane>(1, 1, 1, 80);
 
   ncselector_item items[] = {
       {
@@ -85,13 +84,19 @@ bool Ui::initialise() {
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
 
-  ncpp::Selector ncs(*selector_plane, &sopts);
+  struct ncselector_options node_opts = sopts;
+  node_opts.title = "Node Monitor";
+  struct ncselector_options topic_opts = sopts;
+  topic_opts.title = "Topic Monitor";
+  struct ncselector_options service_opts = sopts;
+  service_opts.title = "Service Monitor";
+
   node_monitor_selector_ =
-      std::make_shared<ncpp::Selector>(*node_monitor_plane_, &sopts);
+      std::make_shared<ncpp::Selector>(*node_monitor_plane_, &node_opts);
   topic_monitor_selector_ =
-      std::make_shared<ncpp::Selector>(*topic_monitor_plane_, &sopts);
+      std::make_shared<ncpp::Selector>(*topic_monitor_plane_, &topic_opts);
   service_monitor_selector_ =
-      std::make_shared<ncpp::Selector>(*service_monitor_plane_, &sopts);
+      std::make_shared<ncpp::Selector>(*service_monitor_plane_, &service_opts);
 
   notcurses_core_->render();
 
@@ -116,44 +121,50 @@ void Ui::renderMonitors() {
   // the interface needs to be re-drawn. This bool will also be flagged if
   // the terminal dimensions change
 
-  // Create items struct from topics
-  std::vector<ncselector_item> to_add;
-  std::vector<ncselector_item> to_remove;
-  std::vector<ncselector_item> updated_entries;
-  if (!object_information_["Topics"].empty()) {
-    for (const auto &item : object_information_["Topics"]) {
+  // Update the topic monitor
+  updateMonitor(object_information_["Topics"], topic_monitor_interface_,
+                topic_monitor_selector_);
+  updateMonitor(object_information_["Nodes"], node_monitor_interface_,
+                node_monitor_selector_);
+  updateMonitor(object_information_["Services"], service_monitor_interface_,
+                service_monitor_selector_);
+}
+
+void Ui::updateMonitor(std::vector<std::string> updated_values,
+                       MonitorInterface &interface,
+                       std::shared_ptr<ncpp::Selector> selector) {
+
+  if (!updated_values.empty()) {
+    std::vector<ncselector_item> to_add;
+    std::vector<ncselector_item> to_remove;
+    std::vector<ncselector_item> current_item_vector;
+    // Create items struct from topics
+    for (const auto &item : updated_values) {
+      // The ncselector desc and opt are const char *. Handle this accordingly
+      const char *item_string_ptr = item.c_str();
+      char *item_as_char_array = new char[strlen(item_string_ptr) + 1];
+      strcpy(item_as_char_array, item_string_ptr);
+
       ncselector_item t_item = {
-          .option = item.c_str(),
-          .desc = item.c_str(),
+          .option = item_as_char_array,
+          .desc = "desc",
       };
-      updated_entries.push_back(t_item);
+      current_item_vector.push_back(t_item);
     }
-    topic_monitor_interface_.updateEntries(updated_entries, to_add, to_remove);
+    interface.updateEntries(current_item_vector, to_add, to_remove);
+
+    // Update the corresponding selector
     if (!to_add.empty()) {
       for (const auto &item : to_add) {
-        std::cout << "Adding: " << item.desc << std::endl;
-        // topic_monitor_selector_->additem(&item);
+        selector->additem(&item);
       };
     }
     if (!to_remove.empty()) {
       for (const auto &item : to_remove) {
-        std::cout << "Removing: " << item.option << std::endl;
-        // topic_monitor_selector_->delitem(item.option);
+        selector->delitem(item.option);
       };
     }
   }
-  // std::cout << "XX first entry: " << updated_entries.at(0).option <<
-  // std::endl;
-
-  // &new_vector, std::vector<ncselector_item> &delete_values,
-  // std::vector<ncselector_item> &add_values)
-  // node_monitor_tablet_->updateEntries(object_information_["Nodes"]);
-  // topic_monitor_tablet_->updateEntries(object_information_["Topics"]);
-  // service_monitor_tablet_->updateEntries(object_information_["Services"]);
-
-  // ncreel_redraw(node_monitor_reel_);
-  // ncreel_redraw(topic_monitor_reel_);
-  // ncreel_redraw(service_monitor_reel_);
 }
 
 void Ui::refreshUi() {
@@ -166,7 +177,7 @@ void Ui::refreshUi() {
     renderMonitors();
     notcurses_core_->render();
     using namespace std::chrono_literals;
-    std::this_thread::sleep_for(0.05s);
+    std::this_thread::sleep_for(0.5s);
   }
 }
 

@@ -43,6 +43,9 @@ private:
   uint term_width_;
   uint term_height_;
 
+  void updateMonitor(std::vector<std::string> updated_values,
+                     MonitorInterface &interface,
+                     std::shared_ptr<ncpp::Selector> selector);
   void renderMonitors();
   void renderOptions();
   void refreshUi();
@@ -73,8 +76,6 @@ private:
   std::shared_ptr<ncpp::Selector> node_monitor_selector_;
   std::shared_ptr<ncpp::Selector> topic_monitor_selector_;
   std::shared_ptr<ncpp::Selector> service_monitor_selector_;
-
-
 };
 
 #endif // UI_H_

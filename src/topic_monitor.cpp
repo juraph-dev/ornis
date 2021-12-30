@@ -18,11 +18,11 @@ void TopicMonitor::updateValue() {
 
   std::istringstream t_value(callConsole(ros1_cmd_string_));
 
-  if (t_value.rdbuf()->in_avail() != 0) {
+  if (t_value.rdbuf()->in_avail()) {
     std::vector<std::string> t_vec;
     std::string t_string;
     // Create vector based on splitting by newline
-    while (t_value.rdbuf()->in_avail() != 0) {
+    while (t_value.rdbuf()->in_avail()) {
       std::getline(t_value, t_string, '\n');
       t_vec.push_back(t_string);
     }

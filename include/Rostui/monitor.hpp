@@ -15,7 +15,7 @@
 #include <ncpp/Selector.hh>
 
 inline bool operator==(const ncselector_item A, const ncselector_item B) {
-  return (strcmp(A.desc, B.desc) == 0); // && strcmp(A.option, B.option) == 0;
+  return (strcmp(A.desc, B.desc) == 0) && strcmp(A.option, B.option) == 0;
 }
 
 class Monitor {
@@ -76,63 +76,37 @@ public:
   void updateEntries(std::vector<ncselector_item> &new_vector,
                      std::vector<ncselector_item> &add_values,
                      std::vector<ncselector_item> &delete_values) {
-    if (entries_.empty())
-    {
+
+    // If we have no current entries
+    if (entries_.empty()) {
       entries_ = new_vector;
       add_values = new_vector;
+      lines_ = new_vector.size();
+      return;
+    } else if (new_vector.empty()) {
+      delete_values = entries_;
+      lines_ = 0;
       return;
     }
+
     // TODO: Add a check for if the new vector is equal to the current entry,
     // Maybe convert to a hash for a quick compare?
     // Populate add_values for new values in the new_vector
     const auto t_vec = entries_;
-    std::vector<ncselector_item> add_vec;
-    // std::cout << "XX vec: " << add_values.size() << std::endl;
 
     std::copy_if(
         new_vector.begin(), new_vector.end(), std::back_inserter(add_values),
         [&t_vec](const ncselector_item &item) {
-          // std::cout << "XX searching for item: " << item.desc << std::endl;
-          auto t = std::find(t_vec.begin(), t_vec.end(), item);
-          // if (t != t_vec.end())
-          // std::cout << "Found? " << t->desc << std::endl;
           return (std::find(t_vec.begin(), t_vec.end(), item) == t_vec.end());
         });
-    if (!add_values.empty()) {
-      std::cout << "Add_values: ";
-      for (const auto &t_item : add_values) {
-        std::cout << t_item.option << ", ";
-      }
-      std::cout << std::endl;
-    }
-    // std::cout << "post_search size: " << add_values.size() << std::endl;
-    // std::cout << "XX size of to_ad" << add_vec.size() << std::endl;
 
-    // entries_.insert(entries_.begin(), add_values.begin(), add_values.end());
-
-    if (!delete_values.empty()) {
-      std::cout << "PRE_CHECK delete_values: ";
-      for (const auto &t_item : delete_values) {
-        std::cout << t_item.option << ", ";
-      }
-      std::cout << std::endl;
-    }
     // Populate delete_values for values no longer in the vector list
-    std::copy_if(entries_.begin(), entries_.end(),
-                 std::back_inserter(delete_values),
-                 [new_vector](const ncselector_item &item) {
+    std::copy_if(t_vec.begin(), t_vec.end(), std::back_inserter(delete_values),
+                 [&new_vector](const ncselector_item &item) {
                    return (std::find(new_vector.begin(), new_vector.end(),
                                      item) == new_vector.end());
                  });
 
-    if (!delete_values.empty()) {
-      std::cout << "delete_values: ";
-      for (const auto &t_item : delete_values) {
-        std::cout << t_item.option << ", ";
-      }
-      std::cout << std::endl;
-    }
-    // std::cout << "XX size of to_remove" << delete_values.size() << std::endl;
     lines_ = new_vector.size();
     entries_ = new_vector;
   }

@@ -21,14 +21,13 @@ Ui::~Ui() {
 bool Ui::initialise() {
   struct notcurses_options nopts = {
       .flags =
-  NCOPTION_SUPPRESS_BANNERS // don't show version & performance info
+          NCOPTION_SUPPRESS_BANNERS // don't show version & performance info
   };
   // struct notcurses_options nopts = {
   //     .flags = NCOPTION_NO_ALTERNATE_SCREEN,
   // };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);
-  // notcurses_core_ = notcurses_core_init(&nopts, NULL);
 
   // TODO: Have UI fail to construct on fail
   // if (notcurses_core_ == NULL) {
@@ -38,27 +37,13 @@ bool Ui::initialise() {
 
   std::shared_ptr<ncpp::Plane> n(notcurses_core_->get_stdplane());
 
-  struct ncplane_options titlebar_opts = {
-      .y = 1,
-      .x = 1,
-      .rows = term_height_ - 5,
-      .cols = term_width_ / 3 - 5,
-  };
+  n->get_dim(term_height_, term_width_);
 
-  // node_monitor_plane_ = ncplane_create(backplane_, &titlebar_opts);
-  // titlebar_opts.x = term_width_ / 3 + 1;
-  // service_monitor_plane_ = ncplane_create(backplane_, &titlebar_opts);
-  // titlebar_opts.x = 2 * term_width_ / 3 + 1;
-  // topic_monitor_plane_ = ncplane_create(backplane_, &titlebar_opts);
-
-  struct ncplane_options menuplane_opts = {
-      .rows = 3,
-      .cols = 3,
-  };
-
-  node_monitor_plane_ = std::make_shared<ncpp::Plane>(1, 1, 1, 1);
-  topic_monitor_plane_ = std::make_shared<ncpp::Plane>(1, 1, 1, 40);
-  service_monitor_plane_ = std::make_shared<ncpp::Plane>(1, 1, 1, 80);
+  node_monitor_plane_ = std::make_shared<ncpp::Plane>(1, term_width_ / 3, 1, 1);
+  topic_monitor_plane_ =
+      std::make_shared<ncpp::Plane>(1, term_width_ / 3, 1, term_width_ / 3);
+  service_monitor_plane_ =
+      std::make_shared<ncpp::Plane>(1, term_width_ / 3, 1, 2 * term_width_ / 3);
 
   ncselector_item items[] = {
       {

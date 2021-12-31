@@ -20,15 +20,20 @@ Ui::~Ui() {
 
 bool Ui::initialise() {
   struct notcurses_options nopts = {
-      .flags =
-          NCOPTION_SUPPRESS_BANNERS // don't show version & performance info
+      .termtype = NULL,
+      .loglevel = NCLOGLEVEL_PANIC,
+      .margin_t = 0,
+      .margin_r = 0,
+      .margin_b = 0,
+      .margin_l = 0,
+      .flags = NCOPTION_SUPPRESS_BANNERS // don't show version & performance
+                                         // info | NCOPTION_NO_ALTERNATE_SCREEN
+                                         // //Use if need cout
   };
-  // struct notcurses_options nopts = {
-  //     .flags = NCOPTION_NO_ALTERNATE_SCREEN,
-  // };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);
 
+  notcurses_core_->get_inputready_fd();
   // TODO: Have UI fail to construct on fail
   // if (notcurses_core_ == NULL) {
   //   std::cerr << "UI Failed to initialise!" << std::endl;
@@ -53,7 +58,7 @@ bool Ui::initialise() {
   };
 
   struct ncselector_options sopts {};
-  sopts.maxdisplay = 0;
+  sopts.maxdisplay = 10;
   sopts.items = items;
   sopts.title = "Test title";
   // sopts.secondary = "pick one (you will die regardless)";
@@ -113,6 +118,7 @@ void Ui::renderMonitors() {
                 node_monitor_selector_);
   updateMonitor(object_information_["Services"], service_monitor_interface_,
                 service_monitor_selector_);
+  // Perform any needed resizes
 }
 
 void Ui::updateMonitor(std::vector<std::string> updated_values,
@@ -162,7 +168,7 @@ void Ui::refreshUi() {
     renderMonitors();
     notcurses_core_->render();
     using namespace std::chrono_literals;
-    std::this_thread::sleep_for(0.5s);
+    std::this_thread::sleep_for(0.05s);
   }
 }
 

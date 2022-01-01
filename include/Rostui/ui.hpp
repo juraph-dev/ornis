@@ -51,6 +51,8 @@ private:
   void refreshUi();
   void signalHandler(int sig);
 
+  bool checkEventOnPlane(const ncinput &input, const ncpp::Plane & plane);
+
   // Primary loop method
   void spin();
 

@@ -26,14 +26,14 @@ bool Ui::initialise() {
       .margin_r = 0,
       .margin_b = 0,
       .margin_l = 0,
-      .flags = NCOPTION_SUPPRESS_BANNERS // don't show version & performance
-                                         // info | NCOPTION_NO_ALTERNATE_SCREEN
-                                         // //Use if need cout
+      .flags = NCOPTION_SUPPRESS_BANNERS //| NCOPTION_NO_ALTERNATE_SCREEN
+                                         // Use if need cout
   };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);
 
   notcurses_core_->get_inputready_fd();
+  notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
   // TODO: Have UI fail to construct on fail
   // if (notcurses_core_ == NULL) {
   //   std::cerr << "UI Failed to initialise!" << std::endl;
@@ -44,11 +44,16 @@ bool Ui::initialise() {
 
   n->get_dim(term_height_, term_width_);
 
-  node_monitor_plane_ = std::make_shared<ncpp::Plane>(1, term_width_ / 3, 1, 1);
+  node_monitor_plane_ =
+      std::make_shared<ncpp::Plane>(*n, 1, term_width_ / 3, 1, 1);
   topic_monitor_plane_ =
-      std::make_shared<ncpp::Plane>(1, term_width_ / 3, 1, term_width_ / 3);
-  service_monitor_plane_ =
-      std::make_shared<ncpp::Plane>(1, term_width_ / 3, 1, 2 * term_width_ / 3);
+      std::make_shared<ncpp::Plane>(*n, 1, term_width_ / 3, 1, term_width_ / 3);
+  service_monitor_plane_ = std::make_shared<ncpp::Plane>(
+      *n, 1, term_width_ / 3, 1, 2 * term_width_ / 3);
+
+  node_monitor_plane_->resize(10, 10);
+  topic_monitor_plane_->resize(10, 10);
+  service_monitor_plane_->resize(10, 10);
 
   ncselector_item items[] = {
       {
@@ -88,9 +93,7 @@ bool Ui::initialise() {
   service_monitor_selector_ =
       std::make_shared<ncpp::Selector>(*service_monitor_plane_, &service_opts);
 
-  notcurses_core_->render();
-
-  content_thread_ = new std::thread([this]() { spin(); });
+  // content_thread_ = new std::thread([this]() { spin(); });
   screen_thread_ = new std::thread([this]() { refreshUi(); });
   return 0;
 }
@@ -111,13 +114,15 @@ void Ui::renderMonitors() {
   // the interface needs to be re-drawn. This bool will also be flagged if
   // the terminal dimensions change
 
-  // Update the topic monitor
+  // Ensure Our object information doesn't change while updating
+  data_mutex_.lock();
   updateMonitor(object_information_["Topics"], topic_monitor_interface_,
                 topic_monitor_selector_);
   updateMonitor(object_information_["Nodes"], node_monitor_interface_,
                 node_monitor_selector_);
   updateMonitor(object_information_["Services"], service_monitor_interface_,
                 service_monitor_selector_);
+  data_mutex_.unlock();
   // Perform any needed resizes
 }
 
@@ -159,17 +164,47 @@ void Ui::updateMonitor(std::vector<std::string> updated_values,
 }
 
 void Ui::refreshUi() {
-
+  ncinput *ni = new ncinput;
   while (screen_loop_) {
     if (redraw_flag_) {
       // Post an event to update the display
       redraw_flag_ = false;
     }
+
     renderMonitors();
+    // If we have an input
+    notcurses_core_->get(false, ni);
+    // Ensure we don't change the data while selector attempts to scroll
+    data_mutex_.lock();
+
+    // Check cursor location to determine where to send the input
+    auto n = topic_monitor_selector_->get_plane();
+    if (checkEventOnPlane(*ni, *n)) {
+      topic_monitor_selector_->offer_input(ni);
+    }
+
+    n = node_monitor_selector_->get_plane();
+    if (checkEventOnPlane(*ni, *n)) {
+      node_monitor_selector_->offer_input(ni);
+    }
+
+    n = service_monitor_selector_->get_plane();
+    if (checkEventOnPlane(*ni, *n)) {
+      service_monitor_selector_->offer_input(ni);
+    }
+
     notcurses_core_->render();
+    data_mutex_.unlock();
     using namespace std::chrono_literals;
-    std::this_thread::sleep_for(0.05s);
+    std::this_thread::sleep_for(0.01s);
   }
+}
+
+bool Ui::checkEventOnPlane(const ncinput &input, const ncpp::Plane &plane) {
+  return (input.x > plane.get_x() &&
+          input.x < (int)plane.get_dim_x() + plane.get_x() &&
+          input.y > plane.get_y() &&
+          input.y < (int)plane.get_dim_y() + plane.get_y());
 }
 
 void Ui::renderOptions() {}

@@ -60,9 +60,9 @@ private:
 };
 
 class MonitorInterface {
-
 public:
   MonitorInterface() : lines_(0), rgb_(rand() % 0x1000000) {}
+  ~MonitorInterface() {}
   unsigned getLines() const { return lines_; }
   void updateEntries(std::vector<ncselector_item> &new_vector,
                      std::vector<ncselector_item> &add_values,

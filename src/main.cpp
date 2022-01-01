@@ -17,7 +17,6 @@ int main(int argc, char *argv[]) {
   }
 
   std::cout << "Rostui LAUNCHED" << std::endl;
-  // system("clear");
 
   ObjectController objectController;
   objectController.spin();

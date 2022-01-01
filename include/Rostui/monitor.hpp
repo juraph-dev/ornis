@@ -20,15 +20,8 @@ inline bool operator==(const ncselector_item A, const ncselector_item B) {
 
 class Monitor {
 public:
-  Monitor() : spin_(true) {
-    thread_ = new std::thread([this]() { spin(); });
-  }
-  ~Monitor() {
-    if (thread_ != nullptr) {
-      thread_->join();
-      delete thread_;
-    }
-  }
+  Monitor() : spin_(true) {}
+  ~Monitor() {}
 
   void getValue(std::vector<std::string> &value) {
     data_mutex_.lock();
@@ -64,8 +57,6 @@ protected:
 private:
   virtual void spin() = 0;
   virtual void updateValue() = 0;
-
-  std::thread *thread_;
 };
 
 class MonitorInterface {

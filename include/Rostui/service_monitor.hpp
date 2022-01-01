@@ -13,8 +13,9 @@ private:
   const std::string ros2_cmd_string_ = "ros2 service list";
 
   void spin();
-
   void updateValue();
+
+  std::thread *thread_;
 };
 
 #endif // SERVICE_MONITOR_H_

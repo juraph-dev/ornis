@@ -4,8 +4,15 @@
 
 #include "Rostui/topic_monitor.hpp"
 
-TopicMonitor::TopicMonitor() {}
-TopicMonitor::~TopicMonitor() {}
+TopicMonitor::TopicMonitor() {
+  thread_ = new std::thread([this]() { spin(); });
+}
+TopicMonitor::~TopicMonitor() {
+  if (thread_ != nullptr) {
+    thread_->join();
+    delete thread_;
+  }
+}
 
 void TopicMonitor::spin() {
   while (spin_) {

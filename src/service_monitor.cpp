@@ -4,8 +4,15 @@
 
 #include "Rostui/service_monitor.hpp"
 
-ServiceMonitor::ServiceMonitor() {}
-ServiceMonitor::~ServiceMonitor() {}
+ServiceMonitor::ServiceMonitor() {
+  thread_ = new std::thread([this]() { spin(); });
+}
+ServiceMonitor::~ServiceMonitor() {
+  if (thread_ != nullptr) {
+    thread_->join();
+    delete thread_;
+  }
+}
 
 void ServiceMonitor::spin() {
   while (spin_) {

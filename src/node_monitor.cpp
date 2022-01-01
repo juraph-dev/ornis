@@ -4,8 +4,15 @@
 
 #include "Rostui/node_monitor.hpp"
 
-NodeMonitor::NodeMonitor() {}
-NodeMonitor::~NodeMonitor() {}
+NodeMonitor::NodeMonitor() {
+  thread_ = new std::thread([this]() { spin(); });
+}
+NodeMonitor::~NodeMonitor() {
+  if (thread_ != nullptr) {
+    thread_->join();
+    delete thread_;
+  }
+}
 
 void NodeMonitor::spin() {
   while (spin_) {

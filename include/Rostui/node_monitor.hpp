@@ -15,8 +15,9 @@ class NodeMonitor : public Monitor
         const std::string ros2_cmd_string_ = "ros2 node list";
 
         void spin();
-
         void updateValue();
+
+        std::thread *thread_;
 };
 
 

@@ -164,7 +164,7 @@ void Ui::updateMonitor(std::vector<std::string> updated_values,
 }
 
 void Ui::refreshUi() {
-  ncinput *ni = new ncinput;
+  ncinput *nc_input = new ncinput;
   while (screen_loop_) {
     if (redraw_flag_) {
       // Post an event to update the display
@@ -173,24 +173,24 @@ void Ui::refreshUi() {
 
     renderMonitors();
     // If we have an input
-    notcurses_core_->get(false, ni);
+    notcurses_core_->get(false, nc_input);
     // Ensure we don't change the data while selector attempts to scroll
     data_mutex_.lock();
 
     // Check cursor location to determine where to send the input
-    auto n = topic_monitor_selector_->get_plane();
-    if (checkEventOnPlane(*ni, *n)) {
-      topic_monitor_selector_->offer_input(ni);
+    auto selector_plane = topic_monitor_selector_->get_plane();
+    if (checkEventOnPlane(*nc_input, *selector_plane)) {
+      topic_monitor_selector_->offer_input(nc_input);
     }
 
-    n = node_monitor_selector_->get_plane();
-    if (checkEventOnPlane(*ni, *n)) {
-      node_monitor_selector_->offer_input(ni);
+    selector_plane = node_monitor_selector_->get_plane();
+    if (checkEventOnPlane(*nc_input, *selector_plane)) {
+      node_monitor_selector_->offer_input(nc_input);
     }
 
-    n = service_monitor_selector_->get_plane();
-    if (checkEventOnPlane(*ni, *n)) {
-      service_monitor_selector_->offer_input(ni);
+    selector_plane = service_monitor_selector_->get_plane();
+    if (checkEventOnPlane(*nc_input, *selector_plane)) {
+      service_monitor_selector_->offer_input(nc_input);
     }
 
     notcurses_core_->render();

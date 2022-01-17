@@ -23,6 +23,8 @@ public:
   Monitor() : spin_(true) {}
   ~Monitor() {}
 
+  virtual void getEntryInfo(const std::string &entry_name, std::string &entry_info) = 0;
+
   void getValue(std::vector<std::string> &value) {
     data_mutex_.lock();
     value = latest_value_;
@@ -61,7 +63,7 @@ private:
 
 class MonitorInterface {
 public:
-  MonitorInterface() : lines_(0), rgb_(rand() % 0x1000000) {}
+  MonitorInterface(const std::string &monitor_name) : lines_(0), rgb_(rand() % 0x1000000), monitor_name_(monitor_name){}
   ~MonitorInterface() {}
   unsigned getLines() const { return lines_; }
   void updateEntries(std::vector<ncselector_item> &new_vector,
@@ -85,6 +87,7 @@ public:
     // Populate add_values for new values in the new_vector
     const auto t_vec = entries_;
 
+    // Populate add values for items not found in list
     std::copy_if(
         new_vector.begin(), new_vector.end(), std::back_inserter(add_values),
         [&t_vec](const ncselector_item &item) {
@@ -103,9 +106,13 @@ public:
   }
   void addLine() { ++lines_; }
 
+  std::string getEntryInfo(std::string entry) {}
+
   std::vector<ncselector_item> getEntries() { return entries_; }
   int getIdx() const { return idx_; }
   unsigned getRGB() const { return rgb_; }
+
+  const std::string monitor_name_;
 
 private:
   int lines_;

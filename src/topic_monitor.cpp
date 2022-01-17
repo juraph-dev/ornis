@@ -21,9 +21,18 @@ void TopicMonitor::spin() {
   }
 };
 
+void TopicMonitor::getEntryInfo(const std::string &entry_name,
+                                std::string &entry_info) {
+  std::cout << "get info on: " << entry_name << '\n';
+
+  std::istringstream t_value(callConsole(ros1_info_string_ + entry_name));
+
+  std::cout << "Found info: " << t_value.str() << std::endl;
+}
+
 void TopicMonitor::updateValue() {
 
-  std::istringstream t_value(callConsole(ros1_cmd_string_));
+  std::istringstream t_value(callConsole(ros1_list_string_));
 
   if (t_value.rdbuf()->in_avail()) {
     std::vector<std::string> t_vec;

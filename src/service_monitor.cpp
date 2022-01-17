@@ -21,9 +21,13 @@ void ServiceMonitor::spin() {
   }
 };
 
+void ServiceMonitor::getEntryInfo(const std::string &entry_name, std::string &entry_info) {
+  std::cout << "XX getting service entry info: " << entry_name << std::endl;
+}
+
 void ServiceMonitor::updateValue() {
 
-  std::istringstream t_value(callConsole(ros1_cmd_string_));
+  std::istringstream t_value(callConsole(ros1_list_string_));
 
   if (t_value.rdbuf()->in_avail() != 0) {
     std::vector<std::string> t_vec;

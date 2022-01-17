@@ -2,6 +2,8 @@
 #include "Rostui/ui.hpp"
 #include <csignal>
 
+using namespace std::chrono_literals;
+
 Ui::Ui() : redraw_flag_(true), screen_loop_(true) {}
 
 Ui::~Ui() {
@@ -18,7 +20,10 @@ Ui::~Ui() {
   }
 }
 
-bool Ui::initialise() {
+bool Ui::initialise(Channel &interface_channel) {
+
+  interface_channel_ = &interface_channel;
+
   struct notcurses_options nopts = {
       .termtype = NULL,
       .loglevel = NCLOGLEVEL_PANIC,
@@ -26,8 +31,8 @@ bool Ui::initialise() {
       .margin_r = 0,
       .margin_b = 0,
       .margin_l = 0,
-      .flags = NCOPTION_SUPPRESS_BANNERS //| NCOPTION_NO_ALTERNATE_SCREEN
-                                         // Use if need cout
+      .flags = NCOPTION_SUPPRESS_BANNERS | NCOPTION_NO_ALTERNATE_SCREEN
+      // Use if need cout
   };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);
@@ -50,6 +55,9 @@ bool Ui::initialise() {
       std::make_shared<ncpp::Plane>(*n, 1, term_width_ / 3, 1, term_width_ / 3);
   service_monitor_plane_ = std::make_shared<ncpp::Plane>(
       *n, 1, term_width_ / 3, 1, 2 * term_width_ / 3);
+
+  monitor_info_plane_ =
+      std::make_shared<ncpp::Plane>(*n, 1, term_width_ / 3, 1, term_width_ / 2);
 
   node_monitor_plane_->resize(10, 10);
   topic_monitor_plane_->resize(10, 10);
@@ -93,7 +101,6 @@ bool Ui::initialise() {
   service_monitor_selector_ =
       std::make_shared<ncpp::Selector>(*service_monitor_plane_, &service_opts);
 
-  // content_thread_ = new std::thread([this]() { spin(); });
   screen_thread_ = new std::thread([this]() { refreshUi(); });
   return 0;
 }
@@ -124,6 +131,37 @@ void Ui::renderMonitors() {
                 service_monitor_selector_);
   data_mutex_.unlock();
   // Perform any needed resizes
+}
+
+void Ui::renderMonitorInfo(const MonitorInterface &interface,
+                           const char *item) {
+
+  std::cout << "XX rendering monitor info" << std::endl;
+
+  // Lock the channel mutex
+  interface_channel_->request_type_ =
+      Channel::requestEnum::monitorEntryInformation;
+  interface_channel_->request_details_["monitor_name"] =
+      interface.monitor_name_;
+  interface_channel_->request_details_["monitor_entry"] = item;
+  interface_channel_->request_pending_ = true;
+
+  std::cout << "XX waiting for request" << std::endl;
+  std::unique_lock<std::mutex> data_request_lock(
+      interface_channel_->access_mutex_);
+  interface_channel_->condition_variable_.wait_for(
+      data_request_lock, 4s,
+      [this] { return interface_channel_->request_pending_.load(); });
+
+  // // // Make a call to the monitor (Or maybe the interface? Not sure)
+  // // // to get a string containing the monitor's information
+
+  // while (request_pending_.load())
+  //   std::this_thread::sleep_for(0.05s);
+  std::cout << "XX render info done waiting" << std::endl;
+
+  // Draw a new plane with borders (Maybe doouble borders for swag)
+  // Draw string
 }
 
 void Ui::updateMonitor(std::vector<std::string> updated_values,
@@ -170,32 +208,52 @@ void Ui::refreshUi() {
       // Post an event to update the display
       redraw_flag_ = false;
     }
-
-    renderMonitors();
     // If we have an input
     notcurses_core_->get(false, nc_input);
-    // Ensure we don't change the data while selector attempts to scroll
-    data_mutex_.lock();
+    if (nc_input->id != (uint32_t)-1) {
+      // Ensure we don't change the data while selector attempts to scroll
+      data_mutex_.lock();
+      // Check cursor location to determine where to send the input
+      auto selector_plane = topic_monitor_selector_->get_plane();
+      if (checkEventOnPlane(*nc_input, *selector_plane)) {
+        if (!topic_monitor_selector_->offer_input(nc_input)) {
+          if (nc_input->evtype == nc_input->NCTYPE_PRESS) {
+            // If we recieve an enter, we neeed to grab the
+            // currently selected topic, and view the topic information
+            renderMonitorInfo(topic_monitor_interface_,
+                              topic_monitor_selector_->get_selected());
+          }
+        }
+      }
 
-    // Check cursor location to determine where to send the input
-    auto selector_plane = topic_monitor_selector_->get_plane();
-    if (checkEventOnPlane(*nc_input, *selector_plane)) {
-      topic_monitor_selector_->offer_input(nc_input);
+      selector_plane = node_monitor_selector_->get_plane();
+      if (checkEventOnPlane(*nc_input, *selector_plane)) {
+        if (!node_monitor_selector_->offer_input(nc_input)) {
+          if (nc_input->evtype == nc_input->NCTYPE_PRESS) {
+            // If we recieve an enter, we neeed to grab the
+            // currently selected topic, and view the topic information
+            // renderMonitorInfo(node_monitor_interface_,
+            //                   node_monitor_selector_->get_selected());
+          }
+        }
+      }
+
+      selector_plane = service_monitor_selector_->get_plane();
+      if (checkEventOnPlane(*nc_input, *selector_plane)) {
+        if (!service_monitor_selector_->offer_input(nc_input)) {
+          if (nc_input->evtype == nc_input->NCTYPE_PRESS) {
+            // If we recieve an enter, we neeed to grab the
+            // currently selected topic, and view the topic information
+            // renderMonitorInfo(service_monitor_interface_,
+            //                   service_monitor_selector_->get_selected());
+          }
+        }
+      }
+
+      data_mutex_.unlock();
     }
-
-    selector_plane = node_monitor_selector_->get_plane();
-    if (checkEventOnPlane(*nc_input, *selector_plane)) {
-      node_monitor_selector_->offer_input(nc_input);
-    }
-
-    selector_plane = service_monitor_selector_->get_plane();
-    if (checkEventOnPlane(*nc_input, *selector_plane)) {
-      service_monitor_selector_->offer_input(nc_input);
-    }
-
+    renderMonitors();
     notcurses_core_->render();
-    data_mutex_.unlock();
-    using namespace std::chrono_literals;
     std::this_thread::sleep_for(0.01s);
   }
 }

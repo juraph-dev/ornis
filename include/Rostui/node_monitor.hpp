@@ -3,22 +3,23 @@
 
 #include "Rostui/monitor.hpp"
 
-class NodeMonitor : public Monitor
-{
-    public:
-    NodeMonitor();
-    ~NodeMonitor();
+class NodeMonitor : public Monitor {
+public:
+  NodeMonitor();
+  ~NodeMonitor();
 
-    private:
+  void getEntryInfo(const std::string &entry_name, std::string &entry_info);
 
-        const std::string ros1_cmd_string_ = "rosnode list";
-        const std::string ros2_cmd_string_ = "ros2 node list";
+private:
+  static constexpr auto ros1_list_string_ = "rosnode list";
+  static constexpr auto ros2_list_string_ = "ros2 node list";
 
-        void spin();
-        void updateValue();
 
-        std::thread *thread_;
+
+  void spin();
+  void updateValue();
+
+  std::thread *thread_;
 };
-
 
 #endif // NODE_MONITOR_H_

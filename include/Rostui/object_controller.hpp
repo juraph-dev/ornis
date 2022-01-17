@@ -3,10 +3,11 @@
 
 #include <map>
 
-#include "Rostui/node_monitor.hpp"
-#include "Rostui/service_monitor.hpp"
-#include "Rostui/topic_monitor.hpp"
 #include "Rostui/ui.hpp"
+#include "Rostui/node_monitor.hpp"
+#include "Rostui/topic_monitor.hpp"
+#include "Rostui/service_monitor.hpp"
+#include "Rostui/channel_interface.hpp"
 
 class ObjectController {
 public:
@@ -20,9 +21,13 @@ public:
   bool initialiseUserInterface();
   // Initialises all controllers
   void initialiseMonitors();
-
   // Updates all monitors
   void updateMonitors();
+  // Check if the UI is wating for any information
+  void checkUiRequests();
+
+  // Communication channel between the object controller and the user interface
+  Channel interface_channel_;
 
 private:
   Ui ui_;
@@ -44,6 +49,8 @@ private:
       {"Services", {"Loading..."}},
 
   };
+
+
 };
 
 #endif // OBJECT_CONTROLLER_H_

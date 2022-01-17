@@ -8,9 +8,14 @@ public:
   ServiceMonitor();
   ~ServiceMonitor();
 
+  void getEntryInfo(const std::string &entry_name, std::string &entry_info);
+
 private:
-  const std::string ros1_cmd_string_ = "rosservice list";
-  const std::string ros2_cmd_string_ = "ros2 service list";
+  static constexpr auto ros1_list_string_ = "rosservice list";
+  static constexpr auto ros2_list_string_ = "ros2 service list";
+
+  static constexpr auto ros1_info_string_ = "rosservice info ";
+  static constexpr auto ros2_info_string_ = "ros2 service info ";
 
   void spin();
   void updateValue();

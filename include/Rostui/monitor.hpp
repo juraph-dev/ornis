@@ -62,7 +62,7 @@ private:
 
 class MonitorInterface {
 public:
-  MonitorInterface(const std::string &monitor_name) : lines_(0), rgb_(rand() % 0x1000000), monitor_name_(monitor_name){}
+  MonitorInterface(const std::string &monitor_name) : monitor_name_(monitor_name), lines_(0){}
   ~MonitorInterface() {}
   unsigned getLines() const { return lines_; }
   void updateEntries(std::vector<ncselector_item> &new_vector,
@@ -104,8 +104,6 @@ public:
     entries_ = new_vector;
   }
   void addLine() { ++lines_; }
-
-  std::string getEntryInfo(std::string entry) {}
 
   std::vector<ncselector_item> getEntries() { return entries_; }
   int getIdx() const { return idx_; }

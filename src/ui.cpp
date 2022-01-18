@@ -40,7 +40,7 @@ bool Ui::initialise(Channel &interface_channel) {
 
   notcurses_core_->get_inputready_fd();
   notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
-  // TODO: Have UI fail to construct on fail
+  // TODO: Have UI return early when fails to construct
   // if (notcurses_core_ == NULL) {
   //   std::cerr << "UI Failed to initialise!" << std::endl;
   //   return 1;
@@ -57,8 +57,13 @@ bool Ui::initialise(Channel &interface_channel) {
   service_monitor_plane_ = std::make_shared<ncpp::Plane>(
       *n, 1, term_width_ / 3, 1, 2 * term_width_ / 3);
 
-  monitor_info_plane_ =
-      std::make_shared<ncpp::Plane>(*n, 1, term_width_ / 3, 1, term_width_ / 2);
+  monitor_info_plane_ = std::make_shared<ncpp::Plane>(
+      *n, 1, term_width_ / 3, term_height_ / 2, term_width_ / 3);
+  uint64_t popup_channels = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
+  monitor_info_plane_->move_bottom();
+  monitor_info_plane_->set_bg_alpha(NCALPHA_OPAQUE);
+  monitor_info_plane_->set_channels(popup_channels);
+  monitor_info_plane_->set_bg_rgb8(100, 100, 0);
 
   ncselector_item items[] = {
       {
@@ -71,8 +76,6 @@ bool Ui::initialise(Channel &interface_channel) {
   sopts.maxdisplay = 10;
   sopts.items = items;
   sopts.title = "Test title";
-  // sopts.secondary = "pick one (you will die regardless)";
-  // sopts.footer = "press q to exit (there is no exit)";
   sopts.defidx = 0;
   sopts.boxchannels =
       NCCHANNELS_INITIALIZER(0x20, 0xe0, 0x40, 0x20, 0x20, 0x20);
@@ -156,7 +159,7 @@ void Ui::renderMonitorInfo(const MonitorInterface &interface,
   uint i = 0;
   uint max_len = 0;
 
-  for (std::string line; std::getline(ss, line, '\n');){
+  for (std::string line; std::getline(ss, line, '\n');) {
     monitor_info_plane_->putstr(i++, NCALIGN_LEFT, line.c_str());
     max_len = line.length() > max_len ? line.length() : max_len;
   }

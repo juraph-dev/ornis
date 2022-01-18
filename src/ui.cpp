@@ -1,6 +1,7 @@
 
 #include "Rostui/ui.hpp"
 #include <csignal>
+#include <sstream>
 
 using namespace std::chrono_literals;
 
@@ -31,8 +32,8 @@ bool Ui::initialise(Channel &interface_channel) {
       .margin_r = 0,
       .margin_b = 0,
       .margin_l = 0,
-      .flags = NCOPTION_SUPPRESS_BANNERS | NCOPTION_NO_ALTERNATE_SCREEN
-      // Use if need cout
+      .flags = NCOPTION_SUPPRESS_BANNERS // | NCOPTION_NO_ALTERNATE_SCREEN
+                                         // Use if need cout
   };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);
@@ -58,10 +59,6 @@ bool Ui::initialise(Channel &interface_channel) {
 
   monitor_info_plane_ =
       std::make_shared<ncpp::Plane>(*n, 1, term_width_ / 3, 1, term_width_ / 2);
-
-  node_monitor_plane_->resize(10, 10);
-  topic_monitor_plane_->resize(10, 10);
-  service_monitor_plane_->resize(10, 10);
 
   ncselector_item items[] = {
       {
@@ -136,8 +133,6 @@ void Ui::renderMonitors() {
 void Ui::renderMonitorInfo(const MonitorInterface &interface,
                            const char *item) {
 
-  std::cout << "XX rendering monitor info" << std::endl;
-
   // Lock the channel mutex
   interface_channel_->request_type_ =
       Channel::requestEnum::monitorEntryInformation;
@@ -146,22 +141,28 @@ void Ui::renderMonitorInfo(const MonitorInterface &interface,
   interface_channel_->request_details_["monitor_entry"] = item;
   interface_channel_->request_pending_ = true;
 
-  std::cout << "XX waiting for request" << std::endl;
   std::unique_lock<std::mutex> data_request_lock(
       interface_channel_->access_mutex_);
   interface_channel_->condition_variable_.wait_for(
       data_request_lock, 4s,
       [this] { return interface_channel_->request_pending_.load(); });
 
-  // // // Make a call to the monitor (Or maybe the interface? Not sure)
-  // // // to get a string containing the monitor's information
+  monitor_info_plane_->erase();
+  monitor_info_plane_->move_top();
 
-  // while (request_pending_.load())
-  //   std::this_thread::sleep_for(0.05s);
-  std::cout << "XX render info done waiting" << std::endl;
+  // HACK FIXME Figure out how to get NC to do this, instead of hacking it
+  // together yourself
+  auto ss = std::stringstream{interface_channel_->response_string_};
+  uint i = 0;
+  uint max_len = 0;
 
-  // Draw a new plane with borders (Maybe doouble borders for swag)
-  // Draw string
+  for (std::string line; std::getline(ss, line, '\n');){
+    monitor_info_plane_->putstr(i++, NCALIGN_LEFT, line.c_str());
+    max_len = line.length() > max_len ? line.length() : max_len;
+  }
+
+  monitor_info_plane_->resize(i, max_len);
+  monitor_info_plane_->perimeter_rounded(0, 0, 0);
 }
 
 void Ui::updateMonitor(std::vector<std::string> updated_values,

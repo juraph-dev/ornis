@@ -14,7 +14,8 @@ private:
   static constexpr auto ros1_list_string_ = "rosnode list";
   static constexpr auto ros2_list_string_ = "ros2 node list";
 
-
+  static constexpr auto ros1_info_string_ = "rosnode info ";
+  static constexpr auto ros2_info_string_ = "ros2 node info ";
 
   void spin();
   void updateValue();

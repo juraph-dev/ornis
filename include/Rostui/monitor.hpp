@@ -53,7 +53,6 @@ protected:
   }
 
   std::mutex data_mutex_;
-
   std::vector<std::string> latest_value_;
 
 private:

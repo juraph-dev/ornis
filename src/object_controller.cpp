@@ -40,9 +40,11 @@ void ObjectController::updateMonitors() {
 void ObjectController::checkUiRequests() {
 
   if (interface_channel_.request_pending_.load()) {
-    std::cout << "objctrl getting monitor info" << std::endl;
-    std::string t_string;
-    topicMonitor_.getEntryInfo(interface_channel_.request_details_["monitor_entry"], t_string);
+    // Ensure response string empty
+    interface_channel_.response_string_.clear();
+    topicMonitor_.getEntryInfo(
+        interface_channel_.request_details_["monitor_entry"],
+        interface_channel_.response_string_);
 
     std::unique_lock<std::mutex> lk(interface_channel_.access_mutex_);
     interface_channel_.request_pending_ = false;

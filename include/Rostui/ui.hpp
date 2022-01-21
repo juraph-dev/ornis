@@ -52,15 +52,14 @@ private:
   void renderMonitors();
   void renderOptions();
   void refreshUi();
-  void signalHandler(int sig);
+  void drawPopupPlane(ncpp::Plane &plane, const std::string &content, const uint64_t &channel);
 
   bool checkEventOnPlane(const ncinput &input, const ncpp::Plane &plane);
 
   // Primary loop method
   void spin();
 
-  std::thread *content_thread_;
-  std::thread *screen_thread_;
+  std::thread *ui_thread_;
 
   std::map<std::string, std::vector<std::string>> monitor_data_;
 

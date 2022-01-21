@@ -1,6 +1,5 @@
 
 #include "Rostui/ui.hpp"
-#include <csignal>
 #include <sstream>
 
 using namespace std::chrono_literals;
@@ -10,14 +9,10 @@ Ui::Ui() : redraw_flag_(true), screen_loop_(true) {}
 Ui::~Ui() {
   screen_loop_ = false;
   notcurses_core_->stop();
-  if (content_thread_ != nullptr) {
-    content_thread_->join();
-    delete content_thread_;
-  }
 
-  if (screen_thread_ != nullptr) {
-    screen_thread_->join();
-    delete screen_thread_;
+  if (ui_thread_ != nullptr) {
+    ui_thread_->join();
+    delete ui_thread_;
   }
 }
 
@@ -101,7 +96,7 @@ bool Ui::initialise(Channel &interface_channel) {
   service_monitor_selector_ =
       std::make_shared<ncpp::Selector>(*service_monitor_plane_, &service_opts);
 
-  screen_thread_ = new std::thread([this]() { refreshUi(); });
+  ui_thread_ = new std::thread([this]() { refreshUi(); });
   return 0;
 }
 
@@ -138,47 +133,10 @@ void Ui::renderMonitorInfo(const MonitorInterface &interface,
       data_request_lock, 4s,
       [this] { return !interface_channel_->request_pending_.load(); });
 
-  monitor_info_plane_->erase();
-  monitor_info_plane_->move_top();
-
-  int row = 1;
-  int col = 1;
-  int longest_col = 0;
-  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
-
-  // Horrible iteration through string twice, once to find what size
-  // to resize the plane to, second to place the characters on the plane.
-  // It's ugly, but much more efficient than dynamically resizing the
-  // plane as we iterate through the string.
-  for (char c : interface_channel_->response_string_) {
-    if (c == '\n') {
-      row++;
-      col = 1;
-    } else {
-      longest_col = col > longest_col ? col : longest_col;
-      col++;
-    }
-  }
-
-  monitor_info_plane_->resize(row,
-                              longest_col + 1); // Add one to cols for perimeter
-  row = 1;
-  col = 1;
-  for (char c : interface_channel_->response_string_) {
-    if (c == '\n') {
-      row++;
-      col = 1;
-    } else {
-      nccell_load(monitor_info_plane_->to_ncplane(), &cell, &c);
-      monitor_info_plane_->putc(row, col, c);
-      nccell_release(monitor_info_plane_->to_ncplane(), &cell);
-      col++;
-    }
-  }
-
-  uint64_t channels =
+  uint64_t channel =
       NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
-  monitor_info_plane_->perimeter_rounded(0, channels, 0);
+
+  drawPopupPlane(*monitor_info_plane_, interface_channel_->response_string_, channel);
 }
 
 void Ui::updateMonitor(std::vector<std::string> updated_values,
@@ -277,6 +235,51 @@ bool Ui::checkEventOnPlane(const ncinput &input, const ncpp::Plane &plane) {
           input.x < (int)plane.get_dim_x() + plane.get_x() &&
           input.y > plane.get_y() &&
           input.y < (int)plane.get_dim_y() + plane.get_y());
+}
+
+void Ui::drawPopupPlane(ncpp::Plane &plane, const std::string &content,
+                        const uint64_t &channel) {
+
+  plane.erase();
+  plane.move_top();
+
+  int row = 1;
+  int col = 1;
+  int longest_col = 0;
+  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
+
+  // iterate through string twice, once to find what size
+  // to resize the plane to, second to place the characters on the plane.
+  // It's ugly, but much more efficient than dynamically resizing the
+  // plane as we iterate through the string.
+  for (const char c : content) {
+    if (c == '\n') {
+      row++;
+      col = 1;
+    } else {
+      longest_col = col > longest_col ? col : longest_col;
+      col++;
+    }
+  }
+
+  // Add one to longest col to account for boreder
+  plane.resize(row, longest_col + 1);
+
+  row = 1;
+  col = 1;
+  for (const char c : content) {
+    if (c == '\n') {
+      row++;
+      col = 1;
+    } else {
+      nccell_load(plane.to_ncplane(), &cell, &c);
+      plane.putc(row, col, c);
+      nccell_release(plane.to_ncplane(), &cell);
+      col++;
+    }
+  }
+
+  monitor_info_plane_->perimeter_rounded(0, channel, 0);
 }
 
 void Ui::renderOptions() {}

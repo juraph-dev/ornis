@@ -34,7 +34,6 @@ public:
   Ui();
   ~Ui();
   bool initialise(Channel &interface_channel);
-  void setValues(const std::map<std::string, std::vector<std::string>> values);
 
   // Re-draw flag, for updated value, or changed console dimensions
   bool redraw_flag_;
@@ -63,9 +62,7 @@ private:
   std::thread *content_thread_;
   std::thread *screen_thread_;
 
-  std::map<std::string, std::vector<std::string>> object_information_;
-
-  std::mutex data_mutex_;
+  std::map<std::string, std::vector<std::string>> monitor_data_;
 
   // Notcurses core
   std::unique_ptr<ncpp::NotCurses> notcurses_core_;

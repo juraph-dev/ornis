@@ -32,7 +32,7 @@ bool Ui::initialise(Channel &interface_channel) {
       .margin_r = 0,
       .margin_b = 0,
       .margin_l = 0,
-      .flags = NCOPTION_SUPPRESS_BANNERS //| NCOPTION_NO_ALTERNATE_SCREEN
+      .flags = NCOPTION_SUPPRESS_BANNERS // | NCOPTION_NO_ALTERNATE_SCREEN
                                          // Use if need cout
   };
 
@@ -105,32 +105,20 @@ bool Ui::initialise(Channel &interface_channel) {
   return 0;
 }
 
-void Ui::setValues(
-    const std::map<std::string, std::vector<std::string>> values) {
-
-  data_mutex_.lock();
-  object_information_ = values;
-  data_mutex_.unlock();
-  redraw_flag_ = true;
-}
-
 void Ui::renderMonitors() {
-
-  // Object controller will reach out to ui, and update the values in its array
-  // This will require an atomic bool. This bool will indicate to the ui that
-  // the interface needs to be re-drawn. This bool will also be flagged if
-  // the terminal dimensions change
-
+  // Get latest monitor data
+  if (!interface_channel_->ui_data_current_.load()) {
+    std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
+    monitor_data_ = interface_channel_->latest_monitor_data_;
+    interface_channel_->ui_data_current_ = true;
+  }
   // Ensure Our object information doesn't change while updating
-  data_mutex_.lock();
-  updateMonitor(object_information_["Topics"], topic_monitor_interface_,
+  updateMonitor(monitor_data_["Topics"], topic_monitor_interface_,
                 topic_monitor_selector_);
-  updateMonitor(object_information_["Nodes"], node_monitor_interface_,
+  updateMonitor(monitor_data_["Nodes"], node_monitor_interface_,
                 node_monitor_selector_);
-  updateMonitor(object_information_["Services"], service_monitor_interface_,
+  updateMonitor(monitor_data_["Services"], service_monitor_interface_,
                 service_monitor_selector_);
-  data_mutex_.unlock();
-  // Perform any needed resizes
 }
 
 void Ui::renderMonitorInfo(const MonitorInterface &interface,
@@ -153,15 +141,15 @@ void Ui::renderMonitorInfo(const MonitorInterface &interface,
   monitor_info_plane_->erase();
   monitor_info_plane_->move_top();
 
-  // HACK FIXME Figure out how to get NC to do this, instead of hacking it
-  // together yourself
-  // auto ss = std::stringstream{interface_channel_->response_string_};
-
   int row = 1;
   int col = 1;
   int longest_col = 0;
   nccell cell = NCCELL_TRIVIAL_INITIALIZER;
 
+  // Horrible iteration through string twice, once to find what size
+  // to resize the plane to, second to place the characters on the plane.
+  // It's ugly, but much more efficient than dynamically resizing the
+  // plane as we iterate through the string.
   for (char c : interface_channel_->response_string_) {
     if (c == '\n') {
       row++;
@@ -174,7 +162,6 @@ void Ui::renderMonitorInfo(const MonitorInterface &interface,
 
   monitor_info_plane_->resize(row,
                               longest_col + 1); // Add one to cols for perimeter
-
   row = 1;
   col = 1;
   for (char c : interface_channel_->response_string_) {
@@ -242,7 +229,6 @@ void Ui::refreshUi() {
     notcurses_core_->get(false, nc_input);
     if (nc_input->id != (uint32_t)-1) {
       // Ensure we don't change the data while selector attempts to scroll
-      data_mutex_.lock();
       // Check cursor location to determine where to send the input
       auto selector_plane = topic_monitor_selector_->get_plane();
       if (checkEventOnPlane(*nc_input, *selector_plane)) {
@@ -279,8 +265,6 @@ void Ui::refreshUi() {
           }
         }
       }
-
-      data_mutex_.unlock();
     }
     renderMonitors();
     notcurses_core_->render();

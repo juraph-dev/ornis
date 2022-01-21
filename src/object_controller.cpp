@@ -14,7 +14,7 @@ bool ObjectController::initialiseUserInterface() {
   if (ui_.initialise(interface_channel_)) {
     return 1;
   }
-  ui_.setValues(default_ui_view_);
+  updateMonitors();
   return 0;
 }
 
@@ -28,13 +28,15 @@ void ObjectController::updateMonitors() {
   topicMonitor_.getValue(monitor_info["Topics"]);
   serviceMonitor_.getValue(monitor_info["Services"]);
 
+  std::unique_lock<std::mutex> lk(interface_channel_.access_mutex_);
   // If we don't have any nodes, we're not going to have any topics or services,
   // so populate the UI with a tempoary loading string
   if (monitor_info["Nodes"].size()) {
-    ui_.setValues(monitor_info);
+    interface_channel_.latest_monitor_data_ = monitor_info;
   } else {
-    ui_.setValues(default_ui_view_);
+    interface_channel_.latest_monitor_data_ = default_ui_view_;
   }
+  interface_channel_.ui_data_current_ = false;
 }
 
 void ObjectController::checkUiRequests() {

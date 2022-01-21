@@ -32,7 +32,7 @@ bool Ui::initialise(Channel &interface_channel) {
       .margin_r = 0,
       .margin_b = 0,
       .margin_l = 0,
-      .flags = NCOPTION_SUPPRESS_BANNERS // | NCOPTION_NO_ALTERNATE_SCREEN
+      .flags = NCOPTION_SUPPRESS_BANNERS //| NCOPTION_NO_ALTERNATE_SCREEN
                                          // Use if need cout
   };
 
@@ -148,24 +148,50 @@ void Ui::renderMonitorInfo(const MonitorInterface &interface,
       interface_channel_->access_mutex_);
   interface_channel_->condition_variable_.wait_for(
       data_request_lock, 4s,
-      [this] { return interface_channel_->request_pending_.load(); });
+      [this] { return !interface_channel_->request_pending_.load(); });
 
   monitor_info_plane_->erase();
   monitor_info_plane_->move_top();
 
   // HACK FIXME Figure out how to get NC to do this, instead of hacking it
   // together yourself
-  auto ss = std::stringstream{interface_channel_->response_string_};
-  uint i = 0;
-  uint max_len = 0;
+  // auto ss = std::stringstream{interface_channel_->response_string_};
 
-  for (std::string line; std::getline(ss, line, '\n');) {
-    monitor_info_plane_->putstr(i++, NCALIGN_LEFT, line.c_str());
-    max_len = line.length() > max_len ? line.length() : max_len;
+  int row = 1;
+  int col = 1;
+  int longest_col = 0;
+  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
+
+  for (char c : interface_channel_->response_string_) {
+    if (c == '\n') {
+      row++;
+      col = 1;
+    } else {
+      longest_col = col > longest_col ? col : longest_col;
+      col++;
+    }
   }
 
-  monitor_info_plane_->resize(i, max_len);
-  monitor_info_plane_->perimeter_rounded(0, 0, 0);
+  monitor_info_plane_->resize(row,
+                              longest_col + 1); // Add one to cols for perimeter
+
+  row = 1;
+  col = 1;
+  for (char c : interface_channel_->response_string_) {
+    if (c == '\n') {
+      row++;
+      col = 1;
+    } else {
+      nccell_load(monitor_info_plane_->to_ncplane(), &cell, &c);
+      monitor_info_plane_->putc(row, col, c);
+      nccell_release(monitor_info_plane_->to_ncplane(), &cell);
+      col++;
+    }
+  }
+
+  uint64_t channels =
+      NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+  monitor_info_plane_->perimeter_rounded(0, channels, 0);
 }
 
 void Ui::updateMonitor(std::vector<std::string> updated_values,

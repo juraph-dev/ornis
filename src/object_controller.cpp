@@ -60,9 +60,9 @@ void ObjectController::spin() {
 
   while (ui_.screen_loop_) {
     updateMonitors();
-
     // Check if the monitor has any pending data requests
     checkUiRequests();
+
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(0.05s);
   }

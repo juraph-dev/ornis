@@ -70,16 +70,20 @@ bool Ui::initialise(Channel &interface_channel) {
   return 0;
 }
 
-void Ui::renderMonitors() {
-  // Get latest monitor data
-  if (!interface_channel_->ui_data_current_.load()) {
-    std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
-    monitor_data_ = interface_channel_->latest_monitor_data_;
-    interface_channel_->ui_data_current_ = true;
+bool Ui::renderMonitors() {
+  // If the channel hasn't been updated since the last
+  // time the Ui checked.
+  if (interface_channel_->ui_data_current_.load()) {
+    return false;
   }
+  std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
+  monitor_data_ = interface_channel_->latest_monitor_data_;
+  interface_channel_->ui_data_current_ = true;
+
   for (const auto &interface : interface_map_) {
     updateMonitor(monitor_data_[interface.first], *interface.second);
   }
+  return true;
 }
 
 void Ui::renderMonitorInfo(const MonitorInterface &interface) {
@@ -121,7 +125,7 @@ void Ui::updateMonitor(std::vector<std::string> updated_values,
 
       ncselector_item t_item = {
           .option = item_as_char_array,
-          .desc = "desc",
+          .desc = "",
       };
       current_item_vector.push_back(t_item);
     }
@@ -144,25 +148,15 @@ void Ui::updateMonitor(std::vector<std::string> updated_values,
 void Ui::refreshUi() {
   ncinput *nc_input = new ncinput;
   while (screen_loop_) {
-    // Check to see if the size of the terminal has changed since last loop
-    uint r, c;
-    notcurses_core_->get_term_dim(r, c);
-
-    if (c != term_width_ || r != term_height_) {
-
-      term_width_ = c;
-      term_height_ = r;
-      uint x_offset = 0;
-
-      for (const auto &interface : interface_map_) {
-        const auto selector_plane = interface.second->selector_->get_plane();
-        selector_plane->move(1, x_offset++ * term_width_ / 3);
-      }
+    // Check to see if we have re-drawn the monitors, or if the size of the
+    // terminal has changed since last loop
+    const bool updated_monitors = renderMonitors();
+    uint rows, cols;
+    notcurses_core_->get_term_dim(rows, cols);
+    if (updated_monitors || cols != term_width_ || rows != term_height_) {
+      repositionElements(rows, cols);
     }
-    if (redraw_flag_) {
-      // Post an event to update the display
-      redraw_flag_ = false;
-    }
+
     // If we have an input
     notcurses_core_->get(false, nc_input);
     if (nc_input->id != (uint32_t)-1) {
@@ -173,11 +167,29 @@ void Ui::refreshUi() {
         if (offerInputMonitor(*interface.second, *nc_input))
           break;
       }
-      renderMonitors();
+      // If we end up re-rendering the monitors,
+      // re-position the planes accordingly
       notcurses_core_->render();
       std::this_thread::sleep_for(0.01s);
     }
   }
+}
+
+void Ui::repositionElements(const uint &rows, const uint &cols) {
+  term_height_ = rows;
+  term_width_ = cols;
+  // HACK Hardcoded positions until you sus out how the layout
+  // is actually going to work
+  auto selector_plane = interface_map_.at("topics")->selector_->get_plane();
+  selector_plane->move(1, 1); // Topic monitor at top left
+
+  // node monitor at center
+  selector_plane = interface_map_.at("nodes")->selector_->get_plane();
+  selector_plane->move(1, (term_width_ / 2) - selector_plane->get_dim_x() / 2);
+
+  // node monitor at center
+  selector_plane = interface_map_.at("services")->selector_->get_plane();
+  selector_plane->move(1, (term_width_)-selector_plane->get_dim_x());
 }
 
 bool Ui::offerInputMonitor(const MonitorInterface &interface,

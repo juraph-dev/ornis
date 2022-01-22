@@ -49,14 +49,16 @@ private:
   void updateMonitor(std::vector<std::string> updated_values,
                      MonitorInterface &interface);
   void renderMonitorInfo(const MonitorInterface &interface);
-  void renderMonitors();
+  bool renderMonitors();
   void renderOptions();
   void refreshUi();
+  void repositionElements(const uint &rows, const uint& cols);
   void drawPopupPlane(ncpp::Plane &plane, const std::string &content,
                       const uint64_t &channel);
 
   bool checkEventOnPlane(const ncinput &input, const ncpp::Plane &plane);
-  bool offerInputMonitor(const MonitorInterface &interface, const ncinput &input);
+  bool offerInputMonitor(const MonitorInterface &interface,
+                         const ncinput &input);
 
   // Primary loop method
   void spin();

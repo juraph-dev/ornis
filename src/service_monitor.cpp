@@ -22,7 +22,8 @@ void ServiceMonitor::spin() {
 };
 
 void ServiceMonitor::getEntryInfo(const std::string &entry_name, std::string &entry_info) {
-  std::cout << "XX getting service entry info: " << entry_name << std::endl;
+  std::istringstream t_value(callConsole(ros1_info_string_ + entry_name));
+  entry_info = t_value.str();
 }
 
 void ServiceMonitor::updateValue() {

@@ -22,7 +22,12 @@ void NodeMonitor::spin() {
 };
 
 void NodeMonitor::getEntryInfo(const std::string &entry_name, std::string &entry_info) {
-  std::cout << "XX finding info on node: " << entry_name << std::endl;
+  std::istringstream t_value(callConsole(ros1_info_string_ + entry_name));
+  entry_info = t_value.str();
+  // For whatever reason, the first line of rosnode info is a series of hyphens ('-').
+  // While this does provide a pleasing line break, it's not needed when being
+  // displayed in rostui
+  entry_info.erase(0, entry_info.find('\n') + 1);
 }
 
 void NodeMonitor::updateValue() {

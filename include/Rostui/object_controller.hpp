@@ -35,20 +35,15 @@ private:
   // Storage map for storing the latest data from the monitors
   std::map<std::string, std::vector<std::string>> monitor_state_;
 
-  // Assorted monitors (Change to initialise as pointer, instead of inside of
-  // header)
-  NodeMonitor nodeMonitor_;
-  TopicMonitor topicMonitor_;
-  ServiceMonitor serviceMonitor_;
-
   // Default connecting nodelet information. Sent when monitors are not yet
   // initialised
   const std::map<std::string, std::vector<std::string>> default_ui_view_ = {
-      {"Nodes", {"Loading..."}},
-      {"Topics", {"Loading..."}},
-      {"Services", {"Loading..."}},
-
+      {"nodes", {"Loading..."}},
+      {"topics", {"Loading..."}},
+      {"services", {"Loading..."}},
   };
+
+  std::map<std::string, std::unique_ptr<Monitor>> monitor_map_;
 
 
 };

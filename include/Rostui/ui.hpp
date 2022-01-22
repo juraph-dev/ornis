@@ -69,9 +69,9 @@ private:
   std::unique_ptr<ncpp::NotCurses> notcurses_core_;
 
   /// Monitor interfaces
-  MonitorInterface node_monitor_interface_{"node_monitor"};
-  MonitorInterface topic_monitor_interface_{"topic_monitor"};
-  MonitorInterface service_monitor_interface_{"service_monitor"};
+  MonitorInterface node_monitor_interface_{"nodes"};
+  MonitorInterface topic_monitor_interface_{"topics"};
+  MonitorInterface service_monitor_interface_{"services"};
 
   // Popup Information planes
   std::shared_ptr<ncpp::Plane> monitor_info_plane_;

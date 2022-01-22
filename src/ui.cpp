@@ -27,7 +27,7 @@ bool Ui::initialise(Channel &interface_channel) {
       .margin_r = 0,
       .margin_b = 0,
       .margin_l = 0,
-      .flags = NCOPTION_SUPPRESS_BANNERS // | NCOPTION_NO_ALTERNATE_SCREEN
+      .flags = NCOPTION_SUPPRESS_BANNERS //| NCOPTION_NO_ALTERNATE_SCREEN
                                          // Use if need cout
   };
 
@@ -70,16 +70,14 @@ void Ui::renderMonitors() {
     monitor_data_ = interface_channel_->latest_monitor_data_;
     interface_channel_->ui_data_current_ = true;
   }
-  // Ensure Our object information doesn't change while updating
-  updateMonitor(monitor_data_["Topics"], topic_monitor_interface_);
-  updateMonitor(monitor_data_["Nodes"], node_monitor_interface_);
-  updateMonitor(monitor_data_["Services"], service_monitor_interface_);
+  updateMonitor(monitor_data_["topics"], topic_monitor_interface_);
+  updateMonitor(monitor_data_["nodes"], node_monitor_interface_);
+  updateMonitor(monitor_data_["services"], service_monitor_interface_);
 }
 
 void Ui::renderMonitorInfo(const MonitorInterface &interface) {
 
   const auto &item = interface.selector_->get_selected();
-
   // Lock the channel mutex
   interface_channel_->request_type_ =
       Channel::requestEnum::monitorEntryInformation;
@@ -107,7 +105,7 @@ void Ui::updateMonitor(std::vector<std::string> updated_values,
     std::vector<ncselector_item> to_add;
     std::vector<ncselector_item> to_remove;
     std::vector<ncselector_item> current_item_vector;
-    // Create items struct from topics
+    // Create items struct from entries
     for (const auto &item : updated_values) {
       // The ncselector desc and opt are const char *. Handle this accordingly
       const char *item_string_ptr = item.c_str();
@@ -148,11 +146,9 @@ void Ui::refreshUi() {
     if (nc_input->id != (uint32_t)-1) {
       // Ensure we don't change the data while selector attempts to scroll
       // Check cursor location to determine where to send the input
-      if (offerInputMonitor(topic_monitor_interface_, *nc_input)) {
-      }
-      else if (offerInputMonitor(node_monitor_interface_, *nc_input)) {
-      }
-      else if (offerInputMonitor(service_monitor_interface_, *nc_input)) {
+      if (offerInputMonitor(node_monitor_interface_, *nc_input)) {
+      } else if (offerInputMonitor(topic_monitor_interface_, *nc_input)) {
+      } else if (offerInputMonitor(service_monitor_interface_, *nc_input)) {
       }
 
       renderMonitors();
@@ -169,21 +165,22 @@ bool Ui::offerInputMonitor(const MonitorInterface &interface,
   // For reasons beyong my understanding, if I pass the
   // interface.plane_, I get a seg fault. I must grab the plane from the
   // selector (Which should just be the interface.plane_)
+
   const auto selector_plane = interface.selector_->get_plane();
   if (!checkEventOnPlane(input, *selector_plane)) {
     return false;
   }
 
-  if (!interface.selector_->offer_input(&input)) {
-    if (input.evtype == input.NCTYPE_PRESS) {
-      // If we recieve an enter, we neeed to grab the
-      // currently selected topic, and view the topic information
-      // in a popup window
-      renderMonitorInfo(interface);
-      return true;
-    }
+  if (interface.selector_->offer_input(&input)) {
+    return true;
+  } else if (input.evtype == input.NCTYPE_PRESS) {
+    // If we recieve an enter, we neeed to grab the
+    // currently selected topic, and view the topic information
+    // in a popup window
+    renderMonitorInfo(interface);
     return true;
   }
+
   return false;
 }
 

@@ -27,7 +27,7 @@ bool Ui::initialise(Channel &interface_channel) {
       .margin_r = 0,
       .margin_b = 0,
       .margin_l = 0,
-      .flags = NCOPTION_SUPPRESS_BANNERS //| NCOPTION_NO_ALTERNATE_SCREEN
+      .flags = NCOPTION_SUPPRESS_BANNERS // | NCOPTION_NO_ALTERNATE_SCREEN
                                          // Use if need cout
   };
 
@@ -54,8 +54,7 @@ bool Ui::initialise(Channel &interface_channel) {
   uint x_offset = 0;
   // Initialise planes
   for (const auto &interface : interface_map_) {
-    interface.second->initialiseInterface(*n, 1, x_offset * term_width_ / 3);
-    x_offset++;
+    interface.second->initialiseInterface(*n, 1, x_offset++ * term_width_ / 3);
   }
 
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(*n, 1, 1, 20, 20);
@@ -145,6 +144,21 @@ void Ui::updateMonitor(std::vector<std::string> updated_values,
 void Ui::refreshUi() {
   ncinput *nc_input = new ncinput;
   while (screen_loop_) {
+    // Check to see if the size of the terminal has changed since last loop
+    uint r, c;
+    notcurses_core_->get_term_dim(r, c);
+
+    if (c != term_width_ || r != term_height_) {
+
+      term_width_ = c;
+      term_height_ = r;
+      uint x_offset = 0;
+
+      for (const auto &interface : interface_map_) {
+        const auto selector_plane = interface.second->selector_->get_plane();
+        selector_plane->move(1, x_offset++ * term_width_ / 3);
+      }
+    }
     if (redraw_flag_) {
       // Post an event to update the display
       redraw_flag_ = false;
@@ -173,7 +187,6 @@ bool Ui::offerInputMonitor(const MonitorInterface &interface,
   // For reasons beyong my understanding, if I pass the
   // interface.plane_, I get a seg fault. I must grab the plane from the
   // selector (Which should just be the interface.plane_)
-
   const auto selector_plane = interface.selector_->get_plane();
   if (!checkEventOnPlane(input, *selector_plane)) {
     return false;

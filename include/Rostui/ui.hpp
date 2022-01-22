@@ -75,6 +75,11 @@ private:
 
   // Popup Information planes
   std::unique_ptr<ncpp::Plane> monitor_info_plane_;
+
+  // Class to for storing the current ui state
+  enum class UiStateEnum { displayingMonitors, displayingMonitorEntry};
+  UiStateEnum ui_state_;
+
 };
 
 #endif // UI_H_

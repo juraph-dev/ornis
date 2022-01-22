@@ -18,6 +18,8 @@ Ui::~Ui() {
 
 bool Ui::initialise(Channel &interface_channel) {
 
+  ui_state_ = UiStateEnum::displayingMonitors;
+
   interface_channel_ = &interface_channel;
 
   struct notcurses_options nopts = {
@@ -88,10 +90,12 @@ bool Ui::renderMonitors() {
 
 void Ui::renderMonitorInfo(const MonitorInterface &interface) {
 
+  ui_state_ = UiStateEnum::displayingMonitorEntry;
+
   const auto &item = interface.selector_->get_selected();
   // Lock the channel mutex
   interface_channel_->request_type_ =
-      Channel::requestEnum::monitorEntryInformation;
+      Channel::RequestEnum::monitorEntryInformation;
   interface_channel_->request_details_["monitor_name"] =
       interface.monitor_name_;
   interface_channel_->request_details_["monitor_entry"] = item;
@@ -160,12 +164,20 @@ void Ui::refreshUi() {
     // If we have an input
     notcurses_core_->get(false, nc_input);
     if (nc_input->id != (uint32_t)-1) {
-      for (const auto &interface : interface_map_) {
-        // If the input is both within the monitor plane, and
-        // is usable, the interface will accept the input, and return true,
-        // "Consuming" the input.
-        if (offerInputMonitor(*interface.second, *nc_input))
-          break;
+      // Check if the input is for the UI
+      if (nc_input->id == NCKEY_ESC &&
+          ui_state_ == UiStateEnum::displayingMonitorEntry) {
+        monitor_info_plane_->erase();
+        monitor_info_plane_->move_bottom();
+        ui_state_ = UiStateEnum::displayingMonitors;
+      } else {
+        for (const auto &interface : interface_map_) {
+          // If the input is both within the monitor plane, and
+          // is usable, the interface will accept the input, and return true,
+          // "Consuming" the input.
+          if (offerInputMonitor(*interface.second, *nc_input))
+            break;
+        }
       }
       // If we end up re-rendering the monitors,
       // re-position the planes accordingly

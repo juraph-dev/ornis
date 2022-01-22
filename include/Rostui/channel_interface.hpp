@@ -11,13 +11,13 @@
 
 class Channel {
 
-  enum class requestEnum { monitorEntryInformation };
+  enum class RequestEnum { monitorEntryInformation };
 
   std::mutex access_mutex_;
 
   // Structures to facilitate UI requesting information from
   // Object controller
-  requestEnum request_type_;
+  RequestEnum request_type_;
   std::string response_string_;
   std::atomic<bool> request_pending_;
   std::condition_variable condition_variable_;

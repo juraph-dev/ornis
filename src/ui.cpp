@@ -45,12 +45,20 @@ bool Ui::initialise(Channel &interface_channel) {
 
   n->get_dim(term_height_, term_width_);
 
+  interface_map_["nodes"] =
+      std::unique_ptr<MonitorInterface>(new MonitorInterface("nodes"));
+  interface_map_["topics"] =
+      std::unique_ptr<MonitorInterface>(new MonitorInterface("topics"));
+  interface_map_["services"] =
+      std::unique_ptr<MonitorInterface>(new MonitorInterface("services"));
+  uint x_offset = 0;
   // Initialise planes
-  node_monitor_interface_.initialiseInterface(*n, 1, 1);
-  topic_monitor_interface_.initialiseInterface(*n, 1, term_width_ / 3);
-  service_monitor_interface_.initialiseInterface(*n, 1, 2 * term_width_ / 3);
+  for (const auto &interface : interface_map_) {
+    interface.second->initialiseInterface(*n, 1, x_offset * term_width_ / 3);
+    x_offset++;
+  }
 
-  monitor_info_plane_ = std::make_shared<ncpp::Plane>(*n, 1, 1, 20, 20);
+  monitor_info_plane_ = std::make_unique<ncpp::Plane>(*n, 1, 1, 20, 20);
   // Initialise the popup-window for selecting a monitor entry
   uint64_t popup_channels = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
   monitor_info_plane_->move_bottom();
@@ -70,9 +78,9 @@ void Ui::renderMonitors() {
     monitor_data_ = interface_channel_->latest_monitor_data_;
     interface_channel_->ui_data_current_ = true;
   }
-  updateMonitor(monitor_data_["topics"], topic_monitor_interface_);
-  updateMonitor(monitor_data_["nodes"], node_monitor_interface_);
-  updateMonitor(monitor_data_["services"], service_monitor_interface_);
+  for (const auto &interface : interface_map_) {
+    updateMonitor(monitor_data_[interface.first], *interface.second);
+  }
 }
 
 void Ui::renderMonitorInfo(const MonitorInterface &interface) {
@@ -144,13 +152,13 @@ void Ui::refreshUi() {
     // If we have an input
     notcurses_core_->get(false, nc_input);
     if (nc_input->id != (uint32_t)-1) {
-      // Ensure we don't change the data while selector attempts to scroll
-      // Check cursor location to determine where to send the input
-      if (offerInputMonitor(node_monitor_interface_, *nc_input)) {
-      } else if (offerInputMonitor(topic_monitor_interface_, *nc_input)) {
-      } else if (offerInputMonitor(service_monitor_interface_, *nc_input)) {
+      for (const auto &interface : interface_map_) {
+        // If the input is both within the monitor plane, and
+        // is usable, the interface will accept the input, and return true,
+        // "Consuming" the input.
+        if (offerInputMonitor(*interface.second, *nc_input))
+          break;
       }
-
       renderMonitors();
       notcurses_core_->render();
       std::this_thread::sleep_for(0.01s);

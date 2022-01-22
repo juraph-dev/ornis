@@ -68,13 +68,11 @@ private:
   // Notcurses core
   std::unique_ptr<ncpp::NotCurses> notcurses_core_;
 
-  /// Monitor interfaces
-  MonitorInterface node_monitor_interface_{"nodes"};
-  MonitorInterface topic_monitor_interface_{"topics"};
-  MonitorInterface service_monitor_interface_{"services"};
+  /// Monitor interface map
+  std::map<std::string, std::unique_ptr<MonitorInterface>> interface_map_;
 
   // Popup Information planes
-  std::shared_ptr<ncpp::Plane> monitor_info_plane_;
+  std::unique_ptr<ncpp::Plane> monitor_info_plane_;
 };
 
 #endif // UI_H_

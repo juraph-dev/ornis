@@ -1,17 +1,22 @@
 #ifndef MONITOR_H_
 #define MONITOR_H_
 
-// Template class for monitoring an object. MonitorTablet is the UI
-// representation of the Monitor object
+// Template class for monitoring an object.
+// Monitor is utilised by the object controller to collect data
+// MonitorInterface is dedicated to providing the Ui with methods of
+// visualising the data.
+
 #include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <mutex>
 #include <stdexcept>
 #include <string>
 #include <thread>
 #include <vector>
 
+#include <ncpp/Plane.hh>
 #include <ncpp/Selector.hh>
 
 inline bool operator==(const ncselector_item A, const ncselector_item B) {
@@ -23,7 +28,8 @@ public:
   Monitor() : spin_(true) {}
   ~Monitor() {}
 
-  virtual void getEntryInfo(const std::string &entry_name, std::string &entry_info) = 0;
+  virtual void getEntryInfo(const std::string &entry_name,
+                            std::string &entry_info) = 0;
 
   void getValue(std::vector<std::string> &value) {
     data_mutex_.lock();
@@ -62,8 +68,41 @@ private:
 
 class MonitorInterface {
 public:
-  MonitorInterface(const std::string &monitor_name) : monitor_name_(monitor_name), lines_(0){}
+  MonitorInterface(const std::string &monitor_name)
+      : monitor_name_(monitor_name), lines_(0) {}
   ~MonitorInterface() {}
+  void initialiseInterface(const ncpp::Plane &parent_plane, int x, int y) {
+    // Don't need to provide size for plane, as it will be resized on first
+    // render
+    plane_ = std::make_shared<ncpp::Plane>(parent_plane, 1, 1, x, y);
+
+    // Set up interface selector.
+    ncselector_item items[] = {
+        {
+            nullptr,
+            nullptr,
+        },
+    };
+
+    struct ncselector_options sopts {};
+    sopts.maxdisplay = 10;
+    sopts.items = items;
+    sopts.title = "Test title";
+    sopts.defidx = 0;
+    sopts.boxchannels =
+        NCCHANNELS_INITIALIZER(0x20, 0xe0, 0x40, 0x20, 0x20, 0x20);
+    sopts.opchannels = NCCHANNELS_INITIALIZER(0xe0, 0x80, 0x40, 0, 0, 0);
+    sopts.descchannels = NCCHANNELS_INITIALIZER(0x80, 0xe0, 0x40, 0, 0, 0);
+    sopts.footchannels = NCCHANNELS_INITIALIZER(0xe0, 0, 0x40, 0x20, 0, 0);
+    sopts.titlechannels = NCCHANNELS_INITIALIZER(0xff, 0xff, 0x80, 0, 0, 0x20);
+    uint64_t bgchannels = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
+    ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
+    ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
+    sopts.title = monitor_name_.c_str();
+
+    selector_ = std::make_shared<ncpp::Selector>(*plane_, &sopts);
+  }
+
   unsigned getLines() const { return lines_; }
   void updateEntries(std::vector<ncselector_item> &new_vector,
                      std::vector<ncselector_item> &add_values,
@@ -111,10 +150,14 @@ public:
 
   const std::string monitor_name_;
 
+  std::shared_ptr<ncpp::Plane> plane_;
+  std::shared_ptr<ncpp::Selector> selector_;
+
 private:
   int lines_;
   unsigned rgb_;
   int idx_;
+
   std::vector<ncselector_item> entries_;
 };
 

@@ -26,8 +26,8 @@
 #include <ncpp/Tablet.hh>
 #include <ncpp/Visual.hh>
 
-#include "Rostui/monitor.hpp"
 #include "Rostui/channel_interface.hpp"
+#include "Rostui/monitor.hpp"
 
 class Ui {
 public:
@@ -40,21 +40,23 @@ public:
   bool screen_loop_;
 
   Channel *interface_channel_;
+
 private:
   // Stores the width of the terminal at startup. Used for scaling the ui
   uint term_width_;
   uint term_height_;
 
   void updateMonitor(std::vector<std::string> updated_values,
-                     MonitorInterface &interface,
-                     std::shared_ptr<ncpp::Selector> selector);
-  void renderMonitorInfo(const MonitorInterface &interface, const char *item);
+                     MonitorInterface &interface);
+  void renderMonitorInfo(const MonitorInterface &interface);
   void renderMonitors();
   void renderOptions();
   void refreshUi();
-  void drawPopupPlane(ncpp::Plane &plane, const std::string &content, const uint64_t &channel);
+  void drawPopupPlane(ncpp::Plane &plane, const std::string &content,
+                      const uint64_t &channel);
 
   bool checkEventOnPlane(const ncinput &input, const ncpp::Plane &plane);
+  bool offerInputMonitor(const MonitorInterface &interface, const ncinput &input);
 
   // Primary loop method
   void spin();
@@ -70,15 +72,6 @@ private:
   MonitorInterface node_monitor_interface_{"node_monitor"};
   MonitorInterface topic_monitor_interface_{"topic_monitor"};
   MonitorInterface service_monitor_interface_{"service_monitor"};
-
-  // Monitor planes
-  std::shared_ptr<ncpp::Plane> node_monitor_plane_;
-  std::shared_ptr<ncpp::Plane> topic_monitor_plane_;
-  std::shared_ptr<ncpp::Plane> service_monitor_plane_;
-  // Monitor Selectors
-  std::shared_ptr<ncpp::Selector> node_monitor_selector_;
-  std::shared_ptr<ncpp::Selector> topic_monitor_selector_;
-  std::shared_ptr<ncpp::Selector> service_monitor_selector_;
 
   // Popup Information planes
   std::shared_ptr<ncpp::Plane> monitor_info_plane_;

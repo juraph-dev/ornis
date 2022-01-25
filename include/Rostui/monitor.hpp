@@ -68,8 +68,8 @@ private:
 
 class MonitorInterface {
 public:
-  MonitorInterface(const std::string &monitor_name)
-      : monitor_name_(monitor_name), lines_(0) {}
+  MonitorInterface(const std::string &monitor_name, const std::string &selector_title)
+      : monitor_name_(monitor_name), selector_title_(selector_title) {}
   ~MonitorInterface() {}
   void initialiseInterface(const ncpp::Plane &parent_plane, int x, int y) {
     // Don't need to provide size for plane, as it will be resized on first
@@ -98,7 +98,7 @@ public:
     uint64_t bgchannels = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
     ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
     ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
-    sopts.title = monitor_name_.c_str();
+    sopts.title = selector_title_.c_str();
 
     selector_ = std::make_shared<ncpp::Selector>(*plane_, &sopts);
   }
@@ -150,6 +150,7 @@ public:
 
   const std::string monitor_name_;
 
+
   std::shared_ptr<ncpp::Plane> plane_;
   std::shared_ptr<ncpp::Selector> selector_;
 
@@ -159,6 +160,8 @@ private:
   int idx_;
 
   std::vector<ncselector_item> entries_;
+
+  const std::string selector_title_;
 };
 
 #endif // MONITOR_H_

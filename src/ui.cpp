@@ -1,5 +1,6 @@
 
 #include "Rostui/ui.hpp"
+#include <cmath>
 #include <sstream>
 
 using namespace std::chrono_literals;
@@ -18,7 +19,7 @@ Ui::~Ui() {
 
 bool Ui::initialise(Channel &interface_channel) {
 
-  ui_state_ = UiStateEnum::displayingMonitors;
+  ui_displaying_ = UiDisplayingEnum::monitors;
 
   interface_channel_ = &interface_channel;
 
@@ -47,12 +48,12 @@ bool Ui::initialise(Channel &interface_channel) {
 
   n->get_dim(term_height_, term_width_);
 
-  interface_map_["nodes"] =
-      std::unique_ptr<MonitorInterface>(new MonitorInterface("nodes"));
-  interface_map_["topics"] =
-      std::unique_ptr<MonitorInterface>(new MonitorInterface("topics"));
-  interface_map_["services"] =
-      std::unique_ptr<MonitorInterface>(new MonitorInterface("services"));
+  interface_map_["nodes"] = std::unique_ptr<MonitorInterface>(
+      new MonitorInterface("nodes", "[n]odes"));
+  interface_map_["topics"] = std::unique_ptr<MonitorInterface>(
+      new MonitorInterface("topics", "[t]opics"));
+  interface_map_["services"] = std::unique_ptr<MonitorInterface>(
+      new MonitorInterface("services", "[s]ervices"));
   uint x_offset = 0;
   // Initialise planes
   for (const auto &interface : interface_map_) {
@@ -90,7 +91,7 @@ bool Ui::renderMonitors() {
 
 void Ui::renderMonitorInfo(const MonitorInterface &interface) {
 
-  ui_state_ = UiStateEnum::displayingMonitorEntry;
+  ui_displaying_ = UiDisplayingEnum::monitorEntry;
 
   const auto &item = interface.selector_->get_selected();
   // Lock the channel mutex
@@ -153,24 +154,33 @@ void Ui::refreshUi() {
   ncinput *nc_input = new ncinput;
   while (screen_loop_) {
     // Check to see if we have re-drawn the monitors, or if the size of the
-    // terminal has changed since last loop
+    // terminal has changed since last loop FIXME: Currently always returns true
     const bool updated_monitors = renderMonitors();
     uint rows, cols;
     notcurses_core_->get_term_dim(rows, cols);
-    if (updated_monitors || cols != term_width_ || rows != term_height_) {
-      repositionElements(rows, cols);
+    // TODO change to use SIGWINCH to detect resize, instead of like this
+    if (cols != term_width_ || rows != term_height_) {
+      resizeUi(rows, cols);
     }
-
     // If we have an input
     notcurses_core_->get(false, nc_input);
     if (nc_input->id != (uint32_t)-1) {
       // Check if the input is for the UI
-      if (nc_input->id == NCKEY_ESC &&
-          ui_state_ == UiStateEnum::displayingMonitorEntry) {
-        monitor_info_plane_->erase();
-        monitor_info_plane_->move_bottom();
-        ui_state_ = UiStateEnum::displayingMonitors;
+      if (nc_input->id == 'q' &&
+          (ui_displaying_ == UiDisplayingEnum::monitorEntry ||
+           ui_displaying_ == UiDisplayingEnum::selectedMonitor)) {
+        transitionUiState(UiDisplayingEnum::monitors);
+      } else if (nc_input->id == 't') {
+        selected_monitor_ = "topics";
+        transitionUiState(UiDisplayingEnum::selectedMonitor);
+      } else if (nc_input->id == 'n') {
+        selected_monitor_ = "nodes";
+        transitionUiState(UiDisplayingEnum::selectedMonitor);
+      } else if (nc_input->id == 's') {
+        selected_monitor_ = "services";
+        transitionUiState(UiDisplayingEnum::selectedMonitor);
       } else {
+        // Check if input is for the monitors
         for (const auto &interface : interface_map_) {
           // If the input is both within the monitor plane, and
           // is usable, the interface will accept the input, and return true,
@@ -182,31 +192,129 @@ void Ui::refreshUi() {
       // If we end up re-rendering the monitors,
       // re-position the planes accordingly
       notcurses_core_->render();
-      std::this_thread::sleep_for(0.01s);
     }
+    std::this_thread::sleep_for(0.01s);
   }
 }
 
-void Ui::repositionElements(const uint &rows, const uint &cols) {
+void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
+  // Make this a variable that can be set by the user
+  switch (desired_state) {
+  case UiDisplayingEnum::monitors: {
+
+    if (ui_displaying_ == UiDisplayingEnum::monitorEntry) {
+      monitor_info_plane_->erase();
+      monitor_info_plane_->move_bottom();
+    }
+    // HACK Hardcoded positions until you sus out how the layout
+    // is actually going to work
+    auto selector_plane = interface_map_.at("topics")->selector_->get_plane();
+    selector_plane->move(1, 1); // Topic monitor at top left
+
+    // node monitor at center
+    selector_plane = interface_map_.at("nodes")->selector_->get_plane();
+    selector_plane->move(1,
+                         (term_width_ / 2) - selector_plane->get_dim_x() / 2);
+    // node monitor at center
+    selector_plane = interface_map_.at("services")->selector_->get_plane();
+    selector_plane->move(1, (term_width_)-selector_plane->get_dim_x());
+    break;
+  }
+  case UiDisplayingEnum::selectedMonitor: {
+    if (ui_displaying_ == UiDisplayingEnum::monitorEntry) {
+      monitor_info_plane_->erase();
+      monitor_info_plane_->move_bottom();
+    }
+    auto selected_plane =
+        interface_map_.at(selected_monitor_)->selector_->get_plane();
+    bool have_first_non_selected_plane_ = false;
+    ncpp::Plane *left_hand_plane;
+    ncpp::Plane *right_hand_plane;
+
+    for (const auto &selector : interface_map_) {
+      const auto temp_plane = selector.second->selector_->get_plane();
+      if (selector.first != selected_monitor_) {
+        if (!have_first_non_selected_plane_) {
+          have_first_non_selected_plane_ = true;
+          left_hand_plane = temp_plane;
+        } else if (left_hand_plane->get_x() > temp_plane->get_x()) {
+          right_hand_plane = left_hand_plane;
+          left_hand_plane = temp_plane;
+        } else {
+          right_hand_plane = temp_plane;
+        }
+      }
+    }
+
+    std::vector<std::tuple<ncpp::Plane *, int, int>> planes_locations;
+    planes_locations.push_back(
+        std::tuple<ncpp::Plane *, int, int>(left_hand_plane, 0, 0));
+    planes_locations.push_back(std::tuple<ncpp::Plane *, int, int>(
+        right_hand_plane, term_width_ - right_hand_plane->get_dim_x(), 0));
+    planes_locations.push_back(std::tuple<ncpp::Plane *, int, int>(
+        selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2, 0));
+
+    movePlanesAnimated(planes_locations);
+    break;
+  }
+  case UiDisplayingEnum::monitorEntry: {
+    // Currently, no ui transitions need to be made
+    // for displaying an entry
+    break;
+  }
+  default: {
+    // TODO Declare an error here, maybe
+    return;
+  }
+  }
+  ui_displaying_ = desired_state;
+  renderMonitors();
+}
+
+void Ui::movePlanesAnimated(
+    const std::vector<std::tuple<ncpp::Plane *, int, int>> &planes_locations) {
+
+  // Construct the vector transition locations
+  std::vector<std::pair<ncpp::Plane *, std::vector<std::pair<int, int>>>>
+      plane_trajectories;
+  plane_trajectories.reserve(planes_locations.size());
+  for (auto planes_to_move : planes_locations) {
+    const auto &[plane, des_x, des_y] = planes_to_move;
+    int loc_x, loc_y;
+    plane->get_yx(loc_y, loc_x);
+    const float delta_x = (des_x - loc_x) / transition_time_;
+    const float delta_y = (des_y - loc_y) / transition_time_;
+    std::vector<std::pair<int, int>> plane_trajectory;
+    for (int i = 0; i <= transition_time_; i++) {
+      const int traj_x = loc_x + delta_x * i;
+      const int traj_y = loc_y + delta_y * i;
+      plane_trajectory.push_back(std::pair<int, int>(traj_x, traj_y));
+    }
+
+    const auto plane_pair =
+        std::pair<ncpp::Plane *, std::vector<std::pair<int, int>>>(
+            plane, plane_trajectory);
+    plane_trajectories.push_back(plane_pair);
+  }
+
+  // Move the planes along their respective vectors
+  for (int i = 0; i <= transition_time_; i++) {
+    for (const auto &trajectory : plane_trajectories) {
+      const auto &[plane, move_vec] = trajectory;
+      plane->move(move_vec[i].second, move_vec[i].first);
+    }
+    notcurses_core_->render();
+    std::this_thread::sleep_for(0.005s);
+  }
+}
+
+void Ui::resizeUi(const uint &rows, const uint &cols) {
   term_height_ = rows;
   term_width_ = cols;
-  // HACK Hardcoded positions until you sus out how the layout
-  // is actually going to work
-  auto selector_plane = interface_map_.at("topics")->selector_->get_plane();
-  selector_plane->move(1, 1); // Topic monitor at top left
-
-  // node monitor at center
-  selector_plane = interface_map_.at("nodes")->selector_->get_plane();
-  selector_plane->move(1, (term_width_ / 2) - selector_plane->get_dim_x() / 2);
-
-  // node monitor at center
-  selector_plane = interface_map_.at("services")->selector_->get_plane();
-  selector_plane->move(1, (term_width_)-selector_plane->get_dim_x());
 }
 
 bool Ui::offerInputMonitor(const MonitorInterface &interface,
                            const ncinput &input) {
-
   // TODO: Investigate, fix.
   // For reasons beyong my understanding, if I pass the
   // interface.plane_, I get a seg fault. I must grab the plane from the
@@ -216,12 +324,19 @@ bool Ui::offerInputMonitor(const MonitorInterface &interface,
     return false;
   }
 
+  // if (input.id == NCKEY_UP || input.id == NCKEY_SCROLL_UP) {
+  //   interface.selector_->previtem();
+  //   return true;
+  // }
+
   if (interface.selector_->offer_input(&input)) {
     return true;
-  } else if (input.evtype == input.NCTYPE_PRESS) {
+  }
+  if (input.evtype == input.NCTYPE_PRESS) {
     // If we recieve an enter, we neeed to grab the
     // currently selected topic, and view the topic information
     // in a popup window
+    transitionUiState(UiDisplayingEnum::monitorEntry);
     renderMonitorInfo(interface);
     return true;
   }

@@ -42,6 +42,9 @@ public:
   Channel *interface_channel_;
 
 private:
+  // Class to for storing the current ui state
+  enum class UiDisplayingEnum { monitors, selectedMonitor, monitorEntry };
+
   // Stores the width of the terminal at startup. Used for scaling the ui
   uint term_width_;
   uint term_height_;
@@ -52,9 +55,14 @@ private:
   bool renderMonitors();
   void renderOptions();
   void refreshUi();
-  void repositionElements(const uint &rows, const uint& cols);
+  void transitionUiState(const UiDisplayingEnum &desired_state);
+  void resizeUi(const uint &rows, const uint &cols);
   void drawPopupPlane(ncpp::Plane &plane, const std::string &content,
                       const uint64_t &channel);
+
+  // Moves a each plane in the vector to their corresponding x/y locations in the tuple.
+  void movePlanesAnimated(
+const std::vector<std::tuple<ncpp::Plane* , int, int>> &planes_locations);
 
   bool checkEventOnPlane(const ncinput &input, const ncpp::Plane &plane);
   bool offerInputMonitor(const MonitorInterface &interface,
@@ -76,10 +84,16 @@ private:
   // Popup Information planes
   std::unique_ptr<ncpp::Plane> monitor_info_plane_;
 
-  // Class to for storing the current ui state
-  enum class UiStateEnum { displayingMonitors, displayingMonitorEntry};
-  UiStateEnum ui_state_;
+  UiDisplayingEnum ui_displaying_;
 
+  // Storage for the monitor that has been selected to be interacted with by the
+  // user
+  std::string selected_monitor_;
+
+
+  // Number of frames to use for anmations
+  // TODO: re-write as a parameter for the user to configure
+  int transition_time_ = 50;
 };
 
 #endif // UI_H_

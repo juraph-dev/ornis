@@ -31,10 +31,14 @@ public:
   virtual void getEntryInfo(const std::string &entry_name,
                             std::string &entry_info) = 0;
 
-  void getValue(std::vector<std::string> &value) {
-    data_mutex_.lock();
+  bool getValue(std::vector<std::string> &value) {
+    if (last_read_current_.load()) {
+      return false;
+    }
+    std::unique_lock<std::mutex> lk(data_mutex_);
     value = latest_value_;
-    data_mutex_.unlock();
+    last_read_current_ = true;
+    return true;
   }
 
   bool spin_;
@@ -61,6 +65,8 @@ protected:
   std::mutex data_mutex_;
   std::vector<std::string> latest_value_;
 
+  std::atomic<bool> last_read_current_;
+
 private:
   virtual void spin() = 0;
   virtual void updateValue() = 0;
@@ -68,7 +74,8 @@ private:
 
 class MonitorInterface {
 public:
-  MonitorInterface(const std::string &monitor_name, const std::string &selector_title)
+  MonitorInterface(const std::string &monitor_name,
+                   const std::string &selector_title)
       : monitor_name_(monitor_name), selector_title_(selector_title) {}
   ~MonitorInterface() {}
   void initialiseInterface(const ncpp::Plane &parent_plane, int x, int y) {
@@ -87,7 +94,6 @@ public:
     struct ncselector_options sopts {};
     sopts.maxdisplay = 10;
     sopts.items = items;
-    sopts.title = "Test title";
     sopts.defidx = 0;
     sopts.boxchannels =
         NCCHANNELS_INITIALIZER(0x20, 0xe0, 0x40, 0x20, 0x20, 0x20);
@@ -149,7 +155,6 @@ public:
   unsigned getRGB() const { return rgb_; }
 
   const std::string monitor_name_;
-
 
   std::shared_ptr<ncpp::Plane> plane_;
   std::shared_ptr<ncpp::Selector> selector_;

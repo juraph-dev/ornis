@@ -54,10 +54,9 @@ bool Ui::initialise(Channel &interface_channel) {
       new MonitorInterface("topics", "[t]opics"));
   interface_map_["services"] = std::unique_ptr<MonitorInterface>(
       new MonitorInterface("services", "[s]ervices"));
-  uint x_offset = 0;
   // Initialise planes
   for (const auto &interface : interface_map_) {
-    interface.second->initialiseInterface(*n, 1, x_offset++ * term_width_ / 3);
+    interface.second->initialiseInterface(*n, 0, 0);
   }
 
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(*n, 1, 1, 20, 20);
@@ -74,6 +73,7 @@ bool Ui::initialise(Channel &interface_channel) {
 }
 
 bool Ui::renderMonitors() {
+  // TODO: Rename this. Doesn't actually render, just updates values
   // If the channel hasn't been updated since the last
   // time the Ui checked.
   if (interface_channel_->ui_data_current_.load()) {
@@ -152,6 +152,9 @@ void Ui::updateMonitor(std::vector<std::string> updated_values,
 
 void Ui::refreshUi() {
   ncinput *nc_input = new ncinput;
+  notcurses_core_->get_term_dim(term_height_, term_width_);
+  renderMonitors();
+  transitionUiState(UiDisplayingEnum::monitors);
   while (screen_loop_) {
     // Check to see if we have re-drawn the monitors, or if the size of the
     // terminal has changed since last loop FIXME: Currently always returns true
@@ -159,8 +162,9 @@ void Ui::refreshUi() {
     uint rows, cols;
     notcurses_core_->get_term_dim(rows, cols);
     // TODO change to use SIGWINCH to detect resize, instead of like this
-    if (cols != term_width_ || rows != term_height_) {
+    if (updated_monitors || cols != term_width_ || rows != term_height_) {
       resizeUi(rows, cols);
+      transitionUiState(UiDisplayingEnum::monitors);
     }
     // If we have an input
     notcurses_core_->get(false, nc_input);
@@ -215,7 +219,7 @@ void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
     selector_plane = interface_map_.at("nodes")->selector_->get_plane();
     selector_plane->move(1,
                          (term_width_ / 2) - selector_plane->get_dim_x() / 2);
-    // node monitor at center
+    // node monitor at right hand side
     selector_plane = interface_map_.at("services")->selector_->get_plane();
     selector_plane->move(1, (term_width_)-selector_plane->get_dim_x());
     break;
@@ -268,7 +272,7 @@ void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
   }
   }
   ui_displaying_ = desired_state;
-  renderMonitors();
+  notcurses_core_->render();
 }
 
 void Ui::movePlanesAnimated(

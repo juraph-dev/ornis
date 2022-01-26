@@ -43,6 +43,8 @@ private:
       {"services", {"Loading..."}},
   };
 
+  const std::vector<std::string> default_monitor_view = {"Loading..."};
+
   std::map<std::string, std::unique_ptr<Monitor>> monitor_map_;
 
 

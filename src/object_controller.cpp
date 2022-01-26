@@ -25,19 +25,28 @@ void ObjectController::initialiseMonitors() {
 
 void ObjectController::updateMonitors() {
 
+  bool have_updated = false;
   std::map<std::string, std::vector<std::string>> monitor_info;
   for (const auto &monitor : monitor_map_) {
-    monitor.second->getValue(monitor_info[monitor.first]);
+    // If we don't end up recieving any new data from the monitors, don't update
+    // the interface
+    have_updated = monitor.second->getValue(monitor_info[monitor.first])
+                       ? true
+                       : have_updated;
   }
 
-  std::unique_lock<std::mutex> lk(interface_channel_.access_mutex_);
-  // If we don't have any nodes, we're not going to have any topics or services,
-  // so populate the UI with a tempoary loading string
-  if (monitor_info["nodes"].size()) {
-    interface_channel_.latest_monitor_data_ = monitor_info;
-  } else {
-    interface_channel_.latest_monitor_data_ = default_ui_view_;
+  if (!have_updated) {
+    return;
   }
+  std::unique_lock<std::mutex> lk(interface_channel_.access_mutex_);
+
+  for (auto &monitor_data : monitor_info) {
+    if (monitor_data.second.size()) {
+      interface_channel_.latest_monitor_data_[monitor_data.first] =
+          monitor_data.second;
+    }
+  }
+
   interface_channel_.ui_data_current_ = false;
 }
 

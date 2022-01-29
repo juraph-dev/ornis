@@ -3,6 +3,8 @@
 
 #include <map>
 
+#include <rclcpp/rclcpp.hpp>
+
 #include "rostui/channel_interface.hpp"
 #include "rostui/node_monitor.hpp"
 #include "rostui/service_monitor.hpp"
@@ -11,9 +13,15 @@
 #include "rostui/topic_streamer.hpp"
 #include "rostui/ui.hpp"
 
-class ObjectController {
+class ObjectController : public rclcpp::Node {
 public:
-  ObjectController();
+  explicit ObjectController(const rclcpp::NodeOptions &options)
+      : Node("rostui", options) {}
+
+  // Constructor
+  ObjectController(const std::string &node_name,
+                   const rclcpp::NodeOptions &options);
+
   ~ObjectController();
 
   // Initialises object controller. Creates loop
@@ -50,7 +58,7 @@ private:
   std::map<std::string, std::unique_ptr<Monitor>> monitor_map_;
 
   // Stream interface map.
-  std::map<std::string, StreamChannel*> stream_interface_map_;
+  std::map<std::string, StreamChannel *> stream_interface_map_;
 
   // Stream thread map
   std::map<std::string, std::unique_ptr<TopicStreamer>> stream_map_;

@@ -15,6 +15,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <atomic>
 
 #include <ncpp/Plane.hh>
 #include <ncpp/Selector.hh>

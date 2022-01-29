@@ -3,7 +3,11 @@
 
 #include <iostream>
 
-ObjectController::ObjectController() {}
+ObjectController::ObjectController(const std::string &node_name,
+                                   const rclcpp::NodeOptions &options)
+    : Node(node_name) {
+  spin();
+}
 
 ObjectController::~ObjectController() {
   // Destroy monitors
@@ -31,7 +35,6 @@ void ObjectController::initialiseMonitors() {
 }
 
 void ObjectController::updateMonitors() {
-
   bool have_updated = false;
   std::map<std::string, std::vector<std::string>> monitor_info;
   for (const auto &monitor : monitor_map_) {
@@ -58,7 +61,6 @@ void ObjectController::updateMonitors() {
 }
 
 void ObjectController::checkUiRequests() {
-
   if (interface_channel_.request_pending_.load()) {
     // Check to see what the type of request is
     if (interface_channel_.request_type_ ==

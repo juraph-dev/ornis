@@ -1,0 +1,757 @@
+[
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/include -I/home/juraph/ros2_ws/rostui_ws/build/rostui/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include  -g    -Wall -Wextra -Wpedantic -pthread -std=gnu++2a -o CMakeFiles/Rostui.dir/src/main.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/src/main.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/src/main.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/include -I/home/juraph/ros2_ws/rostui_ws/build/rostui/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include  -g    -Wall -Wextra -Wpedantic -pthread -std=gnu++2a -o CMakeFiles/Rostui.dir/src/ui.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/src/ui.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/src/ui.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/include -I/home/juraph/ros2_ws/rostui_ws/build/rostui/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include  -g    -Wall -Wextra -Wpedantic -pthread -std=gnu++2a -o CMakeFiles/Rostui.dir/src/object_controller.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/src/object_controller.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/src/object_controller.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui",
+  "command": "/usr/bin/g++-10   -I/home/juraph/ros2_ws/rostui_ws/rostui/include -I/home/juraph/ros2_ws/rostui_ws/build/rostui/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include  -g    -Wall -Wextra -Wpedantic -std=gnu++2a -o CMakeFiles/rostui-lib.dir/src/node_monitor.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/src/node_monitor.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/src/node_monitor.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui",
+  "command": "/usr/bin/g++-10   -I/home/juraph/ros2_ws/rostui_ws/rostui/include -I/home/juraph/ros2_ws/rostui_ws/build/rostui/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include  -g    -Wall -Wextra -Wpedantic -std=gnu++2a -o CMakeFiles/rostui-lib.dir/src/topic_monitor.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/src/topic_monitor.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/src/topic_monitor.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui",
+  "command": "/usr/bin/g++-10   -I/home/juraph/ros2_ws/rostui_ws/rostui/include -I/home/juraph/ros2_ws/rostui_ws/build/rostui/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include  -g    -Wall -Wextra -Wpedantic -std=gnu++2a -o CMakeFiles/rostui-lib.dir/src/service_monitor.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/src/service_monitor.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/src/service_monitor.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui",
+  "command": "/usr/bin/g++-10   -I/home/juraph/ros2_ws/rostui_ws/rostui/include -I/home/juraph/ros2_ws/rostui_ws/build/rostui/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include  -g    -Wall -Wextra -Wpedantic -std=gnu++2a -o CMakeFiles/rostui-lib.dir/src/topic_streamer.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/src/topic_streamer.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/src/topic_streamer.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=c++17 -o CMakeFiles/ncls.dir/src/ls/main.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/ls/main.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/ls/main.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/ncman.dir/src/man/main.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/man/main.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/man/main.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/ncman.dir/src/compat/compat.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=c++17 -o CMakeFiles/notcurses-input.dir/src/input/input.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/input/input.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/input/input.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/ncneofetch.dir/src/compat/compat.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/ncneofetch.dir/src/fetch/main.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/fetch/main.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/fetch/main.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/ncneofetch.dir/src/fetch/ncart.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/fetch/ncart.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/fetch/ncart.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/nctetris.dir/src/compat/compat.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=c++17 -o CMakeFiles/nctetris.dir/src/tetris/main.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/tetris/main.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/tetris/main.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-info.dir/src/info/main.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/info/main.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/info/main.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-info.dir/src/compat/compat.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/animate.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/animate.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/animate.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/box.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/box.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/box.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/chunli.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/chunli.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/chunli.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/demo.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/demo.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/demo.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/dragon.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/dragon.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/dragon.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/eagle.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/eagle.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/eagle.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/fission.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/fission.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/fission.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/grid.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/grid.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/grid.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/highcon.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/highcon.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/highcon.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/hud.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/hud.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/hud.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/input.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/input.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/input.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/intro.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/intro.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/intro.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/jungle.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/jungle.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/jungle.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/keller.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/keller.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/keller.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/luigi.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/luigi.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/luigi.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/mojibake.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/mojibake.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/mojibake.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/normal.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/normal.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/normal.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/outro.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/outro.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/outro.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/qrcode.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/qrcode.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/qrcode.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/reel.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/reel.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/reel.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/sliders.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/sliders.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/sliders.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/trans.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/trans.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/trans.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/uniblock.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/uniblock.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/uniblock.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/view.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/view.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/view.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/whiteout.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/whiteout.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/whiteout.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/xray.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/xray.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/xray.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/yield.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/yield.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/yield.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/demo/zoo.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/zoo.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/demo/zoo.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-demo.dir/src/compat/compat.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/FDPlane.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/FDPlane.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/FDPlane.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/Menu.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Menu.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Menu.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/MultiSelector.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/MultiSelector.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/MultiSelector.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/NotCurses.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/NotCurses.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/NotCurses.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/Plane.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Plane.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Plane.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/Plot.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Plot.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Plot.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/Reel.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Reel.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Reel.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/Root.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Root.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Root.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/Selector.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Selector.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Selector.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/Subproc.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Subproc.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Subproc.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/Tablet.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Tablet.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Tablet.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -std=c++17 -o CMakeFiles/notcurses++-static.dir/src/libcpp/Utilities.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Utilities.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Utilities.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-static.dir/src/media/ffmpeg.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/ffmpeg.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/ffmpeg.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-static.dir/src/media/none.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/none.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/none.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-static.dir/src/media/oiio-indep.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/oiio-indep.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/oiio-indep.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=c++17 -o CMakeFiles/notcurses-static.dir/src/media/oiio.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/oiio.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/oiio.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-static.dir/src/media/shim.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/shim.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/shim.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses.dir/src/media/ffmpeg.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/ffmpeg.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/ffmpeg.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses.dir/src/media/none.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/none.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/none.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses.dir/src/media/oiio-indep.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/oiio-indep.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/oiio-indep.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=c++17 -o CMakeFiles/notcurses.dir/src/media/oiio.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/oiio.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/oiio.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses.dir/src/media/shim.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/shim.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/media/shim.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses.dir/src/compat/compat.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/FDPlane.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/FDPlane.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/FDPlane.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/Menu.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Menu.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Menu.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/MultiSelector.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/MultiSelector.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/MultiSelector.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/NotCurses.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/NotCurses.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/NotCurses.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/Plane.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Plane.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Plane.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/Plot.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Plot.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Plot.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/Reel.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Reel.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Reel.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/Root.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Root.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Root.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/Selector.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Selector.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Selector.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/Subproc.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Subproc.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Subproc.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/Tablet.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Tablet.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Tablet.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses___EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -Wnull-dereference -Wunused -Wno-c99-extensions -fno-strict-aliasing -ffunction-sections -fno-rtti -fpic -pthread -std=c++17 -o CMakeFiles/notcurses++.dir/src/libcpp/Utilities.cc.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Utilities.cc",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/libcpp/Utilities.cc"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/g++-10  -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=c++17 -o CMakeFiles/ncplayer.dir/src/player/play.cpp.o -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/player/play.cpp",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/player/play.cpp"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/ncplayer.dir/src/compat/compat.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/automaton.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/automaton.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/automaton.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/banner.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/banner.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/banner.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/blit.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/blit.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/blit.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/debug.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/debug.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/debug.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/direct.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/direct.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/direct.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/fade.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fade.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fade.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/fd.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fd.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fd.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/fill.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fill.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fill.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/gpm.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/gpm.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/gpm.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/in.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/in.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/in.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/kitty.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/kitty.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/kitty.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/layout.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/layout.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/layout.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/linux.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/linux.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/linux.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/menu.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/menu.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/menu.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/metric.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/metric.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/metric.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/mice.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/mice.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/mice.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/notcurses.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/notcurses.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/notcurses.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/plot.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/plot.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/plot.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/progbar.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/progbar.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/progbar.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/reader.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/reader.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/reader.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/reel.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/reel.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/reel.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/render.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/render.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/render.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/selector.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/selector.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/selector.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/sixel.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/sixel.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/sixel.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/sprite.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/sprite.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/sprite.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/stats.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/stats.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/stats.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/tabbed.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/tabbed.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/tabbed.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/termdesc.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/termdesc.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/termdesc.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/tree.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/tree.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/tree.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/unixsig.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/unixsig.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/unixsig.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/util.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/util.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/util.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/visual.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/visual.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/visual.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core-static.dir/src/lib/windows.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/windows.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/windows.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/automaton.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/automaton.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/automaton.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/banner.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/banner.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/banner.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/blit.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/blit.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/blit.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/debug.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/debug.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/debug.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/direct.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/direct.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/direct.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/fade.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fade.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fade.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/fd.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fd.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fd.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/fill.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fill.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/fill.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/gpm.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/gpm.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/gpm.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/in.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/in.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/in.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/kitty.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/kitty.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/kitty.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/layout.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/layout.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/layout.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/linux.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/linux.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/linux.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/menu.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/menu.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/menu.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/metric.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/metric.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/metric.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/mice.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/mice.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/mice.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/notcurses.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/notcurses.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/notcurses.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/plot.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/plot.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/plot.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/progbar.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/progbar.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/progbar.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/reader.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/reader.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/reader.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/reel.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/reel.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/reel.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/render.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/render.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/render.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/selector.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/selector.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/selector.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/sixel.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/sixel.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/sixel.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/sprite.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/sprite.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/sprite.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/stats.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/stats.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/stats.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/tabbed.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/tabbed.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/tabbed.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/termdesc.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/termdesc.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/termdesc.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/tree.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/tree.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/tree.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/unixsig.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/unixsig.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/unixsig.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/util.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/util.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/util.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/visual.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/visual.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/visual.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/lib/windows.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/windows.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/lib/windows.c"
+},
+{
+  "directory": "/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses",
+  "command": "/usr/bin/gcc-10 -D_DEFAULT_SOURCE -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE -D_XOPEN_SOURCE=700 -Dnotcurses_core_EXPORTS -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/include -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src -I/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses -I/home/juraph/ros2_ws/rostui_ws/build/rostui/external/notcurses/include  -g -Og -fPIC -fvisibility=hidden   -w -Wall -Wextra -Wpedantic -Wformat -Werror=format-security -W -Wshadow -Wvla -fno-signed-zeros -fno-trapping-math -fassociative-math -fno-math-errno -freciprocal-math -funsafe-math-optimizations -fexceptions -fstrict-aliasing -pthread -std=gnu11 -o CMakeFiles/notcurses-core.dir/src/compat/compat.c.o   -c /home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c",
+  "file": "/home/juraph/ros2_ws/rostui_ws/rostui/external/notcurses/src/compat/compat.c"
+}
+]

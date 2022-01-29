@@ -1,0 +1,3 @@
+[submodule "external/notcurses"]
+	path = external/notcurses
+	url = https://github.com/dankamongmen/notcurses

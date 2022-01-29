@@ -32,8 +32,8 @@ bool Ui::initialise(Channel &interface_channel,
       .margin_r = 0,
       .margin_b = 0,
       .margin_l = 0,
-      .flags = NCOPTION_SUPPRESS_BANNERS | NCOPTION_NO_ALTERNATE_SCREEN
-      // Use if need cout
+      .flags = NCOPTION_SUPPRESS_BANNERS // | NCOPTION_NO_ALTERNATE_SCREEN
+                                         // Use if need cout
   };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);

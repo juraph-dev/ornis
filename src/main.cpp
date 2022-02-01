@@ -3,8 +3,8 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-// FIXME Figure out why this was here?
-// #include "rostui/config.hpp"
+// Config contains application information such as VERSION
+#include "rostui/config.hpp"
 #include "rostui/node_monitor.hpp"
 #include "rostui/object_controller.hpp"
 
@@ -13,7 +13,7 @@
   // Print version information
   if (argc == 2 && std::string{argv[1]} == "--version") {
     std::cout << "Project Name version "
-              << "Who's asking?"
+              << VERSION
               << "\n";
     std::cout << "Copyright information here\n";
     std::cout << "More copyright details.\n";

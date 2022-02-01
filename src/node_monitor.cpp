@@ -23,7 +23,7 @@ void NodeMonitor::spin() {
 
 void NodeMonitor::getEntryInfo(const std::string &entry_name,
                                std::string &entry_info) {
-  std::istringstream t_value(callConsole(ros1_info_string_ + entry_name));
+  std::istringstream t_value(callConsole(ros2_info_string_ + entry_name));
   entry_info = t_value.str();
   // For whatever reason, the first line of rosnode info is a series of hyphens
   // ('-'). While this does provide a pleasing line break, it's not needed when
@@ -33,7 +33,7 @@ void NodeMonitor::getEntryInfo(const std::string &entry_name,
 
 void NodeMonitor::updateValue() {
 
-  std::istringstream t_value(callConsole(ros1_list_string_));
+  std::istringstream t_value(callConsole(ros2_list_string_));
 
   std::unique_lock<std::mutex> lk(data_mutex_);
   if (t_value.rdbuf()->in_avail()) {

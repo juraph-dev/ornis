@@ -54,8 +54,8 @@ private:
   uint term_width_;
   uint term_height_;
 
-  void updateMonitor(std::vector<std::string> updated_values,
-                     MonitorInterface &interface);
+  void updateMonitor(std::vector<std::pair<std::string, std::string>> updated_values,
+                       MonitorInterface &interface);
   void renderMonitorInfo(const MonitorInterface &interface);
   bool renderMonitors();
   void renderOptions();
@@ -81,7 +81,8 @@ private:
 
   std::thread *ui_thread_;
 
-  std::map<std::string, std::vector<std::string>> monitor_data_;
+  std::map<std::string, std::vector<std::pair<std::string, std::string>>>
+      monitor_data_;
 
   // Notcurses core
   std::unique_ptr<ncpp::NotCurses> notcurses_core_;

@@ -11,10 +11,7 @@ public:
   void getEntryInfo(const std::string &entry_name, std::string &entry_info);
 
 private:
-  static constexpr auto ros1_list_string_ = "rosservice list";
   static constexpr auto ros2_list_string_ = "ros2 service list";
-
-  static constexpr auto ros1_info_string_ = "rosservice info ";
   static constexpr auto ros2_info_string_ = "ros2 service info ";
 
   void spin();

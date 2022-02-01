@@ -26,7 +26,7 @@ class Channel {
 
   // Structures to facilitate Object controller storing updated information
   // for UI to grab when ready
-  std::map<std::string, std::vector<std::string>> latest_monitor_data_;
+  std::map<std::string, std::vector<std::pair<std::string, std::string>>> latest_monitor_data_;
   // Flag to allow the UI to check if the monitor data has been updated since
   // last check.
   std::atomic<bool> ui_data_current_;

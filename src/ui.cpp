@@ -123,7 +123,7 @@ void Ui::renderMonitorInfo(const MonitorInterface &interface) {
       term_width_ / 2 - monitor_info_plane_->get_dim_x() / 2);
 }
 
-void Ui::updateMonitor(std::vector<std::string> updated_values,
+void Ui::updateMonitor(std::vector<std::pair<std::string, std::string>> updated_values,
                        MonitorInterface &interface) {
 
   if (!updated_values.empty()) {
@@ -133,13 +133,16 @@ void Ui::updateMonitor(std::vector<std::string> updated_values,
     // Create items struct from entries
     for (const auto &item : updated_values) {
       // The ncselector desc and opt are const char *. Handle this accordingly
-      const char *item_string_ptr = item.c_str();
-      char *item_as_char_array = new char[strlen(item_string_ptr) + 1];
-      strcpy(item_as_char_array, item_string_ptr);
+      const char *first_string_ptr = item.first.c_str();
+      const char *second_string_ptr = item.second.c_str();
+      char *first_as_char_array = new char[strlen(first_string_ptr) + 1];
+      char *second_as_char_array = new char[strlen(second_string_ptr) + 1];
+      strcpy(first_as_char_array, first_string_ptr);
+      strcpy(second_as_char_array, second_string_ptr);
 
       ncselector_item t_item = {
-          .option = item_as_char_array,
-          .desc = "",
+          .option = first_as_char_array,
+          .desc = second_as_char_array,
       };
       current_item_vector.push_back(t_item);
     }
@@ -235,16 +238,16 @@ void Ui::handleInputMonitors(const ncinput &input) {
     selected_monitor_ = "services";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
   }
-  // else {
-  //   // Check if input is for the monitors
-  //   for (const auto &interface : interface_map_) {
-  //     // If the input is both within the monitor plane, and
-  //     // is usable, the interface will accept the input, and return true,
-  //     // "Consuming" the input.
-  //     if (offerInputMonitor(*interface.second, *nc_input))
-  //       break;
-  //   }
-  // }
+  else {
+    // Check if input is for the monitors
+    for (const auto &interface : interface_map_) {
+      // If the input is both within the monitor plane, and
+      // is usable, the interface will accept the input, and return true,
+      // "Consuming" the input.
+      if (offerInputMonitor(*interface.second, input))
+        break;
+    }
+  }
 }
 
 void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {

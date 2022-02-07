@@ -123,8 +123,9 @@ void Ui::renderMonitorInfo(const MonitorInterface &interface) {
       term_width_ / 2 - monitor_info_plane_->get_dim_x() / 2);
 }
 
-void Ui::updateMonitor(std::vector<std::pair<std::string, std::string>> updated_values,
-                       MonitorInterface &interface) {
+void Ui::updateMonitor(
+    std::vector<std::pair<std::string, std::string>> updated_values,
+    MonitorInterface &interface) {
 
   if (!updated_values.empty()) {
     std::vector<ncselector_item> to_add;
@@ -155,7 +156,7 @@ void Ui::updateMonitor(std::vector<std::pair<std::string, std::string>> updated_
       };
     }
     if (!to_remove.empty()) {
-      for (const auto &item : to_remove) {
+      for (auto &item : to_remove) {
         interface.selector_->delitem(item.option);
       };
     }
@@ -203,6 +204,7 @@ void Ui::refreshUi() {
     notcurses_core_->render();
     std::this_thread::sleep_for(0.01s);
   }
+  delete nc_input;
 }
 void Ui::handleInputSelected(const ncinput &input) {
   if (input.id == 'q') {
@@ -237,8 +239,7 @@ void Ui::handleInputMonitors(const ncinput &input) {
   } else if (input.id == 's') {
     selected_monitor_ = "services";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
-  }
-  else {
+  } else {
     // Check if input is for the monitors
     for (const auto &interface : interface_map_) {
       // If the input is both within the monitor plane, and
@@ -338,12 +339,7 @@ void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
 
     stream_map_->at(selected_entry)->stream_open_ = true;
     stream_map_->at(selected_entry)->condition_variable_.notify_all();
-    std::cout << "ui opened stream" << '\n';
 
-    // stream_map_[selected_entry]->stream_open_ = true;
-
-    // stream_map_[selected_entry]->
-    // Assign the request in the interface channel
     // ncinput *nc_input = new ncinput;
     // while (nc_input->id != 'q') {
     //   // Set up a request in the interface channel for a new streamer object

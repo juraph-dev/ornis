@@ -1,13 +1,17 @@
 
 #include "rostui/object_controller.hpp"
 
+#include <csignal>
 #include <iostream>
 
-ObjectController::ObjectController(const std::string &node_name,
-                                   const rclcpp::NodeOptions &options)
-    : Node(node_name) {
-  spin();
+void intHandler(int sig) {
+
+  rclcpp::shutdown();
+
+  exit(0);
 }
+
+ObjectController::ObjectController() {}
 
 ObjectController::~ObjectController() {
   // Destroy monitors
@@ -39,7 +43,7 @@ void ObjectController::updateMonitors() {
   std::map<std::string, std::vector<std::pair<std::string, std::string>>>
       monitor_info;
   // For now, initialise nodes with empty info
-  const auto node_list = this->get_node_names();
+  const auto node_list = ros_interface_node_->get_node_names();
   std::vector<std::pair<std::string, std::string>> nodes;
   nodes.resize(node_list.size());
   for (const auto &node : node_list) {
@@ -53,7 +57,7 @@ void ObjectController::updateMonitors() {
 
   // For now, just list each type net to each node
   // TODO: Modify to also return the type. That's useful information
-  const auto topic_list = this->get_topic_names_and_types();
+  const auto topic_list = ros_interface_node_->get_topic_names_and_types();
   std::vector<std::pair<std::string, std::string>> topic_info;
   for (const auto &topic : topic_list) {
     for (const auto &pub_type : topic.second) {
@@ -67,7 +71,7 @@ void ObjectController::updateMonitors() {
   }
   monitor_info["topics"] = topic_info;
 
-  const auto service_list = this->get_service_names_and_types();
+  const auto service_list = ros_interface_node_->get_service_names_and_types();
   std::vector<std::pair<std::string, std::string>> service_info;
   for (const auto &service : service_list) {
     for (const auto &serv_type : service.second) {
@@ -103,13 +107,16 @@ void ObjectController::checkUiRequests() {
         interface_channel_.RequestEnum::monitorEntryInformation) {
       // Ensure response string empty
       interface_channel_.response_string_.clear();
-      // For topics, collect our own info. For nodes and services, use the defaul ros2 "node/service" info.
+      // For topics, collect our own info. For nodes and services, use the
+      // defaul ros2 "node/service" info.
       // TODO: Write your own equivilant for this
       if (interface_channel_.request_details_["monitor_name"] == "topics") {
-        const auto topic_publishers = this->get_publishers_info_by_topic(
-            interface_channel_.request_details_["monitor_entry"]);
-        const auto topic_subscribers = this->get_subscriptions_info_by_topic(
-            interface_channel_.request_details_["monitor_entry"]);
+        const auto topic_publishers =
+            ros_interface_node_->get_publishers_info_by_topic(
+                interface_channel_.request_details_["monitor_entry"]);
+        const auto topic_subscribers =
+            ros_interface_node_->get_subscriptions_info_by_topic(
+                interface_channel_.request_details_["monitor_entry"]);
         interface_channel_.response_string_ = "Publishers: \n";
         for (const auto &publisher : topic_publishers) {
           interface_channel_.response_string_ += publisher.node_name() + '\n';
@@ -144,6 +151,23 @@ void ObjectController::checkUiRequests() {
 }
 
 void ObjectController::spin() {
+  // force flush of the stdout buffer.
+  // this ensures a correct sync of all prints
+  // even when executed simultaneously within the launch file.
+  // setvbuf(stdout, NULL, _IONBF, BUFSIZ);
+  // Set up handle to handle ctrl+c killing of software
+  signal(SIGINT, intHandler);
+
+  rclcpp::init(0, nullptr);
+
+  rclcpp::NodeOptions controller_options;
+  ros_interface_node_ = std::shared_ptr<RosInterfaceNode>(
+      new RosInterfaceNode("rostui", std::move(controller_options)));
+
+  // Create the ros interface node
+  rclcpp::executors::MultiThreadedExecutor exe;
+
+  exe.add_node(ros_interface_node_->get_node_base_interface());
 
   if (!initialiseUserInterface()) {
     initialiseMonitors();
@@ -158,4 +182,6 @@ void ObjectController::spin() {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(1.00s);
   }
+
+  rclcpp::shutdown();
 }

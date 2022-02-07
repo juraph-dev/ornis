@@ -65,9 +65,8 @@ target_include_directories(${PROJECT_NAME}-lib PUBLIC ${CMAKE_SOURCE_DIR}/includ
 
  # ${rclcpp_INCLUDE_DIRS})
 
-add_executable(${PROJECT_NAME} src/main.cpp src/ui.cpp src/object_controller.cpp) # The main executables
+add_executable(${PROJECT_NAME} src/main.cpp src/ui.cpp src/object_controller.cpp src/ros_interface_node.cpp) # The main executables
 target_link_libraries(rostui rostui-lib
-  # rclcpp
   Threads::Threads
   notcurses++
   ${rclcpp_LIBRARIES}

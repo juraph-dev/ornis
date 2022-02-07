@@ -11,16 +11,13 @@
 #include "rostui/stream_interface.hpp"
 #include "rostui/topic_monitor.hpp"
 #include "rostui/topic_streamer.hpp"
+#include "rostui/ros_interface_node.hpp"
 #include "rostui/ui.hpp"
 
-class ObjectController : public rclcpp::Node {
+class ObjectController {
 public:
-  explicit ObjectController(const rclcpp::NodeOptions &options)
-      : Node("rostui", options) {}
-
   // Constructor
-  ObjectController(const std::string &node_name,
-                   const rclcpp::NodeOptions &options);
+  ObjectController();
 
   ~ObjectController();
 
@@ -52,6 +49,10 @@ private:
 
   // Stream thread map
   std::map<std::string, std::unique_ptr<TopicStreamer>> stream_map_;
+
+  // Ros interface node
+  std::shared_ptr<RosInterfaceNode> ros_interface_node_;
+
 };
 
 #endif // OBJECT_CONTROLLER_H_

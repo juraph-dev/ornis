@@ -1,11 +1,14 @@
 #ifndef NODE_MONITOR_H_
 #define NODE_MONITOR_H_
 
+#include <rclcpp/rclcpp.hpp>
+#include "rostui/ros_interface_node.hpp"
+
 #include "rostui/monitor.hpp"
 
 class NodeMonitor : public Monitor {
 public:
-  NodeMonitor();
+  NodeMonitor(std::shared_ptr<RosInterfaceNode> ros_interface_node);
   ~NodeMonitor();
 
   void getEntryInfo(const std::string &entry_name, std::string &entry_info);
@@ -18,6 +21,8 @@ private:
   void updateValue();
 
   std::thread *thread_;
+
+  std::shared_ptr<RosInterfaceNode> ros_interface_node_;
 };
 
 #endif // NODE_MONITOR_H_

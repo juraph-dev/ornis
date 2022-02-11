@@ -4,7 +4,8 @@
 
 #include "rostui/topic_monitor.hpp"
 
-TopicMonitor::TopicMonitor() {
+TopicMonitor::TopicMonitor(std::shared_ptr<RosInterfaceNode> ros_interface_node)
+    : ros_interface_node_(std::move(ros_interface_node)) {
   thread_ = new std::thread([this]() { spin(); });
 }
 TopicMonitor::~TopicMonitor() {
@@ -28,23 +29,20 @@ void TopicMonitor::getEntryInfo(const std::string &entry_name,
 }
 
 void TopicMonitor::updateValue() {
-  std::istringstream t_value(callConsole(ros2_list_string_));
-
-  std::unique_lock<std::mutex> lk(data_mutex_);
-  if (t_value.rdbuf()->in_avail()) {
-    std::vector<std::string> t_vec;
-    std::string t_string;
-    // Create vector based on splitting by newline
-    while (t_value.rdbuf()->in_avail()) {
-      std::getline(t_value, t_string, '\n');
-      t_vec.push_back(t_string);
+  // For now, just list each type net to each node
+  // TODO: Modify to also return the type. That's useful information
+  const auto topic_list = ros_interface_node_->get_topic_names_and_types();
+  std::vector<std::pair<std::string, std::string>> topic_info;
+  for (const auto &topic : topic_list) {
+    for (const auto &pub_type : topic.second) {
+      topic_info.push_back(
+          std::pair<std::string, std::string>{topic.first, pub_type});
     }
-    if (t_vec != latest_value_) {
-      latest_value_ = t_vec;
-      last_read_current_ = false;
-    }
-  } else {
-    latest_value_.clear();
-    last_read_current_ = false;
   }
+  if (latest_value_ == topic_info) {
+    return;
+  }
+  std::unique_lock<std::mutex> lk(data_mutex_);
+  latest_value_ = topic_info;
+  last_read_current_ = false;
 }

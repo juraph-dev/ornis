@@ -7,11 +7,11 @@
 
 #include "rostui/channel_interface.hpp"
 #include "rostui/node_monitor.hpp"
+#include "rostui/ros_interface_node.hpp"
 #include "rostui/service_monitor.hpp"
 #include "rostui/stream_interface.hpp"
 #include "rostui/topic_monitor.hpp"
 #include "rostui/topic_streamer.hpp"
-#include "rostui/ros_interface_node.hpp"
 #include "rostui/ui.hpp"
 
 class ObjectController {
@@ -38,9 +38,8 @@ public:
 private:
   Ui ui_;
 
-  std::vector<std::pair<std::string, std::string>> last_node_list_;
-  std::vector<std::pair<std::string, std::string>> last_topic_list_;
-  std::vector<std::pair<std::string, std::string>> last_service_list_;
+  std::map<std::string, std::vector<std::pair<std::string, std::string>>>
+      previous_monitor_info_;
 
   std::map<std::string, std::unique_ptr<Monitor>> monitor_map_;
 
@@ -52,7 +51,6 @@ private:
 
   // Ros interface node
   std::shared_ptr<RosInterfaceNode> ros_interface_node_;
-
 };
 
 #endif // OBJECT_CONTROLLER_H_

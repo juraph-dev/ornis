@@ -4,7 +4,8 @@
 
 #include "rostui/node_monitor.hpp"
 
-NodeMonitor::NodeMonitor() {
+NodeMonitor::NodeMonitor(std::shared_ptr<RosInterfaceNode> ros_interface_node)
+    : ros_interface_node_(std::move(ros_interface_node)) {
   thread_ = new std::thread([this]() { spin(); });
 }
 NodeMonitor::~NodeMonitor() {
@@ -33,23 +34,18 @@ void NodeMonitor::getEntryInfo(const std::string &entry_name,
 
 void NodeMonitor::updateValue() {
 
-  std::istringstream t_value(callConsole(ros2_list_string_));
-
-  std::unique_lock<std::mutex> lk(data_mutex_);
-  if (t_value.rdbuf()->in_avail()) {
-    std::vector<std::string> t_vec;
-    std::string t_string;
-    // Create vector based on splitting by newline
-    while (t_value.rdbuf()->in_avail()) {
-      std::getline(t_value, t_string, '\n');
-      t_vec.push_back(t_string);
-    }
-    if (t_vec != latest_value_) {
-      latest_value_ = t_vec;
-      last_read_current_ = false;
-    }
-  } else {
-    latest_value_.clear();
-    last_read_current_ = false;
+  // For now, initialise nodes with empty info
+  const auto node_list = ros_interface_node_->get_node_names();
+  std::vector<std::pair<std::string, std::string>> nodes;
+  nodes.resize(node_list.size());
+  for (const auto &node : node_list) {
+    nodes.push_back(std::pair<std::string, std::string>{node, ""});
   }
+
+  if (latest_value_ == nodes) {
+    return;
+  }
+  std::unique_lock<std::mutex> lk(data_mutex_);
+  latest_value_ = nodes;
+  last_read_current_ = false;
 }

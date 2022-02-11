@@ -365,7 +365,7 @@ void Ui::movePlanesAnimated(
   std::vector<std::pair<ncpp::Plane *, std::vector<std::pair<int, int>>>>
       plane_trajectories;
   plane_trajectories.reserve(planes_locations.size());
-  for (auto planes_to_move : planes_locations) {
+  for (const auto &planes_to_move : planes_locations) {
     const auto &[plane, des_x, des_y] = planes_to_move;
     int loc_x, loc_y;
     plane->get_yx(loc_y, loc_x);

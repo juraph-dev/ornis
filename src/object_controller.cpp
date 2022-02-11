@@ -6,6 +6,7 @@
 
 void intHandler(int sig) {
 
+  std::cout << "Exiting: " << sig << '\n';
   rclcpp::shutdown();
 
   exit(0);
@@ -33,63 +34,33 @@ bool ObjectController::initialiseUserInterface() {
 }
 
 void ObjectController::initialiseMonitors() {
-  monitor_map_["nodes"] = std::unique_ptr<Monitor>(new NodeMonitor());
-  monitor_map_["topics"] = std::unique_ptr<Monitor>(new TopicMonitor());
-  monitor_map_["services"] = std::unique_ptr<Monitor>(new ServiceMonitor());
+  monitor_map_["nodes"] =
+      std::unique_ptr<Monitor>(new NodeMonitor(ros_interface_node_));
+  monitor_map_["topics"] =
+      std::unique_ptr<Monitor>(new TopicMonitor(ros_interface_node_));
+  monitor_map_["services"] =
+      std::unique_ptr<Monitor>(new ServiceMonitor(ros_interface_node_));
 }
 
 void ObjectController::updateMonitors() {
+
   bool have_updated = false;
+
   std::map<std::string, std::vector<std::pair<std::string, std::string>>>
       monitor_info;
-  // For now, initialise nodes with empty info
-  const auto node_list = ros_interface_node_->get_node_names();
-  std::vector<std::pair<std::string, std::string>> nodes;
-  nodes.resize(node_list.size());
-  for (const auto &node : node_list) {
-    nodes.push_back(std::pair<std::string, std::string>{node, ""});
-  }
-  if (last_node_list_ != nodes) {
-    have_updated = true;
-    last_node_list_ = nodes;
-  }
-  monitor_info["nodes"] = nodes;
-
-  // For now, just list each type net to each node
-  // TODO: Modify to also return the type. That's useful information
-  const auto topic_list = ros_interface_node_->get_topic_names_and_types();
-  std::vector<std::pair<std::string, std::string>> topic_info;
-  for (const auto &topic : topic_list) {
-    for (const auto &pub_type : topic.second) {
-      topic_info.push_back(
-          std::pair<std::string, std::string>{topic.first, pub_type});
+  for (const auto &monitor : monitor_map_) {
+    monitor.second->getValue(monitor_info[monitor.first]);
+    if (previous_monitor_info_[monitor.first] != monitor_info[monitor.first]) {
+      have_updated = true;
+      previous_monitor_info_[monitor.first] = monitor_info[monitor.first];
     }
   }
-  if (last_topic_list_ != topic_info) {
-    have_updated = true;
-    last_topic_list_ = topic_info;
-  }
-  monitor_info["topics"] = topic_info;
-
-  const auto service_list = ros_interface_node_->get_service_names_and_types();
-  std::vector<std::pair<std::string, std::string>> service_info;
-  for (const auto &service : service_list) {
-    for (const auto &serv_type : service.second) {
-      service_info.push_back(
-          std::pair<std::string, std::string>{service.first, serv_type});
-    }
-  }
-  if (last_service_list_ != service_info) {
-    have_updated = true;
-    last_service_list_ = service_info;
-  }
-  monitor_info["services"] = service_info;
 
   if (!have_updated) {
     return;
   }
-  std::unique_lock<std::mutex> lk(interface_channel_.access_mutex_);
 
+  std::unique_lock<std::mutex> lk(interface_channel_.access_mutex_);
   for (auto &monitor_data : monitor_info) {
     if (monitor_data.second.size()) {
       interface_channel_.latest_monitor_data_[monitor_data.first] =

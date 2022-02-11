@@ -4,7 +4,10 @@
 
 #include "rostui/service_monitor.hpp"
 
-ServiceMonitor::ServiceMonitor() {
+ServiceMonitor::ServiceMonitor(
+    std::shared_ptr<RosInterfaceNode> ros_interface_node)
+    : ros_interface_node_(std::move(ros_interface_node)) {
+
   thread_ = new std::thread([this]() { spin(); });
 }
 ServiceMonitor::~ServiceMonitor() {
@@ -28,23 +31,18 @@ void ServiceMonitor::getEntryInfo(const std::string &entry_name,
 }
 
 void ServiceMonitor::updateValue() {
-  std::istringstream t_value(callConsole(ros2_list_string_));
-
-  std::unique_lock<std::mutex> lk(data_mutex_);
-  if (t_value.rdbuf()->in_avail()) {
-    std::vector<std::string> t_vec;
-    std::string t_string;
-    // Create vector based on splitting by newline
-    while (t_value.rdbuf()->in_avail()) {
-      std::getline(t_value, t_string, '\n');
-      t_vec.push_back(t_string);
+  const auto service_list = ros_interface_node_->get_service_names_and_types();
+  std::vector<std::pair<std::string, std::string>> service_info;
+  for (const auto &service : service_list) {
+    for (const auto &serv_type : service.second) {
+      service_info.push_back(
+          std::pair<std::string, std::string>{service.first, serv_type});
     }
-    if (t_vec != latest_value_) {
-      latest_value_ = t_vec;
-      last_read_current_ = false;
-    }
-  } else {
-    latest_value_.clear();
-    last_read_current_ = false;
   }
+  if (latest_value_ == service_info) {
+    return;
+  }
+  std::unique_lock<std::mutex> lk(data_mutex_);
+  latest_value_ = service_info;
+  last_read_current_ = false;
 }

@@ -12,7 +12,6 @@
 #include <unistd.h>
 #include <vector>
 
-#include <ncpp/Direct.hh>
 #include <ncpp/FDPlane.hh>
 #include <ncpp/Menu.hh>
 #include <ncpp/MultiSelector.hh>
@@ -27,7 +26,7 @@
 #include <ncpp/Visual.hh>
 
 #include "rostui/channel_interface.hpp"
-#include "rostui/monitor.hpp"
+#include "rostui/monitor_interface.hpp"
 #include "rostui/stream_interface.hpp"
 
 class Ui {

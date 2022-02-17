@@ -7,8 +7,8 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include "rostui/ros_interface_node.hpp"
-#include "rostui/stream_interface.hpp"
+#include "ornis/ros_interface_node.hpp"
+#include "ornis/stream_interface.hpp"
 
 class TopicStreamer {
 

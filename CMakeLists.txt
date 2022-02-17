@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
-project(rostui)
+project(ornis)
 
 set(Project-Name_VERSION_MAJOR 0)
 set(Project-Name_VERSION_MINOR 1)
 set(Project-Name_VERSION_PATCH 0)
 set(Project-Name_VERSION "${Project-Name_VERSION_MAJOR}.${Project-Name_VERSION_MINOR}.${Project-Name_VERSION_PATCH}")
 
-set(PROJECT_NAME "rostui") # PROJECT_NAME is a predefined variable
+set(PROJECT_NAME "ornis") # PROJECT_NAME is a predefined variable
 set(PROJECT_DESCRIPTION "\"ROS terminal user interface\"")
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
@@ -52,14 +52,14 @@ target_include_directories(${PROJECT_NAME}-lib PUBLIC ${PROJECT_SOURCE_DIR}/incl
 
 add_executable(${PROJECT_NAME} src/main.cpp) # The main executables
 
-target_link_libraries(rostui-lib PUBLIC
+target_link_libraries(ornis-lib PUBLIC
   notcurses++
   Threads::Threads
   ${rclcpp_LIBRARIES}
   ) # Link our sources to the executable
 
-target_link_libraries(rostui PUBLIC
-  rostui-lib
+target_link_libraries(ornis PUBLIC
+  ornis-lib
   notcurses++
   Threads::Threads
   ${rclcpp_LIBRARIES}

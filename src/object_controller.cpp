@@ -3,7 +3,7 @@
 #include <csignal>
 #include <iostream>
 
-#include "rostui/object_controller.hpp"
+#include "ornis/object_controller.hpp"
 
 void intHandler(int sig) {
 
@@ -154,7 +154,7 @@ void ObjectController::spin() {
 
   rclcpp::NodeOptions controller_options;
   ros_interface_node_ = std::shared_ptr<RosInterfaceNode>(
-      new RosInterfaceNode("rostui", std::move(controller_options)));
+      new RosInterfaceNode("ornis", std::move(controller_options)));
 
   // Create the ros interface node
   rclcpp::executors::MultiThreadedExecutor exe;

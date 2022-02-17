@@ -2,7 +2,7 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "rostui/service_monitor.hpp"
+#include "ornis/service_monitor.hpp"
 
 ServiceMonitor::ServiceMonitor(
     std::shared_ptr<RosInterfaceNode> ros_interface_node)

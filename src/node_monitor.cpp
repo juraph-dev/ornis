@@ -2,7 +2,7 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "rostui/node_monitor.hpp"
+#include "ornis/node_monitor.hpp"
 
 NodeMonitor::NodeMonitor(std::shared_ptr<RosInterfaceNode> ros_interface_node)
     : ros_interface_node_(std::move(ros_interface_node)) {
@@ -28,7 +28,7 @@ void NodeMonitor::getEntryInfo(const std::string &entry_name,
   entry_info = t_value.str();
   // For whatever reason, the first line of rosnode info is a series of hyphens
   // ('-'). While this does provide a pleasing line break, it's not needed when
-  // being displayed in rostui
+  // being displayed in ornis
   entry_info.erase(0, entry_info.find('\n') + 1);
 }
 

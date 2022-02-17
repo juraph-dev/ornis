@@ -25,9 +25,9 @@
 #include <ncpp/Tablet.hh>
 #include <ncpp/Visual.hh>
 
-#include "rostui/channel_interface.hpp"
-#include "rostui/monitor_interface.hpp"
-#include "rostui/stream_interface.hpp"
+#include "ornis/channel_interface.hpp"
+#include "ornis/monitor_interface.hpp"
+#include "ornis/stream_interface.hpp"
 
 class Ui {
 public:

@@ -7,7 +7,7 @@
 class RosInterfaceNode : public rclcpp::Node {
 public:
   explicit RosInterfaceNode(const rclcpp::NodeOptions &options)
-      : Node("rostui", options) {}
+      : Node("ornis", options) {}
 
   // Constructor
   RosInterfaceNode(const std::string &node_name,

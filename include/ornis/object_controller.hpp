@@ -5,14 +5,14 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include "rostui/channel_interface.hpp"
-#include "rostui/node_monitor.hpp"
-#include "rostui/ros_interface_node.hpp"
-#include "rostui/service_monitor.hpp"
-#include "rostui/stream_interface.hpp"
-#include "rostui/topic_monitor.hpp"
-#include "rostui/topic_streamer.hpp"
-#include "rostui/ui.hpp"
+#include "ornis/channel_interface.hpp"
+#include "ornis/node_monitor.hpp"
+#include "ornis/ros_interface_node.hpp"
+#include "ornis/service_monitor.hpp"
+#include "ornis/stream_interface.hpp"
+#include "ornis/topic_monitor.hpp"
+#include "ornis/topic_streamer.hpp"
+#include "ornis/ui.hpp"
 
 class ObjectController {
 public:

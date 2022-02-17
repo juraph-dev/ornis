@@ -2,9 +2,9 @@
 #define TOPIC_MONITOR_H_
 
 #include <rclcpp/rclcpp.hpp>
-#include "rostui/ros_interface_node.hpp"
+#include "ornis/ros_interface_node.hpp"
 
-#include "rostui/monitor.hpp"
+#include "ornis/monitor.hpp"
 
 class TopicMonitor : public Monitor {
 public:

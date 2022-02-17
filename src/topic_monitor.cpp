@@ -2,7 +2,7 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "rostui/topic_monitor.hpp"
+#include "ornis/topic_monitor.hpp"
 
 TopicMonitor::TopicMonitor(std::shared_ptr<RosInterfaceNode> ros_interface_node)
     : ros_interface_node_(std::move(ros_interface_node)) {

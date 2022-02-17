@@ -1,4 +1,4 @@
-#include "rostui/ros_interface_node.hpp"
+#include "ornis/ros_interface_node.hpp"
 
 RosInterfaceNode::RosInterfaceNode(const std::string &node_name,
                                    const rclcpp::NodeOptions &options)

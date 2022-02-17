@@ -33,7 +33,7 @@ public:
   // Check if the UI is wating for any information
   void checkUiRequests();
   // Communication channel between the object controller and the user interface
-  Channel interface_channel_;
+  std::shared_ptr<Channel> interface_channel_;
 
 private:
   Ui ui_;
@@ -44,10 +44,10 @@ private:
   std::map<std::string, std::unique_ptr<Monitor>> monitor_map_;
 
   // Stream interface map.
-  std::map<std::string, StreamChannel *> stream_interface_map_;
+  std::map<std::string, std::shared_ptr<StreamChannel>> stream_interface_map_;
 
   // Stream thread map
-  std::map<std::string, std::unique_ptr<TopicStreamer>> stream_map_;
+  std::map<std::string, std::shared_ptr<TopicStreamer>> stream_map_;
 
   // Ros interface node
   std::shared_ptr<RosInterfaceNode> ros_interface_node_;

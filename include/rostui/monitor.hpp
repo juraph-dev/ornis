@@ -41,14 +41,14 @@ public:
 
 protected:
   // Function to interface with the command line (rostopic list/rostopic info)
-  std::string callConsole(const std::string cmd) {
-    char buffer[128];
+  std::string callConsole(const std::string &cmd) {
     std::string result = "";
     const std::string cmd_pipe = cmd + " 2>&1";
     FILE *pipe = popen(cmd_pipe.c_str(), "r");
     if (!pipe)
       throw std::runtime_error("popen() failed!");
     try {
+      char buffer[128];
       while (fgets(buffer, sizeof buffer, pipe) != NULL) {
         result += buffer;
       }

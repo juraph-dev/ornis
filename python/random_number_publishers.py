@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 
 import random
 
@@ -9,8 +10,9 @@ from std_msgs.msg import Float32
 class MinimalPublisher(Node):
 
     def __init__(self):
-        super().__init__('minimal_publisher')
-        self.publisher_ = self.create_publisher(Float32, 'random_number', 10)
+        super().__init__('random_number_pub')
+
+        self.publisher_ = self.create_publisher(Float32, 'random_number', qos_profile_sensor_data)
         timer_period = 0.1  # Start with 10hz
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0

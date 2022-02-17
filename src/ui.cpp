@@ -17,12 +17,13 @@ Ui::~Ui() {
   }
 }
 
-bool Ui::initialise(Channel &interface_channel,
-                    std::map<std::string, StreamChannel *> &stream_map) {
+bool Ui::initialise(
+    std::shared_ptr<Channel> interface_channel,
+    std::map<std::string, std::shared_ptr<StreamChannel>> &stream_map) {
 
   ui_displaying_ = UiDisplayingEnum::monitors;
 
-  interface_channel_ = &interface_channel;
+  interface_channel_ = std::move(interface_channel);
   stream_map_ = &stream_map;
 
   struct notcurses_options nopts = {
@@ -255,7 +256,6 @@ void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
   // Make this a variable that can be set by the user
   switch (desired_state) {
   case UiDisplayingEnum::monitors: {
-
     if (ui_displaying_ == UiDisplayingEnum::monitorEntry) {
       monitor_info_plane_->erase();
       monitor_info_plane_->move_bottom();
@@ -279,6 +279,7 @@ void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
       monitor_info_plane_->erase();
       monitor_info_plane_->move_bottom();
     }
+
     auto selected_plane =
         interface_map_.at(selected_monitor_)->selector_->get_plane();
     bool have_first_non_selected_plane_ = false;
@@ -317,13 +318,19 @@ void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
     break;
   }
   case UiDisplayingEnum::streamingTopic: {
-    std::cout << "transitioning state" << '\n';
+    // TODO: Spin off a new thread, which will handle the drawing to plane. as
+    // well as the notcurses render. You're going to need to create a function
+    // which wraps both the writing to the plane, as well as the
+    // notcurses->render call in with a mutex, to prevent multiple calls at
+    // once.
+
     // Create new plane for visualising data
     // At least for now, just enter a horrible loop here, exit on 'q'
-    ncpp::Plane temp_streaming_plane(*monitor_info_plane_);
+    ncpp::Plane temp_streaming_plane(*notcurses_core_->get_stdplane());
     temp_streaming_plane.move(monitor_info_plane_->get_abs_y(),
                               monitor_info_plane_->get_abs_x() +
                                   monitor_info_plane_->get_dim_x());
+
     const std::string selected_entry =
         interface_map_[selected_monitor_]->selector_->get_selected();
 
@@ -331,22 +338,45 @@ void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
         interface_channel_->access_mutex_);
 
     interface_channel_->request_type_ = Channel::RequestEnum::topicStreamer;
-    interface_channel_->request_details_["topic_name"] = selected_entry;
+    interface_channel_->request_details_.emplace("topic_name", selected_entry);
     interface_channel_->request_pending_ = true;
     interface_channel_->condition_variable_.wait_for(
         data_request_lock, 4s,
         [this] { return !interface_channel_->request_pending_.load(); });
+    std::cout << "ui cv completed" << '\n';
 
-    stream_map_->at(selected_entry)->stream_open_ = true;
-    stream_map_->at(selected_entry)->condition_variable_.notify_all();
+    // std::lock_guard<std::mutex> stream_interface_lock(
+    //     stream_map_->at(selected_entry)->access_mutex_);
 
-    // ncinput *nc_input = new ncinput;
-    // while (nc_input->id != 'q') {
-    //   // Set up a request in the interface channel for a new streamer object
-    //   // Each loop, wait on the condition_variable
+    {
+      // std::unique_lock<std::mutex> stream_request_lock(
+      //     stream_map_->at(selected_entry)->access_mutex_);
+      stream_map_->at(selected_entry)->stream_open_ = true;
+      stream_map_->at(selected_entry)->ui_data_current_ = true;
+      stream_map_->at(selected_entry)->condition_variable_.notify_all();
+    }
 
-    //   std::this_thread::sleep_for(0.03s);
-    // }
+    ncinput *nc_input = new ncinput;
+    while (nc_input->id != 'q') {
+
+      // Set up a request in the interface channel for a new streamer object
+      // Each loop, wait on the condition_variable
+      notcurses_core_->get(false, nc_input);
+      std::this_thread::sleep_for(0.01s);
+      std::unique_lock<std::mutex> lk(
+          stream_map_->at(selected_entry)->access_mutex_);
+      if (!stream_map_->at(selected_entry)->ui_data_current_.load()) {
+        std::cout
+            << "got msg from stream: "
+            << stream_map_->at(selected_entry)->latest_stream_data_.c_str()
+            << '\n';
+
+        drawPopupPlane(
+            temp_streaming_plane,
+            stream_map_->at(selected_entry)->latest_stream_data_.c_str());
+      }
+    }
+    ui_displaying_ = UiDisplayingEnum::monitorEntry;
     break;
   }
   default: {
@@ -355,7 +385,6 @@ void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
   }
   }
   ui_displaying_ = desired_state;
-  notcurses_core_->render();
 }
 
 void Ui::movePlanesAnimated(
@@ -453,22 +482,21 @@ void Ui::drawPopupPlane(ncpp::Plane &plane, const std::string &content) {
   // to resize the plane to, second to place the characters on the plane.
   // It's ugly, but much more efficient than dynamically resizing the
   // plane as we iterate through the string.
-  for (const char c : content) {
+  for (const char &c : content) {
     if (c == '\n') {
       row++;
       col = 1;
     } else {
-      longest_col = col > longest_col ? col : longest_col;
       col++;
+      longest_col = col > longest_col ? col : longest_col;
     }
   }
-
   // Add one to longest col to account for boreder
-  plane.resize(row, longest_col + 1);
+  plane.resize(row + 1, longest_col + 1);
 
   row = 1;
   col = 1;
-  for (const char c : content) {
+  for (const char &c : content) {
     if (c == '\n') {
       row++;
       col = 1;

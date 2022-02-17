@@ -13,10 +13,11 @@
 class StreamChannel {
 
 public:
+  explicit StreamChannel(const std::string &topic_name)
+      : topic_name_(topic_name) {}
 
-  explicit StreamChannel(const std::string &topic_name) : topic_name_(topic_name){}
-    
-  ~StreamChannel();
+    StreamChannel(){};
+    ~StreamChannel(){};
 
   std::mutex access_mutex_;
   std::condition_variable condition_variable_;

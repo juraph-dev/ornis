@@ -1,11 +1,19 @@
 #include "rostui/topic_streamer.hpp"
 
-TopicStreamer::TopicStreamer(const std::string &topic_name,
-                             StreamChannel &interface_channel)
-    : topic_name_(topic_name) {
-  interface_channel_ = &interface_channel;
-  spin_ = true;
-  thread_ = new std::thread([this]() { spin(); });
+using std::placeholders::_1;
+using namespace std::chrono_literals;
+
+TopicStreamer::TopicStreamer(
+    const std::string &topic_name, const std::string &topic_type,
+    std::shared_ptr<StreamChannel> &interface_channel,
+    std::shared_ptr<RosInterfaceNode> ros_interface_node)
+    : topic_name_(topic_name), topic_type_(topic_type),
+      ros_interface_node_(std::move(ros_interface_node)) {
+
+  interface_channel_ = interface_channel;
+  thread_ = new std::thread(
+      [this]() {initialise();
+      });
 }
 TopicStreamer::~TopicStreamer() {
   if (thread_ != nullptr) {
@@ -14,42 +22,32 @@ TopicStreamer::~TopicStreamer() {
   }
 }
 
-void TopicStreamer::streamEntry(std::string &stream_frame) {
-  stream_frame = callConsole(ros1_stream_string_ + topic_name_);
-}
+void TopicStreamer::callback(std::shared_ptr<rclcpp::SerializedMessage> msg) {
 
-void TopicStreamer::spin() {
-
-  // Wait until ui is ready before we spin
-  // std::cout << "topic streamer waiting" << '\n';
-  // waitUntilUiReady();
-  // std::cout << "about to stream" << interface_channel_->topic_name_ << '\n';
-
-  // const std::string cmd_pipe = ros1_stream_string_ + topic_name_ + " 2>&1";
-  // FILE *pipe = popen(cmd_pipe.c_str(), "r");
-  // if (!pipe)
-  //   throw std::runtime_error("popen() failed!");
-
-  // while (spin_) {
-  //   char buffer[1024];
-  //   std::string result = "";
-  //   if (fgets(buffer, sizeof buffer, pipe)) {
-  //     std::cout << "buffer" << buffer << '\n';
-  //     result += buffer;
-  //   }
-  //   // std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
-  //   // Now we (Theoretically) have the contents of the stream, pass it
-  //   // to the interface channel
-  // }
-  // pclose(pipe);
-}
-
-// Currently unused. Re-implement
-void TopicStreamer::waitUntilUiReady() {
   std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
-  while (!interface_channel_->stream_open_) {
-    // BUG If the UI never sets this flag, stream waits indefinitely.
-    // Create a fail condition here
-    interface_channel_->condition_variable_.wait(lk);
+  const std::string msg_str = "msg size: " + std::to_string(msg->size());
+  interface_channel_->latest_stream_data_ = msg_str;
+  interface_channel_->ui_data_current_ = false;
+}
+
+void TopicStreamer::waitUntilUiReady() {
+  while (!interface_channel_->stream_open_.load()) {
   }
+}
+
+void TopicStreamer::initialise() {
+
+  waitUntilUiReady();
+
+  // TODO: Investigate swapping profiles in realtime
+  rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
+  rclcpp::SubscriptionOptions options;
+
+  const auto qos = rclcpp::QoS(
+      rclcpp::QoSInitialization(qos_profile.history, qos_profile.depth),
+      qos_profile);
+
+  subscription_ = ros_interface_node_->create_generic_subscription(
+      topic_name_, topic_type_, qos,
+      std::bind(&TopicStreamer::callback, this, _1), options);
 }

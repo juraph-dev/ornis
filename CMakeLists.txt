@@ -17,7 +17,7 @@ if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
 endif()
 
-# Default to C++19
+# Default to C++17
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
@@ -46,7 +46,7 @@ file(GLOB LIBRARY_SOURCES
 list(REMOVE_ITEM LIBRARY_SOURCES "main.cpp")
 
 add_library(${PROJECT_NAME}-lib ${LIBRARY_SOURCES})
-target_include_directories(${PROJECT_NAME}-lib PUBLIC ${CMAKE_SOURCE_DIR}/include
+target_include_directories(${PROJECT_NAME}-lib PUBLIC ${PROJECT_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/include ${NCPP_DIR}/include
   ${rclcpp_INLUDE_DIR})
 

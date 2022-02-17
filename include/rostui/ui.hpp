@@ -33,8 +33,8 @@ class Ui {
 public:
   Ui();
   ~Ui();
-  bool initialise(Channel &interface_channel,
-                  std::map<std::string, StreamChannel *> &stream_map);
+  bool initialise(std::shared_ptr<Channel> interface_channel,
+                  std::map<std::string, std::shared_ptr<StreamChannel>> &stream_map);
 
   // Re-draw flag, for updated value, or changed console dimensions
   bool redraw_flag_;
@@ -87,13 +87,13 @@ private:
   std::unique_ptr<ncpp::NotCurses> notcurses_core_;
 
   // Channel to handle sending information to/from the object controller
-  Channel *interface_channel_;
+  std::shared_ptr<Channel> interface_channel_;
 
   // Monitor interface map
   std::map<std::string, std::unique_ptr<MonitorInterface>> interface_map_;
 
   // Stream map
-  std::map<std::string, StreamChannel *> *stream_map_;
+  std::map<std::string, std::shared_ptr<StreamChannel>> *stream_map_;
 
   // Popup Information planes
   std::unique_ptr<ncpp::Plane> monitor_info_plane_;

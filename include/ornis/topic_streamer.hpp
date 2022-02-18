@@ -6,6 +6,8 @@
 #include <thread>
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/serialization.hpp>
+#include <std_msgs/msg/float32.hpp>
 
 #include "ornis/ros_interface_node.hpp"
 #include "ornis/stream_interface.hpp"
@@ -30,7 +32,7 @@ private:
   void streamEntry(std::string &stream_frame);
   void waitUntilUiReady();
   void initialise();
-  void callback(std::shared_ptr<rclcpp::SerializedMessage> msg);
+  void callback(const std::shared_ptr<rclcpp::SerializedMessage> msg);
 
   std::thread *thread_;
 

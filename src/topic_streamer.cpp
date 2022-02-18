@@ -20,9 +20,13 @@ TopicStreamer::~TopicStreamer() {
   }
 }
 
-void TopicStreamer::callback(std::shared_ptr<rclcpp::SerializedMessage> msg) {
-  const std::string msg_str = "msg size: " + std::to_string(msg->size());
-  interface_channel_->stream_plane_->putstr(2, NCALIGN_CENTER, msg_str.c_str());
+void TopicStreamer::callback(const std::shared_ptr<rclcpp::SerializedMessage> msg) {
+  std_msgs::msg::Float32 des_msg;
+  auto serializer = rclcpp::Serialization<std_msgs::msg::Float32>();
+  serializer.deserialize_message(msg.get(), &des_msg);
+  const std::string msg_str = std::to_string(des_msg.data);
+  interface_channel_->stream_plane_->putstr(2, NCALIGN_CENTER,
+                                            msg_str.c_str());
 }
 
 void TopicStreamer::waitUntilUiReady() {

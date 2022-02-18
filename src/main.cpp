@@ -1,11 +1,8 @@
 #include <iostream>
 #include <string>
 
-#include <rclcpp/rclcpp.hpp>
-
 // Config contains application information such as VERSION
 #include "ornis/config.hpp"
-#include "ornis/node_monitor.hpp"
 #include "ornis/object_controller.hpp"
 
 int main(int argc, char *argv[]) {

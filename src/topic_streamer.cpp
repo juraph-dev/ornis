@@ -11,9 +11,7 @@ TopicStreamer::TopicStreamer(
       ros_interface_node_(std::move(ros_interface_node)) {
 
   interface_channel_ = interface_channel;
-  thread_ = new std::thread(
-      [this]() {initialise();
-      });
+  thread_ = new std::thread([this]() { initialise(); });
 }
 TopicStreamer::~TopicStreamer() {
   if (thread_ != nullptr) {
@@ -23,11 +21,8 @@ TopicStreamer::~TopicStreamer() {
 }
 
 void TopicStreamer::callback(std::shared_ptr<rclcpp::SerializedMessage> msg) {
-
-  std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
   const std::string msg_str = "msg size: " + std::to_string(msg->size());
-  interface_channel_->latest_stream_data_ = msg_str;
-  interface_channel_->ui_data_current_ = false;
+  interface_channel_->stream_plane_->putstr(2, NCALIGN_CENTER, msg_str.c_str());
 }
 
 void TopicStreamer::waitUntilUiReady() {

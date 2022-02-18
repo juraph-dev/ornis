@@ -10,6 +10,8 @@
 #include <queue>
 #include <thread>
 
+#include <ncpp/Plane.hh>
+
 class StreamChannel {
 
 public:
@@ -25,16 +27,12 @@ public:
   // name of topic being streamed
   std::string topic_name_;
 
-  // Structures to facilitate stream storing updated information
-  // for UI to grab when ready
-  std::string latest_stream_data_;
-  // Flag to allow the UI to check if the monitor data has been updated since
-  // last check.
-  std::atomic<bool> ui_data_current_;
-
   // Flag for whether the stream is currently open in the UI.
   // Object controller checks this flag for whether to kill the stream thread
   std::atomic<bool> stream_open_;
+
+  // Plane that gets written to directly from the streamer
+  std::shared_ptr<ncpp::Plane> stream_plane_;
 };
 
 #endif // STREAM_INTERFACE_H_

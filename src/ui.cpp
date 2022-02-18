@@ -1,7 +1,8 @@
 
-#include "ornis/ui.hpp"
 #include <cmath>
 #include <sstream>
+
+#include "ornis/ui.hpp"
 
 using namespace std::chrono_literals;
 
@@ -318,18 +319,21 @@ void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
     break;
   }
   case UiDisplayingEnum::streamingTopic: {
-    // TODO: Spin off a new thread, which will handle the drawing to plane. as
-    // well as the notcurses render. You're going to need to create a function
-    // which wraps both the writing to the plane, as well as the
-    // notcurses->render call in with a mutex, to prevent multiple calls at
-    // once.
 
-    // Create new plane for visualising data
-    // At least for now, just enter a horrible loop here, exit on 'q'
-    ncpp::Plane temp_streaming_plane(*notcurses_core_->get_stdplane());
-    temp_streaming_plane.move(monitor_info_plane_->get_abs_y(),
-                              monitor_info_plane_->get_abs_x() +
-                                  monitor_info_plane_->get_dim_x());
+    // Create new plane for visualising data to get passed to the topic streamer
+    auto stream_plane =
+        std::make_shared<ncpp::Plane>(*notcurses_core_->get_stdplane());
+
+    stream_plane->move(monitor_info_plane_->get_abs_y(),
+                       monitor_info_plane_->get_abs_x() +
+                           monitor_info_plane_->get_dim_x());
+    stream_plane->resize(20, 20);
+
+    uint64_t channel = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
+    stream_plane->set_bg_alpha(NCALPHA_OPAQUE);
+    stream_plane->set_channels(channel);
+    stream_plane->set_bg_rgb8(100, 100, 0);
+    stream_plane->perimeter_rounded(0, channel, 0);
 
     const std::string selected_entry =
         interface_map_[selected_monitor_]->selector_->get_selected();
@@ -343,39 +347,10 @@ void Ui::transitionUiState(const UiDisplayingEnum &desired_state) {
     interface_channel_->condition_variable_.wait_for(
         data_request_lock, 4s,
         [this] { return !interface_channel_->request_pending_.load(); });
-    std::cout << "ui cv completed" << '\n';
 
-    // std::lock_guard<std::mutex> stream_interface_lock(
-    //     stream_map_->at(selected_entry)->access_mutex_);
+    stream_map_->at(selected_entry)->stream_plane_ = stream_plane;
+    stream_map_->at(selected_entry)->stream_open_ = true;
 
-    {
-      // std::unique_lock<std::mutex> stream_request_lock(
-      //     stream_map_->at(selected_entry)->access_mutex_);
-      stream_map_->at(selected_entry)->stream_open_ = true;
-      stream_map_->at(selected_entry)->ui_data_current_ = true;
-      stream_map_->at(selected_entry)->condition_variable_.notify_all();
-    }
-
-    ncinput *nc_input = new ncinput;
-    while (nc_input->id != 'q') {
-
-      // Set up a request in the interface channel for a new streamer object
-      // Each loop, wait on the condition_variable
-      notcurses_core_->get(false, nc_input);
-      std::this_thread::sleep_for(0.01s);
-      std::unique_lock<std::mutex> lk(
-          stream_map_->at(selected_entry)->access_mutex_);
-      if (!stream_map_->at(selected_entry)->ui_data_current_.load()) {
-        std::cout
-            << "got msg from stream: "
-            << stream_map_->at(selected_entry)->latest_stream_data_.c_str()
-            << '\n';
-
-        drawPopupPlane(
-            temp_streaming_plane,
-            stream_map_->at(selected_entry)->latest_stream_data_.c_str());
-      }
-    }
     ui_displaying_ = UiDisplayingEnum::monitorEntry;
     break;
   }

@@ -10,6 +10,13 @@
 #include "ornis/ros_interface_node.hpp"
 #include "ornis/stream_interface.hpp"
 
+/*
+ * A note on the streamer, Notcurses itself is thread-safe. This allows the
+ * streamer to freely access and write to the plane provided by the UI, as long
+ * as the UI promises to not access it at the same time, which it won't without
+ * destroying the streamer first.
+ * TODO: Check if the UI is allowed to move the plane while the stream is open
+ */
 class TopicStreamer {
 
 public:
@@ -17,9 +24,6 @@ public:
                 std::shared_ptr<StreamChannel> &interface_channel,
                 std::shared_ptr<RosInterfaceNode> ros_interface_node);
   ~TopicStreamer();
-
-  // TODO Make atomic?
-  bool spin_;
 
 private:
   void updateValue();

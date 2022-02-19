@@ -7,43 +7,47 @@
 #include <iterator>
 #include <memory>
 #include <mutex>
+#include <ncpp/Plane.hh>
+#include <ncpp/Selector.hh>
 #include <stdexcept>
 #include <string>
 #include <thread>
 #include <vector>
 
-#include <ncpp/Plane.hh>
-#include <ncpp/Selector.hh>
-
-inline bool operator==(const ncselector_item A, const ncselector_item B) {
+inline bool operator==(const ncselector_item A, const ncselector_item B)
+{
   return (strcmp(A.desc, B.desc) == 0) && strcmp(A.option, B.option) == 0;
 }
 
-class MonitorInterface {
+class MonitorInterface
+{
 public:
-  MonitorInterface(const std::string &monitor_name,
-                   const std::string &selector_title)
-      : monitor_name_(monitor_name), selector_title_(selector_title) {}
+  MonitorInterface(const std::string & monitor_name, const std::string & selector_title)
+  : monitor_name_(monitor_name), selector_title_(selector_title)
+  {
+  }
   ~MonitorInterface() {}
-  void initialiseInterface(const ncpp::Plane &parent_plane, int x, int y) {
+  void initialiseInterface(const ncpp::Plane & parent_plane, int x, int y)
+  {
     // Don't need to provide size for plane, as it will be resized on first
     // render
     plane_ = std::make_shared<ncpp::Plane>(parent_plane, 1, 1, x, y);
 
     // Set up interface selector.
     ncselector_item items[] = {
-        {
-            nullptr,
-            nullptr,
-        },
+      {
+        nullptr,
+        nullptr,
+      },
     };
 
-    struct ncselector_options sopts {};
+    struct ncselector_options sopts
+    {
+    };
     sopts.maxdisplay = 10;
     sopts.items = items;
     sopts.defidx = 0;
-    sopts.boxchannels =
-        NCCHANNELS_INITIALIZER(0x20, 0xe0, 0x40, 0x20, 0x20, 0x20);
+    sopts.boxchannels = NCCHANNELS_INITIALIZER(0x20, 0xe0, 0x40, 0x20, 0x20, 0x20);
     sopts.opchannels = NCCHANNELS_INITIALIZER(0xe0, 0x80, 0x40, 0, 0, 0);
     sopts.descchannels = NCCHANNELS_INITIALIZER(0x80, 0xe0, 0x40, 0, 0, 0);
     sopts.footchannels = NCCHANNELS_INITIALIZER(0xe0, 0, 0x40, 0x20, 0, 0);
@@ -57,10 +61,10 @@ public:
   }
 
   unsigned getLines() const { return lines_; }
-  void updateEntries(std::vector<ncselector_item> &new_vector,
-                     std::vector<ncselector_item> &add_values,
-                     std::vector<ncselector_item> &delete_values) {
-
+  void updateEntries(
+    std::vector<ncselector_item> & new_vector, std::vector<ncselector_item> & add_values,
+    std::vector<ncselector_item> & delete_values)
+  {
     // If we have no current entries
     if (entries_.empty()) {
       entries_ = new_vector;
@@ -80,17 +84,17 @@ public:
 
     // Populate add values for items not found in list
     std::copy_if(
-        new_vector.begin(), new_vector.end(), std::back_inserter(add_values),
-        [&t_vec](const ncselector_item &item) {
-          return (std::find(t_vec.begin(), t_vec.end(), item) == t_vec.end());
-        });
+      new_vector.begin(), new_vector.end(), std::back_inserter(add_values),
+      [&t_vec](const ncselector_item & item) {
+        return (std::find(t_vec.begin(), t_vec.end(), item) == t_vec.end());
+      });
 
     // Populate delete_values for values no longer in the vector list
-    std::copy_if(t_vec.begin(), t_vec.end(), std::back_inserter(delete_values),
-                 [&new_vector](const ncselector_item &item) {
-                   return (std::find(new_vector.begin(), new_vector.end(),
-                                     item) == new_vector.end());
-                 });
+    std::copy_if(
+      t_vec.begin(), t_vec.end(), std::back_inserter(delete_values),
+      [&new_vector](const ncselector_item & item) {
+        return (std::find(new_vector.begin(), new_vector.end(), item) == new_vector.end());
+      });
 
     lines_ = new_vector.size();
     entries_ = new_vector;
@@ -116,5 +120,4 @@ private:
   const std::string selector_title_;
 };
 
-
-#endif // MONITOR_INTERFACE_H_
+#endif  // MONITOR_INTERFACE_H_

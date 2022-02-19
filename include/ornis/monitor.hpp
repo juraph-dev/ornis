@@ -17,16 +17,17 @@
 #include <thread>
 #include <vector>
 
-class Monitor {
+class Monitor
+{
 public:
   // Monitor() {}
   Monitor() : spin_(true) {}
   ~Monitor() {}
 
-  virtual void getEntryInfo(const std::string &entry_name,
-                            std::string &entry_info) = 0;
+  virtual void getEntryInfo(const std::string & entry_name, std::string & entry_info) = 0;
 
-  bool getValue(std::vector<std::pair<std::string, std::string>> &value) {
+  bool getValue(std::vector<std::pair<std::string, std::string>> & value)
+  {
     if (last_read_current_.load()) {
       return false;
     }
@@ -41,12 +42,12 @@ public:
 
 protected:
   // Function to interface with the command line (rostopic list/rostopic info)
-  std::string callConsole(const std::string &cmd) {
+  std::string callConsole(const std::string & cmd)
+  {
     std::string result = "";
     const std::string cmd_pipe = cmd + " 2>&1";
-    FILE *pipe = popen(cmd_pipe.c_str(), "r");
-    if (!pipe)
-      throw std::runtime_error("popen() failed!");
+    FILE * pipe = popen(cmd_pipe.c_str(), "r");
+    if (!pipe) throw std::runtime_error("popen() failed!");
     try {
       char buffer[128];
       while (fgets(buffer, sizeof buffer, pipe) != NULL) {
@@ -68,4 +69,4 @@ private:
   virtual void updateValue() = 0;
 };
 
-#endif // MONITOR_H_
+#endif  // MONITOR_H_

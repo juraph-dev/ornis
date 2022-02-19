@@ -6,8 +6,29 @@ set(Project-Name_VERSION_MINOR 1)
 set(Project-Name_VERSION_PATCH 0)
 set(Project-Name_VERSION "${Project-Name_VERSION_MAJOR}.${Project-Name_VERSION_MINOR}.${Project-Name_VERSION_PATCH}")
 
-set(PROJECT_NAME "ornis") # PROJECT_NAME is a predefined variable
-set(PROJECT_DESCRIPTION "\"ROS terminal user interface\"")
+set(PROJECT_NAME "ornis")
+set(PROJECT_DESCRIPTION "\"Open Ros2 Notcurses Interface System\"")
+
+
+# Options
+# option(BUILD_TESTS "Build test executable" OFF)
+# option(GEN_DOCS "Generate documentation" OFF)
+# option(ENABLE_COVERAGE "Enable code coverage" OFF)
+
+# if (CHECK_INCLUDES)
+#   find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
+# endif(CHECK_INCLUDES)
+option(CHECK_INCLUDES "use iwyu to check for bad includes" OFF)
+option(FIX_INCLUDES "use iwyu to fix bad includes" OFF)
+
+
+# if (ENABLE_COVERAGE)
+#     include(CodeCoverage)
+#     append_coverage_compiler_flags()
+#     set(COVERAGE_EXCLUDES "/usr/include/\\*;${CMAKE_SOURCE_DIR}/src/main.cpp;${CMAKE_SOURCE_DIR}/test/*;${CMAKE_SOURCE_DIR}/third_party/doctest/*")
+
+#     setup_target_for_coverage(NAME coverage EXECUTABLE ctest DEPENDENCIES coverage)
+# endif(ENABLE_COVERAGE)
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
@@ -27,17 +48,39 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # Set subdirectory variables
-option(USE_POC "Build small, uninstalled proof-of-concept binaries" OFF) # Doesn't work
+# option(USE_POC "Build small, uninstalled proof-of-concept binaries" OFF) # Doesn't work
 set(NCPP_DIR "external/notcurses")
 # Use Notcurses
 add_subdirectory(${NCPP_DIR})
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
 find_package(Threads REQUIRED)
 find_package(notcurses 3.0.0 CONFIG )
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
 
+
+# Perform this after find_package to prevent iwyu from running on our external dir
+IF (FIX_INCLUDES)
+  find_program(IWYU_PATH NAMES include-what-you-use iwyu)
+  IF(NOT IWYU_PATH)
+    message(FATAL_ERROR "Could not find the program include-what-you-use")
+  ENDIF()
+  set(IWYU_PATH_OPTS
+    ${IWYU_PATH})
+  set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_OPTS})
+  set(CMAKE_C_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_OPTS})
+ELSEIF (CHECK_INCLUDES)
+  find_program(IWYU_PATH NAMES include-what-you-use iwyu)
+  IF(NOT IWYU_PATH)
+    message(FATAL_ERROR "Could not find the program include-what-you-use")
+  ENDIF()
+  set(IWYU_PATH_OPTS
+    ${IWYU_PATH}
+    -Xiwyu)
+  set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_OPTS})
+  set(CMAKE_C_INCLUDE_WHAT_YOU_USE ${IWYU_PATH_OPTS})
+ENDIF(FIX_INCLUDES)
 
 file(GLOB LIBRARY_SOURCES
   src/*.cpp

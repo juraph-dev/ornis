@@ -7,4 +7,4 @@
 #define VERSION_PATCH "@Project-Name_VERSION_PATCH@"
 #define VERSION "@Project-Name_VERSION@"
 
-#endif // !CONFIG_HPP_
+#endif  // !CONFIG_HPP_

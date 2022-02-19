@@ -5,8 +5,8 @@
 #include "ornis/config.hpp"
 #include "ornis/object_controller.hpp"
 
-int main(int argc, char *argv[]) {
-
+int main(int argc, char * argv[])
+{
   // Print version information
   if (argc == 2 && std::string{argv[1]} == "--version") {
     std::cout << "Project Name version " << VERSION << "\n";

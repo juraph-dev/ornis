@@ -6,20 +6,18 @@
 #include <iostream>
 #include <map>
 #include <mutex>
+#include <ncpp/Plane.hh>
 #include <optional>
 #include <queue>
 #include <thread>
 
-#include <ncpp/Plane.hh>
-
-class StreamChannel {
-
+class StreamChannel
+{
 public:
-  explicit StreamChannel(const std::string &topic_name)
-      : topic_name_(topic_name) {}
+  explicit StreamChannel(const std::string & topic_name) : topic_name_(topic_name) {}
 
-    StreamChannel(){};
-    ~StreamChannel(){};
+  StreamChannel(){};
+  ~StreamChannel(){};
 
   std::mutex access_mutex_;
   std::condition_variable condition_variable_;
@@ -35,4 +33,4 @@ public:
   std::shared_ptr<ncpp::Plane> stream_plane_;
 };
 
-#endif // STREAM_INTERFACE_H_
+#endif  // STREAM_INTERFACE_H_

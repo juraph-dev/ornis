@@ -2,7 +2,6 @@
 #define OBJECT_CONTROLLER_H_
 
 #include <map>
-
 #include <rclcpp/rclcpp.hpp>
 
 #include "ornis/channel_interface.hpp"
@@ -14,7 +13,8 @@
 #include "ornis/topic_streamer.hpp"
 #include "ornis/ui.hpp"
 
-class ObjectController {
+class ObjectController
+{
 public:
   // Constructor
   ObjectController();
@@ -38,8 +38,7 @@ public:
 private:
   Ui ui_;
 
-  std::map<std::string, std::vector<std::pair<std::string, std::string>>>
-      previous_monitor_info_;
+  std::map<std::string, std::vector<std::pair<std::string, std::string>>> previous_monitor_info_;
 
   std::map<std::string, std::unique_ptr<Monitor>> monitor_map_;
 
@@ -53,4 +52,4 @@ private:
   std::shared_ptr<RosInterfaceNode> ros_interface_node_;
 };
 
-#endif // OBJECT_CONTROLLER_H_
+#endif  // OBJECT_CONTROLLER_H_

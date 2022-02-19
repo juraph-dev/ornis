@@ -2,12 +2,11 @@
 #define TOPIC_STREAMER_H_
 
 #include <iostream>
-#include <sstream>
-#include <thread>
-
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/serialization.hpp>
+#include <sstream>
 #include <std_msgs/msg/float32.hpp>
+#include <thread>
 
 #include "ornis/ros_interface_node.hpp"
 #include "ornis/stream_interface.hpp"
@@ -19,22 +18,23 @@
  * destroying the streamer first.
  * TODO: Check if the UI is allowed to move the plane while the stream is open
  */
-class TopicStreamer {
-
+class TopicStreamer
+{
 public:
-  TopicStreamer(const std::string &topic_name, const std::string &topic_type,
-                std::shared_ptr<StreamChannel> &interface_channel,
-                std::shared_ptr<RosInterfaceNode> ros_interface_node);
+  TopicStreamer(
+    const std::string & topic_name, const std::string & topic_type,
+    std::shared_ptr<StreamChannel> & interface_channel,
+    std::shared_ptr<RosInterfaceNode> ros_interface_node);
   ~TopicStreamer();
 
 private:
   void updateValue();
-  void streamEntry(std::string &stream_frame);
+  void streamEntry(std::string & stream_frame);
   void waitUntilUiReady();
   void initialise();
   void callback(const std::shared_ptr<rclcpp::SerializedMessage> msg);
 
-  std::thread *thread_;
+  std::thread * thread_;
 
   const std::string topic_name_;
   const std::string topic_type_;
@@ -45,4 +45,4 @@ private:
   std::shared_ptr<rclcpp::GenericSubscription> subscription_;
 };
 
-#endif // TOPIC_STREAMER_H_
+#endif  // TOPIC_STREAMER_H_

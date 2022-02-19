@@ -1,9 +1,15 @@
-#include "ornis/service_monitor.hpp"
-
-#include <unistd.h>
-
+#include <map>
+#include <mutex>
+#include <vector>
+#include <thread>
+#include <atomic>
+#include <chrono>
+#include <utility>
 #include <iostream>
-#include <sstream>
+#include <algorithm>
+
+#include "ornis/service_monitor.hpp"
+#include "ornis/ros_interface_node.hpp"
 
 ServiceMonitor::ServiceMonitor(std::shared_ptr<RosInterfaceNode> ros_interface_node)
 : ros_interface_node_(std::move(ros_interface_node))

@@ -1,7 +1,14 @@
 #ifndef ROS_INTERFACE_NODE_H_
 #define ROS_INTERFACE_NODE_H_
 
+#include <string>
+
+#include <rclcpp/node.hpp>
 #include <rclcpp/rclcpp.hpp>
+
+namespace rclcpp {
+class NodeOptions;
+}  // namespace rclcpp
 
 class RosInterfaceNode : public rclcpp::Node
 {

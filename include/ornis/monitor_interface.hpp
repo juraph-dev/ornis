@@ -1,18 +1,19 @@
 #ifndef MONITOR_INTERFACE_H_
 #define MONITOR_INTERFACE_H_
 
-#include <algorithm>
-#include <atomic>
-#include <iostream>
-#include <iterator>
-#include <memory>
 #include <mutex>
-#include <ncpp/Plane.hh>
-#include <ncpp/Selector.hh>
-#include <stdexcept>
+#include <atomic>
+#include <memory>
 #include <string>
 #include <thread>
 #include <vector>
+#include <iostream>
+#include <iterator>
+#include <algorithm>
+#include <stdexcept>
+
+#include <ncpp/Plane.hh>
+#include <ncpp/Selector.hh>
 
 inline bool operator==(const ncselector_item A, const ncselector_item B)
 {

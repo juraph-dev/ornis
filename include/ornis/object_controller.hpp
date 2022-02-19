@@ -2,16 +2,27 @@
 #define OBJECT_CONTROLLER_H_
 
 #include <map>
+#include <vector>
+#include <memory>
+#include <string>
+#include <utility>
+
 #include <rclcpp/rclcpp.hpp>
 
-#include "ornis/channel_interface.hpp"
+#include "ornis/ui.hpp"
 #include "ornis/node_monitor.hpp"
-#include "ornis/ros_interface_node.hpp"
-#include "ornis/service_monitor.hpp"
-#include "ornis/stream_interface.hpp"
 #include "ornis/topic_monitor.hpp"
 #include "ornis/topic_streamer.hpp"
-#include "ornis/ui.hpp"
+#include "ornis/service_monitor.hpp"
+#include "ornis/stream_interface.hpp"
+#include "ornis/channel_interface.hpp"
+#include "ornis/ros_interface_node.hpp"
+
+class Channel;
+class Monitor;
+class RosInterfaceNode;
+class StreamChannel;
+class TopicStreamer;
 
 class ObjectController
 {

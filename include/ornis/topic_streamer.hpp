@@ -1,15 +1,25 @@
 #ifndef TOPIC_STREAMER_H_
 #define TOPIC_STREAMER_H_
 
+#include <thread>
+#include <memory>
+#include <string>
+#include <sstream>
 #include <iostream>
+
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/serialization.hpp>
-#include <sstream>
 #include <std_msgs/msg/float32.hpp>
-#include <thread>
 
-#include "ornis/ros_interface_node.hpp"
 #include "ornis/stream_interface.hpp"
+#include "ornis/ros_interface_node.hpp"
+
+class RosInterfaceNode;
+class StreamChannel;
+namespace rclcpp {
+class GenericSubscription;
+class SerializedMessage;
+}  // namespace rclcpp
 
 /*
  * A note on the streamer, Notcurses itself is thread-safe. This allows the

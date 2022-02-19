@@ -1,15 +1,16 @@
 #ifndef STREAM_INTERFACE_H_
 #define STREAM_INTERFACE_H_
 
-#include <atomic>
-#include <condition_variable>
-#include <iostream>
 #include <map>
 #include <mutex>
-#include <ncpp/Plane.hh>
-#include <optional>
 #include <queue>
+#include <atomic>
 #include <thread>
+#include <iostream>
+#include <optional>
+#include <condition_variable>
+
+#include <ncpp/Plane.hh>
 
 class StreamChannel
 {

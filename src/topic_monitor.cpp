@@ -1,9 +1,15 @@
-#include "ornis/topic_monitor.hpp"
-
-#include <unistd.h>
-
+#include <map>
+#include <mutex>
+#include <thread>
+#include <atomic>
+#include <chrono>
+#include <vector>
+#include <utility>
 #include <iostream>
-#include <sstream>
+#include <algorithm>
+
+#include "ornis/topic_monitor.hpp"
+#include "ornis/ros_interface_node.hpp"
 
 TopicMonitor::TopicMonitor(std::shared_ptr<RosInterfaceNode> ros_interface_node)
 : ros_interface_node_(std::move(ros_interface_node))

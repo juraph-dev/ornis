@@ -1,9 +1,14 @@
-#include "ornis/node_monitor.hpp"
-
-#include <unistd.h>
-
+#include <mutex>
+#include <atomic>
+#include <thread>
+#include <chrono>
+#include <vector>
+#include <utility>
 #include <iostream>
-#include <sstream>
+#include <algorithm>
+
+#include "ornis/node_monitor.hpp"
+#include "ornis/ros_interface_node.hpp"
 
 NodeMonitor::NodeMonitor(std::shared_ptr<RosInterfaceNode> ros_interface_node)
 : ros_interface_node_(std::move(ros_interface_node))

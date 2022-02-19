@@ -1,8 +1,23 @@
-
 #include "ornis/ui.hpp"
 
-#include <cmath>
-#include <sstream>
+#include <mutex>
+#include <atomic>
+#include <chrono>
+#include <thread>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <iostream>
+#include <condition_variable>
+
+#include "ncpp/Plane.hh"
+#include "ncpp/Selector.hh"
+#include "ncpp/NotCurses.hh"
+#include "notcurses/nckeys.h"
+
+#include "ornis/stream_interface.hpp"
+#include "ornis/channel_interface.hpp"
+#include "ornis/monitor_interface.hpp"
 
 using namespace std::chrono_literals;
 

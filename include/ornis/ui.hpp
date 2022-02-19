@@ -1,33 +1,22 @@
 #ifndef UI_H_
 #define UI_H_
 
-#include <stdio.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-
-#include <condition_variable>
-#include <iostream>
 #include <map>
-#include <mutex>
-#include <ncpp/FDPlane.hh>
-#include <ncpp/Menu.hh>
-#include <ncpp/MultiSelector.hh>
-#include <ncpp/Pile.hh>
-#include <ncpp/Plane.hh>
-#include <ncpp/Plot.hh>
-#include <ncpp/Progbar.hh>
-#include <ncpp/Reel.hh>
-#include <ncpp/Selector.hh>
-#include <ncpp/Subproc.hh>
-#include <ncpp/Tablet.hh>
-#include <ncpp/Visual.hh>
+#include <tuple>
+#include <memory>
 #include <string>
 #include <thread>
 #include <vector>
+#include <utility>
+#include <sys/types.h>
 
-#include "ornis/channel_interface.hpp"
-#include "ornis/monitor_interface.hpp"
-#include "ornis/stream_interface.hpp"
+#include <ncpp/Plane.hh>
+#include "notcurses/notcurses.h"
+
+class Channel;
+class MonitorInterface;
+class StreamChannel;
+namespace ncpp { class NotCurses; }
 
 class Ui
 {

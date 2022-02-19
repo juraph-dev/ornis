@@ -1,4 +1,26 @@
+#include <atomic>
+#include <chrono>
+#include <utility>
+#include <functional>
+
+#include <rmw/types.h>
+#include <rclcpp/qos.hpp>
+#include <rmw/qos_profiles.h>
+#include <rclcpp/qos_event.hpp>
+#include <rclcpp/serialization.hpp>
+#include <std_msgs/msg/float32.hpp>
+#include <rclcpp/subscription_options.hpp>
+
+#include "ncpp/Plane.hh"
+#include "rclcpp/node.hpp"
+#include "notcurses/notcurses.h"
 #include "ornis/topic_streamer.hpp"
+#include "ornis/stream_interface.hpp"
+#include "ornis/ros_interface_node.hpp"
+
+namespace rclcpp {
+class SerializedMessage;
+}  // namespace rclcpp
 
 using std::placeholders::_1;
 using namespace std::chrono_literals;

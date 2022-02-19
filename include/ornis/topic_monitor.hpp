@@ -1,10 +1,16 @@
 #ifndef TOPIC_MONITOR_H_
 #define TOPIC_MONITOR_H_
 
+#include <memory>
+#include <string>
+#include <thread>
+
 #include <rclcpp/rclcpp.hpp>
 
 #include "ornis/monitor.hpp"
 #include "ornis/ros_interface_node.hpp"
+
+class RosInterfaceNode;
 
 class TopicMonitor : public Monitor
 {

@@ -1,10 +1,16 @@
 #ifndef SERVICE_MONITOR_H_
 #define SERVICE_MONITOR_H_
 
+#include <memory>
+#include <string>
+#include <thread>
+
 #include <rclcpp/rclcpp.hpp>
 
 #include "ornis/monitor.hpp"
 #include "ornis/ros_interface_node.hpp"
+
+class RosInterfaceNode;
 
 class ServiceMonitor : public Monitor
 {

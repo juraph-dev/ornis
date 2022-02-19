@@ -6,16 +6,16 @@
 // MonitorInterface is dedicated to providing the Ui with methods of
 // visualising the data.
 
-#include <algorithm>
-#include <atomic>
-#include <iostream>
-#include <iterator>
-#include <memory>
 #include <mutex>
-#include <stdexcept>
+#include <atomic>
+#include <memory>
 #include <string>
 #include <thread>
 #include <vector>
+#include <iterator>
+#include <iostream>
+#include <stdexcept>
+#include <algorithm>
 
 class Monitor
 {

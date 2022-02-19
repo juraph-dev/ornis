@@ -1,4 +1,11 @@
+#include <rclcpp/rate.hpp>
+#include <rclcpp/utilities.hpp>
+
 #include "ornis/ros_interface_node.hpp"
+
+namespace rclcpp {
+class NodeOptions;
+}  // namespace rclcpp
 
 RosInterfaceNode::RosInterfaceNode(
   const std::string & node_name, const rclcpp::NodeOptions & options)

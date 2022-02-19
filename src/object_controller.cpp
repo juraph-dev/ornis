@@ -1,9 +1,30 @@
 
-
-#include "ornis/object_controller.hpp"
-
+#include <mutex>
+#include <atomic>
+#include <thread>
+#include <chrono>
+#include <thread>
 #include <csignal>
 #include <iostream>
+#include <stdlib.h>
+#include <algorithm>
+#include <functional>
+#include <condition_variable>
+
+#include <rclcpp/utilities.hpp>
+#include <rclcpp/node_options.hpp>
+#include <rclcpp/executors/multi_threaded_executor.hpp>
+#include <rclcpp/node_interfaces/node_graph_interface.hpp>
+
+#include "ornis/monitor.hpp"
+#include "ornis/node_monitor.hpp"
+#include "ornis/topic_monitor.hpp"
+#include "ornis/topic_streamer.hpp"
+#include "ornis/service_monitor.hpp"
+#include "ornis/stream_interface.hpp"
+#include "ornis/object_controller.hpp"
+#include "ornis/channel_interface.hpp"
+#include "ornis/ros_interface_node.hpp"
 
 void intHandler(int sig)
 {

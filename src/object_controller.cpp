@@ -1,7 +1,7 @@
 
 #include <mutex>
 #include <atomic>
-#include <thread>
+#include <thread> // IWYU pragma: keep
 #include <chrono>
 #include <thread>
 #include <csignal>

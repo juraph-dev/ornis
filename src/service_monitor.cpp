@@ -1,7 +1,7 @@
 #include <map>
 #include <mutex>
 #include <vector>
-#include <thread>
+#include <thread> // IWYU pragma: keep
 #include <atomic>
 #include <chrono>
 #include <utility>

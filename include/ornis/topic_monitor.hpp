@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <string>
-#include <thread>
+#include <thread> // IWYU pragma: keep
 
 #include <rclcpp/rclcpp.hpp>
 

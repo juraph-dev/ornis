@@ -1,7 +1,7 @@
 #ifndef TOPIC_STREAMER_H_
 #define TOPIC_STREAMER_H_
 
-#include <thread>
+#include <thread> // IWYU pragma: keep
 #include <memory>
 #include <string>
 #include <sstream>

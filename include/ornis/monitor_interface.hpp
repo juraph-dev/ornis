@@ -1,19 +1,18 @@
 #ifndef MONITOR_INTERFACE_H_
 #define MONITOR_INTERFACE_H_
 
-#include <mutex>
+#include <algorithm>
 #include <atomic>
-#include <memory>
-#include <string>
-#include <thread>
-#include <vector>
 #include <iostream>
 #include <iterator>
-#include <algorithm>
-#include <stdexcept>
-
+#include <memory>
+#include <mutex>
 #include <ncpp/Plane.hh>
 #include <ncpp/Selector.hh>
+#include <stdexcept>
+#include <string>
+#include <thread>  // IWYU pragma: keep
+#include <vector>
 
 inline bool operator==(const ncselector_item A, const ncselector_item B)
 {
@@ -28,11 +27,12 @@ public:
   {
   }
   ~MonitorInterface() {}
-  void initialiseInterface(const ncpp::Plane & parent_plane, int x, int y)
+  void initialiseInterface(std::shared_ptr<ncpp::Plane> parent_plane, int x, int y)
   {
     // Don't need to provide size for plane, as it will be resized on first
     // render
-    plane_ = std::make_shared<ncpp::Plane>(parent_plane, 1, 1, x, y);
+    parent_plane_ = parent_plane;
+    ncpp::Plane selector_plane = ncpp::Plane(2, 2, x, y, nullptr);
 
     // Set up interface selector.
     ncselector_item items[] = {
@@ -58,7 +58,7 @@ public:
     ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
     sopts.title = selector_title_.c_str();
 
-    selector_ = std::make_shared<ncpp::Selector>(*plane_, &sopts);
+    selector_ = std::make_shared<ncpp::Selector>(selector_plane, &sopts);
   }
 
   unsigned getLines() const { return lines_; }
@@ -100,6 +100,8 @@ public:
     lines_ = new_vector.size();
     entries_ = new_vector;
   }
+
+  ncpp::Plane * get_plane() { return selector_->get_plane(); }
   void addLine() { ++lines_; }
 
   std::vector<ncselector_item> getEntries() { return entries_; }
@@ -108,8 +110,8 @@ public:
 
   const std::string monitor_name_;
 
-  std::shared_ptr<ncpp::Plane> plane_;
   std::shared_ptr<ncpp::Selector> selector_;
+  std::shared_ptr<ncpp::Plane> parent_plane_;
 
 private:
   int lines_;

@@ -1,22 +1,26 @@
 #ifndef UI_H_
 #define UI_H_
 
-#include <map>
-#include <tuple>
-#include <memory>
-#include <string>
-#include <thread>
-#include <vector>
-#include <utility>
 #include <sys/types.h>
 
+#include <map>
+#include <memory>
 #include <ncpp/Plane.hh>
+#include <string>
+#include <thread>  // IWYU pragma: keep
+#include <tuple>
+#include <utility>
+#include <vector>
+
 #include "notcurses/notcurses.h"
 
 class Channel;
 class MonitorInterface;
 class StreamChannel;
-namespace ncpp { class NotCurses; }
+namespace ncpp
+{
+class NotCurses;
+}
 
 class Ui
 {
@@ -40,8 +44,9 @@ private:
   uint term_height_;
 
   void updateMonitor(
-    std::vector<std::pair<std::string, std::string>> updated_values, MonitorInterface & interface);
-  void renderMonitorInfo(const MonitorInterface & interface);
+    std::vector<std::pair<std::string, std::string>> updated_values,
+    const std::unique_ptr<MonitorInterface> & interface);
+  void renderMonitorInfo(const std::unique_ptr<MonitorInterface> & interface);
   bool renderMonitors();
   void renderOptions();
   void refreshUi();
@@ -55,10 +60,10 @@ private:
   // Moves a each plane in the vector to their corresponding x/y locations in
   // the tuple.
   void movePlanesAnimated(
-    const std::vector<std::tuple<ncpp::Plane *, int, int>> & planes_locations);
+  const std::vector<std::tuple<ncpp::Plane *, int, int>> & planes_locations);
 
-  bool checkEventOnPlane(const ncinput & input, const ncpp::Plane & plane);
-  bool offerInputMonitor(const MonitorInterface & interface, const ncinput & input);
+  bool checkEventOnPlane(const ncinput & input, ncpp::Plane * plane);
+  bool offerInputMonitor(MonitorInterface* interface, const ncinput & input);
 
   // Primary loop method
   void spin();
@@ -87,6 +92,9 @@ private:
   // Storage for the monitor that has been selected to be interacted with by the
   // user
   std::string selected_monitor_;
+
+  // Popup Information planes
+  std::shared_ptr<ncpp::Plane> notcurses_stdplane_;
 
   // Number of frames to use for anmations
   // TODO: re-write as a parameter for the user to configure

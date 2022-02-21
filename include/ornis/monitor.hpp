@@ -10,7 +10,7 @@
 #include <atomic>
 #include <memory>
 #include <string>
-#include <thread>
+#include <thread> // IWYU pragma: keep
 #include <vector>
 #include <iterator>
 #include <iostream>
@@ -22,7 +22,7 @@ class Monitor
 public:
   // Monitor() {}
   Monitor() : spin_(true) {}
-  ~Monitor() {}
+  virtual ~Monitor() {}
 
   virtual void getEntryInfo(const std::string & entry_name, std::string & entry_info) = 0;
 
@@ -62,7 +62,7 @@ protected:
 
   std::mutex data_mutex_;
   std::vector<std::pair<std::string, std::string>> latest_value_;
-  std::atomic<bool> last_read_current_;
+  std::atomic<bool> last_read_current_ = false;
 
 private:
   virtual void spin() = 0;

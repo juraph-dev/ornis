@@ -1,13 +1,14 @@
-#include <mutex>
-#include <atomic>
-#include <thread>
-#include <chrono>
-#include <vector>
-#include <utility>
-#include <iostream>
-#include <algorithm>
-
 #include "ornis/node_monitor.hpp"
+
+#include <algorithm>
+#include <atomic>
+#include <chrono>
+#include <iostream>
+#include <mutex>
+#include <thread>  // IWYU pragma: keep
+#include <utility>
+#include <vector>
+
 #include "ornis/ros_interface_node.hpp"
 
 NodeMonitor::NodeMonitor(std::shared_ptr<RosInterfaceNode> ros_interface_node)
@@ -46,7 +47,6 @@ void NodeMonitor::updateValue()
   // For now, initialise nodes with empty info
   const auto node_list = ros_interface_node_->get_node_names();
   std::vector<std::pair<std::string, std::string>> nodes;
-  nodes.resize(node_list.size());
   for (const auto & node : node_list) {
     nodes.push_back(std::pair<std::string, std::string>{node, ""});
   }

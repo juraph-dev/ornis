@@ -1,14 +1,14 @@
 #ifndef CHANNEL_INTERFACE_H_
 #define CHANNEL_INTERFACE_H_
 
-#include <atomic>
-#include <condition_variable>
-#include <iostream>
 #include <map>
 #include <mutex>
-#include <optional>
 #include <queue>
+#include <atomic>
 #include <thread>
+#include <iostream>
+#include <optional>
+#include <condition_variable>
 
 class Channel
 {
@@ -23,7 +23,7 @@ public:
   // Object controller
   RequestEnum request_type_;
   std::string response_string_;
-  std::atomic<bool> request_pending_;
+  std::atomic<bool> request_pending_ = false;
   std::condition_variable condition_variable_;
   std::map<std::string, std::string> request_details_;
 
@@ -32,7 +32,7 @@ public:
   std::map<std::string, std::vector<std::pair<std::string, std::string>>> latest_monitor_data_;
   // Flag to allow the UI to check if the monitor data has been updated since
   // last check.
-  std::atomic<bool> ui_data_current_;
+  std::atomic<bool> ui_data_current_ = false;
 };
 
 #endif  // CHANNEL_INTERFACE_H_

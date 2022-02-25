@@ -46,7 +46,7 @@ private:
   void updateMonitor(
     std::vector<std::pair<std::string, std::string>> updated_values,
     const std::unique_ptr<MonitorInterface> & interface);
-  void renderMonitorInfo(const std::unique_ptr<MonitorInterface> & interface);
+  void renderMonitorInfo(MonitorInterface * interface);
   bool renderMonitors();
   void renderOptions();
   void refreshUi();
@@ -60,9 +60,9 @@ private:
   // Moves a each plane in the vector to their corresponding x/y locations in
   // the tuple.
   void movePlanesAnimated(
-  const std::vector<std::tuple<ncpp::Plane *, int, int>> & planes_locations);
+  const std::vector<std::tuple<const ncpp::Plane *, const int, const int>> & planes_locations);
 
-  bool checkEventOnPlane(const ncinput & input, ncpp::Plane * plane);
+  bool checkEventOnPlane(const ncinput & input, const ncpp::Plane * plane) const;
   bool offerInputMonitor(MonitorInterface* interface, const ncinput & input);
 
   // Primary loop method

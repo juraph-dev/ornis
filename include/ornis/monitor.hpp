@@ -37,8 +37,7 @@ public:
     return true;
   }
 
-  // TODO Make atomic?
-  bool spin_;
+  std::atomic<bool> spin_;
 
 protected:
   // Function to interface with the command line (rostopic list/rostopic info)

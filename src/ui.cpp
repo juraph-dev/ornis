@@ -50,8 +50,8 @@ bool Ui::initialise(
     .margin_r = 0,
     .margin_b = 0,
     .margin_l = 0,
-    .flags = NCOPTION_SUPPRESS_BANNERS | NCOPTION_NO_ALTERNATE_SCREEN
-    // Use if need cout
+    .flags = NCOPTION_SUPPRESS_BANNERS  // | NCOPTION_NO_ALTERNATE_SCREEN
+                                        // Use if need cout
   };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);
@@ -103,7 +103,7 @@ bool Ui::renderMonitors()
   }
   std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
   monitor_data_ = interface_channel_->latest_monitor_data_;
-  interface_channel_->ui_data_current_ = true;
+  interface_channel_->ui_data_current_.store(true);
 
   for (const auto & interface : interface_map_) {
     updateMonitor(monitor_data_[interface.first], interface.second);
@@ -111,7 +111,7 @@ bool Ui::renderMonitors()
   return true;
 }
 
-void Ui::renderMonitorInfo(const std::unique_ptr<MonitorInterface> & interface)
+void Ui::renderMonitorInfo(MonitorInterface * interface)
 {
   ui_displaying_ = UiDisplayingEnum::monitorEntry;
 
@@ -122,7 +122,7 @@ void Ui::renderMonitorInfo(const std::unique_ptr<MonitorInterface> & interface)
   interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInformation;
   interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
   interface_channel_->request_details_["monitor_entry"] = item;
-  interface_channel_->request_pending_ = true;
+  interface_channel_->request_pending_.store(true);
 
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
@@ -220,7 +220,6 @@ void Ui::refreshUi()
     }
     notcurses_core_->render();
     std::this_thread::sleep_for(0.01s);
-
   }
   delete nc_input;
 }
@@ -299,31 +298,30 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
         monitor_info_plane_->move_bottom();
       }
 
-      ncpp::Plane * selected_plane = interface_map_.at(selected_monitor_)->get_plane();
-      bool have_first_non_selected_plane_ = false;
-      ncpp::Plane * left_hand_plane;
-      ncpp::Plane * right_hand_plane;
+      const ncpp::Plane * selected_plane = interface_map_.at(selected_monitor_)->get_plane();
 
-      for (const auto & selector : interface_map_) {
-        ncpp::Plane * temp_plane(selector.second->get_plane());
-        if (selector.first != selected_monitor_) {
-          if (!have_first_non_selected_plane_) {
-            have_first_non_selected_plane_ = true;
-            left_hand_plane = temp_plane;
-          } else if (left_hand_plane->get_x() > temp_plane->get_x()) {
-            right_hand_plane = left_hand_plane;
-            left_hand_plane = temp_plane;
-          } else {
-            right_hand_plane = temp_plane;
-          }
+      std::vector<const MonitorInterface *> interface_order;
+
+      interface_order.reserve(interface_map_.size());
+      for (const auto & interface : interface_map_) {
+        if (interface.first != selected_monitor_) {
+          interface_order.push_back(interface.second.get());
         }
       }
+      std::sort(
+        interface_order.begin(), interface_order.end(),
+        [](const MonitorInterface * a, const MonitorInterface * b) {
+          return a->get_plane()->get_x() < b->get_plane()->get_x();
+        });
 
-      std::vector<std::tuple<ncpp::Plane *, int, int>> planes_locations;
-      planes_locations.push_back(std::tuple<ncpp::Plane *, int, int>(left_hand_plane, 0, 1));
-      planes_locations.push_back(std::tuple<ncpp::Plane *, int, int>(
+      const ncpp::Plane * left_hand_plane = interface_order.front()->selector_->get_plane();
+      const ncpp::Plane * right_hand_plane = interface_order.back()->selector_->get_plane();
+
+      std::vector<std::tuple<const ncpp::Plane *, const int, const int>> planes_locations;
+      planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(left_hand_plane, 0, 1));
+      planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
         right_hand_plane, term_width_ - right_hand_plane->get_dim_x(), 1));
-      planes_locations.push_back(std::tuple<ncpp::Plane *, int, int>(
+      planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
         selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2, 1));
 
       movePlanesAnimated(planes_locations);
@@ -375,10 +373,11 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
 }
 
 void Ui::movePlanesAnimated(
-  const std::vector<std::tuple<ncpp::Plane *, int, int>> & planes_locations)
+  const std::vector<std::tuple<const ncpp::Plane *, const int, const int>> & planes_locations)
 {
   // Construct the vector transition locations
-  std::vector<std::pair<ncpp::Plane *, std::vector<std::pair<int, int>>>> plane_trajectories;
+  std::vector<std::pair<const ncpp::Plane *, std::vector<std::pair<const int, const int>>>>
+    plane_trajectories;
   plane_trajectories.reserve(planes_locations.size());
   for (const auto & planes_to_move : planes_locations) {
     const auto & [plane, des_x, des_y] = planes_to_move;
@@ -386,15 +385,16 @@ void Ui::movePlanesAnimated(
     plane->get_yx(loc_y, loc_x);
     const float delta_x = (float)(des_x - loc_x) / transition_time_;
     const float delta_y = (float)(des_y - loc_y) / transition_time_;
-    std::vector<std::pair<int, int>> plane_trajectory;
+    std::vector<std::pair<const int, const int>> plane_trajectory;
     for (int i = 0; i <= transition_time_; i++) {
       const int traj_x = loc_x + delta_x * i;
       const int traj_y = loc_y + delta_y * i;
-      plane_trajectory.push_back(std::pair<int, int>(traj_x, traj_y));
+      plane_trajectory.push_back(std::pair<const int, const int>(traj_x, traj_y));
     }
 
     const auto plane_pair =
-      std::pair<ncpp::Plane *, std::vector<std::pair<int, int>>>(plane, plane_trajectory);
+      std::pair<const ncpp::Plane *, std::vector<std::pair<const int, const int>>>(
+        plane, plane_trajectory);
     plane_trajectories.push_back(plane_pair);
   }
 
@@ -434,14 +434,14 @@ bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
     // currently selected topic, and view the topic information
     // in a popup window
     transitionUiState(UiDisplayingEnum::monitorEntry);
-    // renderMonitorInfo(interface);
+    renderMonitorInfo(interface);
     return true;
   }
 
   return false;
 }
 
-bool Ui::checkEventOnPlane(const ncinput & input, ncpp::Plane * plane)
+bool Ui::checkEventOnPlane(const ncinput & input, const ncpp::Plane * plane) const
 {
   return (
     input.x > plane->get_x() && input.x < (int)plane->get_dim_x() + plane->get_x() &&

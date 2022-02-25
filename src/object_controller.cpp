@@ -1,34 +1,35 @@
 
-#include <mutex>
-#include <atomic>
-#include <thread> // IWYU pragma: keep
-#include <chrono>
-#include <thread>
-#include <csignal>
-#include <iostream>
-#include <stdlib.h>
-#include <algorithm>
-#include <functional>
-#include <condition_variable>
+#include "ornis/object_controller.hpp"
 
-#include <rclcpp/utilities.hpp>
-#include <rclcpp/node_options.hpp>
+#include <signal.h>
+#include <stdlib.h>
+
+#include <algorithm>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <functional>
+#include <iostream>
+#include <mutex>
 #include <rclcpp/executors/multi_threaded_executor.hpp>
 #include <rclcpp/node_interfaces/node_graph_interface.hpp>
+#include <rclcpp/node_options.hpp>
+#include <rclcpp/utilities.hpp>
+#include <thread>  // IWYU pragma: keep
 
+#include "ornis/channel_interface.hpp"
 #include "ornis/monitor.hpp"
 #include "ornis/node_monitor.hpp"
-#include "ornis/topic_monitor.hpp"
-#include "ornis/topic_streamer.hpp"
+#include "ornis/ros_interface_node.hpp"
 #include "ornis/service_monitor.hpp"
 #include "ornis/stream_interface.hpp"
-#include "ornis/object_controller.hpp"
-#include "ornis/channel_interface.hpp"
-#include "ornis/ros_interface_node.hpp"
+#include "ornis/topic_monitor.hpp"
+#include "ornis/topic_streamer.hpp"
 
-void intHandler(int sig)
+void intHandler(int dum)
 {
-  std::cout << "Exiting: " << sig << '\n';
+  std::cout << "[Ornis] Signal handler with signal: " << dum << '\n';
+
   rclcpp::shutdown();
 
   exit(0);
@@ -44,13 +45,11 @@ ObjectController::~ObjectController()
 {
   // Destroy monitors
   for (const auto & monitor : monitor_map_) {
-    monitor.second->spin_ = false;
+    monitor.second->spin_.store(false);
   }
 
-  // Destroy streams
-  // for (auto const& stream : stream_map_) {
-  //   stream.second->spin_ = false;
-  // }
+  // TODO: Think about whether the object controller needs to handle destroying
+  // any open streams
 }
 
 bool ObjectController::initialiseUserInterface()
@@ -59,6 +58,15 @@ bool ObjectController::initialiseUserInterface()
     return 1;
   }
   return 0;
+}
+
+void ObjectController::initialiseRosInterface()
+{
+  // ros_interface = std::unique_ptr<RosInterface>(new RosInterface);
+  // while (!ros_interface->finished_setup_) {
+  // }
+  // // Once the node has been spun, grab the pointer to the node
+  // ros_interface_node_ = ros_interface->ros_interface_node_;
 }
 
 void ObjectController::initialiseMonitors()
@@ -101,27 +109,11 @@ void ObjectController::checkUiRequests()
     if (interface_channel_->request_type_ == Channel::RequestEnum::monitorEntryInformation) {
       // Ensure response string empty
       interface_channel_->response_string_.clear();
-      // For topics, collect our own info. For nodes and services, use the
-      // defaul ros2 "node/service" info.
-      // TODO: Write your own equivilant for this
-      if (interface_channel_->request_details_["monitor_name"] == "topics") {
-        const auto topic_publishers = ros_interface_node_->get_publishers_info_by_topic(
-          interface_channel_->request_details_["monitor_entry"]);
-        const auto topic_subscribers = ros_interface_node_->get_subscriptions_info_by_topic(
-          interface_channel_->request_details_["monitor_entry"]);
-        interface_channel_->response_string_ = "Publishers: \n";
-        for (const auto & publisher : topic_publishers) {
-          interface_channel_->response_string_ += publisher.node_name() + '\n';
-        }
-        interface_channel_->response_string_ += "Subscribers: \n";
-        for (const auto & subscriber : topic_subscribers) {
-          interface_channel_->response_string_ += subscriber.node_name() + '\n';
-        }
-      } else {
-        monitor_map_[interface_channel_->request_details_["monitor_name"]]->getEntryInfo(
-          interface_channel_->request_details_["monitor_entry"],
-          interface_channel_->response_string_);
-      }
+
+      monitor_map_[interface_channel_->request_details_["monitor_name"]]->getEntryInfo(
+        interface_channel_->request_details_["monitor_entry"],
+        interface_channel_->response_string_);
+
       std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
       interface_channel_->request_pending_ = false;
       interface_channel_->condition_variable_.notify_all();
@@ -142,7 +134,6 @@ void ObjectController::checkUiRequests()
         });
       const auto topic_type = it->second;
 
-      // const auto topic_type = previous_monitor_info_["topics"]
       // Create the interface
       stream_interface_map_[topic_name] = std::make_shared<StreamChannel>(topic_name);
       // Create the stream thread

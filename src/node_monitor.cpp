@@ -26,7 +26,7 @@ NodeMonitor::~NodeMonitor()
 
 void NodeMonitor::spin()
 {
-  while (spin_) {
+  while (spin_.load()) {
     updateValue();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
   }

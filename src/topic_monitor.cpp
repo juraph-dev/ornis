@@ -1,14 +1,15 @@
-#include <map>
-#include <mutex>
-#include <thread> // IWYU pragma: keep
+#include "ornis/topic_monitor.hpp"
+
+#include <algorithm>
 #include <atomic>
 #include <chrono>
-#include <vector>
-#include <utility>
 #include <iostream>
-#include <algorithm>
+#include <map>
+#include <mutex>
+#include <thread>  // IWYU pragma: keep
+#include <utility>
+#include <vector>
 
-#include "ornis/topic_monitor.hpp"
 #include "ornis/ros_interface_node.hpp"
 
 TopicMonitor::TopicMonitor(std::shared_ptr<RosInterfaceNode> ros_interface_node)
@@ -34,8 +35,16 @@ void TopicMonitor::spin()
 
 void TopicMonitor::getEntryInfo(const std::string & entry_name, std::string & entry_info)
 {
-  std::istringstream t_value(callConsole(ros2_info_string_ + entry_name));
-  entry_info = t_value.str();
+  const auto topic_publishers = ros_interface_node_->get_publishers_info_by_topic(entry_name);
+  const auto topic_subscribers = ros_interface_node_->get_subscriptions_info_by_topic(entry_name);
+  entry_info = "Publishers: \n";
+  for (const auto & publisher : topic_publishers) {
+    entry_info += publisher.node_name() + '\n';
+  }
+  entry_info += "Subscribers: \n";
+  for (const auto & subscriber : topic_subscribers) {
+    entry_info += subscriber.node_name() + '\n';
+  }
 }
 
 void TopicMonitor::updateValue()

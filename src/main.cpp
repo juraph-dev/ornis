@@ -14,9 +14,8 @@ int main(int argc, char * argv[])
     std::cout << "More copyright details.\n";
     return 0;
   }
-
   ObjectController object_controller;
   object_controller.spin();
 
-  return 0;
+  exit(0);
 }

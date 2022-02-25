@@ -29,8 +29,6 @@ public:
   ~MonitorInterface() {}
   void initialiseInterface(std::shared_ptr<ncpp::Plane> parent_plane, int x, int y)
   {
-    // Don't need to provide size for plane, as it will be resized on first
-    // render
     parent_plane_ = parent_plane;
     ncpp::Plane selector_plane = ncpp::Plane(2, 2, x, y, nullptr);
 
@@ -101,7 +99,7 @@ public:
     entries_ = new_vector;
   }
 
-  ncpp::Plane * get_plane() { return selector_->get_plane(); }
+  ncpp::Plane * get_plane() const { return selector_->get_plane(); }
   void addLine() { ++lines_; }
 
   std::vector<ncselector_item> getEntries() { return entries_; }

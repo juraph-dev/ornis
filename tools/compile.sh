@@ -1,4 +1,5 @@
-#! /bin/sh
+#! /bin/bash
+set -euo pipefail
 cd ../..
 colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug  -DCMAKE_CXX_OUTPUT_EXTENSION_REPLACE=ON  --symlink-install --event-handlers console_direct+
 cd ornis

@@ -51,6 +51,9 @@ private:
   void renderOptions();
   void renderPopupPlane(ncpp::Plane & plane, const std::string & content);
   void renderHomeLayout();
+  void renderSelectedMonitor();
+  std::shared_ptr<ncpp::Plane> createStreamPlane();
+  void openStream(const std::string & topic_name);
   void refreshUi();
   void handleInputMonitors(const ncinput & input);
   void handleInputSelected(const ncinput & input);

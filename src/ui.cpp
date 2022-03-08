@@ -315,6 +315,74 @@ void Ui::renderHomeLayout()
   movePlanesAnimated(plane_loc_vector);
 }
 
+void Ui::renderSelectedMonitor()
+{
+  const ncpp::Plane * selected_plane = interface_map_.at(selected_monitor_)->get_plane();
+
+  std::vector<const MonitorInterface *> interface_order;
+
+  interface_order.reserve(interface_map_.size());
+  for (const auto & interface : interface_map_) {
+    if (interface.first != selected_monitor_) {
+      interface_order.push_back(interface.second.get());
+    }
+  }
+  std::sort(
+    interface_order.begin(), interface_order.end(),
+    [](const MonitorInterface * a, const MonitorInterface * b) {
+      return a->get_plane()->get_x() < b->get_plane()->get_x();
+    });
+
+  const ncpp::Plane * left_hand_plane = interface_order.front()->selector_->get_plane();
+  const ncpp::Plane * right_hand_plane = interface_order.back()->selector_->get_plane();
+
+  std::vector<std::tuple<const ncpp::Plane *, const int, const int>> planes_locations;
+  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(left_hand_plane, 0, 1));
+  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
+    right_hand_plane, term_width_ - right_hand_plane->get_dim_x(), 1));
+  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
+    selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2, 1));
+
+  movePlanesAnimated(planes_locations);
+}
+
+std::shared_ptr<ncpp::Plane> Ui::createStreamPlane()
+{
+  // Create new plane for visualising data that gets passed to the topic streamer.
+  // UI should not attempt to write to or modify this plane (Aside from move) once it has been passed
+  // to the streamer
+  auto stream_plane = std::make_shared<ncpp::Plane>(*notcurses_core_->get_stdplane());
+
+  stream_plane->move(
+    monitor_info_plane_->get_abs_y(),
+    monitor_info_plane_->get_abs_x() + monitor_info_plane_->get_dim_x());
+  stream_plane->resize(20, 20);
+
+  uint64_t channel = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
+  stream_plane->set_bg_alpha(NCALPHA_OPAQUE);
+  stream_plane->set_channels(channel);
+  stream_plane->set_bg_rgb8(100, 20, 0);
+  stream_plane->set_fg_rgb8(100, 100, 100);
+  stream_plane->perimeter_rounded(0, channel, 0);
+
+  return stream_plane;
+}
+
+void Ui::openStream(const std::string & topic_name)
+{
+  auto stream_plane = createStreamPlane();
+
+  std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
+  interface_channel_->request_type_ = Channel::RequestEnum::topicStreamer;
+  interface_channel_->request_details_.emplace("topic_name", topic_name);
+  interface_channel_->request_pending_ = true;
+  interface_channel_->condition_variable_.wait_for(
+    data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
+
+  stream_map_->at(topic_name)->stream_plane_ = stream_plane;
+  stream_map_->at(topic_name)->stream_open_ = true;
+}
+
 void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
 {
   // Make this a variable that can be set by the user
@@ -332,34 +400,7 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
         monitor_info_plane_->erase();
         monitor_info_plane_->move_bottom();
       }
-
-      const ncpp::Plane * selected_plane = interface_map_.at(selected_monitor_)->get_plane();
-
-      std::vector<const MonitorInterface *> interface_order;
-
-      interface_order.reserve(interface_map_.size());
-      for (const auto & interface : interface_map_) {
-        if (interface.first != selected_monitor_) {
-          interface_order.push_back(interface.second.get());
-        }
-      }
-      std::sort(
-        interface_order.begin(), interface_order.end(),
-        [](const MonitorInterface * a, const MonitorInterface * b) {
-          return a->get_plane()->get_x() < b->get_plane()->get_x();
-        });
-
-      const ncpp::Plane * left_hand_plane = interface_order.front()->selector_->get_plane();
-      const ncpp::Plane * right_hand_plane = interface_order.back()->selector_->get_plane();
-
-      std::vector<std::tuple<const ncpp::Plane *, const int, const int>> planes_locations;
-      planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(left_hand_plane, 0, 1));
-      planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
-        right_hand_plane, term_width_ - right_hand_plane->get_dim_x(), 1));
-      planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
-        selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2, 1));
-
-      movePlanesAnimated(planes_locations);
+      renderSelectedMonitor();
       break;
     }
     case UiDisplayingEnum::monitorEntry: {
@@ -374,35 +415,9 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       break;
     }
     case UiDisplayingEnum::streamingTopic: {
-      // Create new plane for visualising data to get passed to the topic streamer
-      auto stream_plane = std::make_shared<ncpp::Plane>(*notcurses_core_->get_stdplane());
-
-      stream_plane->move(
-        monitor_info_plane_->get_abs_y(),
-        monitor_info_plane_->get_abs_x() + monitor_info_plane_->get_dim_x());
-      stream_plane->resize(20, 20);
-
-      uint64_t channel = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
-      stream_plane->set_bg_alpha(NCALPHA_OPAQUE);
-      stream_plane->set_channels(channel);
-      stream_plane->set_bg_rgb8(100, 20, 0);
-      stream_plane->set_fg_rgb8(100, 100, 100);
-      stream_plane->perimeter_rounded(0, channel, 0);
-
       const std::string selected_entry =
         interface_map_[selected_monitor_]->selector_->get_selected();
-
-      // FIXME: Move code block to own dedicated 'create stream' function
-      std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
-      interface_channel_->request_type_ = Channel::RequestEnum::topicStreamer;
-      interface_channel_->request_details_.emplace("topic_name", selected_entry);
-      interface_channel_->request_pending_ = true;
-      interface_channel_->condition_variable_.wait_for(
-        data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
-
-      stream_map_->at(selected_entry)->stream_plane_ = stream_plane;
-      stream_map_->at(selected_entry)->stream_open_ = true;
-
+      openStream(selected_entry);
       ui_displaying_ = UiDisplayingEnum::monitorEntry;
       break;
     }

@@ -49,6 +49,8 @@ private:
   void renderMonitorInfo(MonitorInterface * interface);
   bool renderMonitors();
   void renderOptions();
+  void renderPopupPlane(ncpp::Plane & plane, const std::string & content);
+  void renderHomeLayout();
   void refreshUi();
   void handleInputMonitors(const ncinput & input);
   void handleInputSelected(const ncinput & input);
@@ -56,7 +58,6 @@ private:
   void handleInputStreaming(const ncinput & input);
   void transitionUiState(const UiDisplayingEnum & desired_state);
   void resizeUi(const uint & rows, const uint & cols);
-  void drawPopupPlane(ncpp::Plane & plane, const std::string & content);
   void closeStream(const std::string & stream_name);
 
   // Moves a each plane in the vector to their corresponding x/y locations in

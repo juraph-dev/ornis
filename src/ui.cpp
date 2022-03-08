@@ -129,7 +129,7 @@ void Ui::renderMonitorInfo(MonitorInterface * interface)
 
   uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
 
-  drawPopupPlane(*monitor_info_plane_, interface_channel_->response_string_);
+  renderPopupPlane(*monitor_info_plane_, interface_channel_->response_string_);
 
   monitor_info_plane_->perimeter_rounded(0, channel, 0);
 
@@ -288,6 +288,33 @@ void Ui::closeStream(const std::string & stream_name)
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
 }
 
+void Ui::renderHomeLayout()
+{
+  // HACK Hardcoded positions until you sus out how the layout
+  // is actually going to work
+  const int topic_x = 0;
+  const int topic_y = 1;
+
+  const int node_x = (term_width_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
+  const int node_y = 1;
+
+  const int service_x = (term_width_)-interface_map_.at("services")->get_plane()->get_dim_x();
+  const int service_y = 1;
+
+  std::vector<std::tuple<const ncpp::Plane *, const int, const int>> plane_loc_vector;
+
+  plane_loc_vector.push_back(std::tuple<const ncpp::Plane *, int, int>(
+    interface_map_.at("topics")->get_plane(), topic_x, topic_y));
+
+  plane_loc_vector.push_back(std::tuple<const ncpp::Plane *, int, int>(
+    interface_map_.at("nodes")->get_plane(), node_x, node_y));
+
+  plane_loc_vector.push_back(std::tuple<const ncpp::Plane *, int, int>(
+    interface_map_.at("services")->get_plane(), service_x, service_y));
+
+  movePlanesAnimated(plane_loc_vector);
+}
+
 void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
 {
   // Make this a variable that can be set by the user
@@ -297,17 +324,7 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
         monitor_info_plane_->erase();
         monitor_info_plane_->move_bottom();
       }
-      // HACK Hardcoded positions until you sus out how the layout
-      // is actually going to work
-      interface_map_.at("topics")->get_plane()->move(1, 0);  // Topic monitor at top left
-
-      // node monitor at center
-      interface_map_.at("nodes")->get_plane()->move(
-        1, (term_width_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2);
-      // node monitor at right hand side
-      interface_map_.at("services")
-        ->get_plane()
-        ->move(1, (term_width_)-interface_map_.at("services")->get_plane()->get_dim_x());
+      renderHomeLayout();
       break;
     }
     case UiDisplayingEnum::selectedMonitor: {
@@ -473,7 +490,7 @@ bool Ui::checkEventOnPlane(const ncinput & input, const ncpp::Plane * plane) con
     input.y > plane->get_y() && input.y < (int)plane->get_dim_y() + plane->get_y());
 }
 
-void Ui::drawPopupPlane(ncpp::Plane & plane, const std::string & content)
+void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content)
 {
   plane.erase();
   plane.move_top();

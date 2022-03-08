@@ -53,17 +53,19 @@ private:
   void handleInputMonitors(const ncinput & input);
   void handleInputSelected(const ncinput & input);
   void handleInputMonitorEntry(const ncinput & input);
+  void handleInputStreaming(const ncinput & input);
   void transitionUiState(const UiDisplayingEnum & desired_state);
   void resizeUi(const uint & rows, const uint & cols);
   void drawPopupPlane(ncpp::Plane & plane, const std::string & content);
+  void closeStream(const std::string & stream_name);
 
   // Moves a each plane in the vector to their corresponding x/y locations in
   // the tuple.
   void movePlanesAnimated(
-  const std::vector<std::tuple<const ncpp::Plane *, const int, const int>> & planes_locations);
+    const std::vector<std::tuple<const ncpp::Plane *, const int, const int>> & planes_locations);
 
   bool checkEventOnPlane(const ncinput & input, const ncpp::Plane * plane) const;
-  bool offerInputMonitor(MonitorInterface* interface, const ncinput & input);
+  bool offerInputMonitor(MonitorInterface * interface, const ncinput & input);
 
   // Primary loop method
   void spin();

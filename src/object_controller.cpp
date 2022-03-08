@@ -117,9 +117,7 @@ void ObjectController::checkUiRequests()
       std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
       interface_channel_->request_pending_ = false;
       interface_channel_->condition_variable_.notify_all();
-      // Else we have a stream
-    } else {
-      // request
+    } else if (interface_channel_->request_type_ == Channel::RequestEnum::topicStreamer) {
       std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
       const auto & topic_name = interface_channel_->request_details_["topic_name"];
 
@@ -134,13 +132,22 @@ void ObjectController::checkUiRequests()
         });
       const auto topic_type = it->second;
 
-      // Create the interface
+      // Currently, the interface map isn't used for anything, but will likely be used in the future
+      // if the streamer needs to make ui scaling requests (Both to and from)
       stream_interface_map_[topic_name] = std::make_shared<StreamChannel>(topic_name);
       // Create the stream thread
       stream_map_.emplace(
         topic_name,
         std::make_shared<TopicStreamer>(
           topic_name, topic_type, stream_interface_map_[topic_name], ros_interface_node_));
+      interface_channel_->request_pending_ = false;
+      interface_channel_->condition_variable_.notify_all();
+    } else if (interface_channel_->request_type_ == Channel::RequestEnum::closeStream) {
+      std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
+      const auto & stream_name = interface_channel_->request_details_["stream_name"];
+      stream_map_[stream_name]->closeStream();
+      stream_map_.erase(stream_name);
+
       interface_channel_->request_pending_ = false;
       interface_channel_->condition_variable_.notify_all();
     }

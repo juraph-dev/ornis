@@ -43,6 +43,13 @@ TopicStreamer::~TopicStreamer()
     delete thread_;
   }
 }
+void TopicStreamer::closeStream()
+{
+  interface_channel_->stream_open_.store(false);
+  interface_channel_->stream_plane_->erase();
+  subscription_.reset();
+  // thread_->join();
+}
 
 void TopicStreamer::callback(const std::shared_ptr<rclcpp::SerializedMessage> msg)
 {

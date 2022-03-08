@@ -212,6 +212,7 @@ void Ui::refreshUi()
           break;
         }
         case UiDisplayingEnum::streamingTopic: {
+          handleInputStreaming(*nc_input);
           break;
         }
         default:
@@ -236,11 +237,19 @@ void Ui::handleInputSelected(const ncinput & input)
 void Ui::handleInputMonitorEntry(const ncinput & input)
 {
   if (input.id == 'q') {
-    transitionUiState(UiDisplayingEnum::monitors);
+    transitionUiState(UiDisplayingEnum::selectedMonitor);
   } else if (input.id == NCKEY_ENTER) {
     transitionUiState(UiDisplayingEnum::streamingTopic);
     // For now, don't worry about streaming multiple items at once,
     // Just have the UI sit idle until user presses q
+  }
+}
+
+void Ui::handleInputStreaming(const ncinput & input)
+{
+  // At the moment, only input while streaming is to close the stream
+  if (input.id == 'q') {
+    transitionUiState(UiDisplayingEnum::monitorEntry);
   }
 }
 
@@ -249,7 +258,6 @@ void Ui::handleInputMonitors(const ncinput & input)
   // TODO: handle user clicking on monitor entry, without
   // first selecting a behaviour. No reason why we shouldn't
   // allow that
-  //
   if (input.id == 't') {
     selected_monitor_ = "topics";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
@@ -268,6 +276,16 @@ void Ui::handleInputMonitors(const ncinput & input)
       if (offerInputMonitor(interface.second.get(), input)) break;
     }
   }
+}
+
+void Ui::closeStream(const std::string & stream_name)
+{
+  std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
+  interface_channel_->request_type_ = Channel::RequestEnum::closeStream;
+  interface_channel_->request_details_.emplace("stream_name", stream_name);
+  interface_channel_->request_pending_ = true;
+  interface_channel_->condition_variable_.wait_for(
+    data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
 }
 
 void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
@@ -328,6 +346,12 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       break;
     }
     case UiDisplayingEnum::monitorEntry: {
+      // Perform a check for it we are returning from streaming a topic:
+      if (ui_displaying_ == UiDisplayingEnum::streamingTopic) {
+        const std::string selected_entry =
+          interface_map_[selected_monitor_]->selector_->get_selected();
+        closeStream(selected_entry);
+      }
       // Currently, no ui transitions need to be made
       // for displaying an entry
       break;
@@ -344,14 +368,15 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       uint64_t channel = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
       stream_plane->set_bg_alpha(NCALPHA_OPAQUE);
       stream_plane->set_channels(channel);
-      stream_plane->set_bg_rgb8(100, 100, 0);
+      stream_plane->set_bg_rgb8(100, 20, 0);
+      stream_plane->set_fg_rgb8(100, 100, 100);
       stream_plane->perimeter_rounded(0, channel, 0);
 
       const std::string selected_entry =
         interface_map_[selected_monitor_]->selector_->get_selected();
 
+      // FIXME: Move code block to own dedicated 'create stream' function
       std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
-
       interface_channel_->request_type_ = Channel::RequestEnum::topicStreamer;
       interface_channel_->request_details_.emplace("topic_name", selected_entry);
       interface_channel_->request_pending_ = true;

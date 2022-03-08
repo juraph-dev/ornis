@@ -37,6 +37,8 @@ public:
     std::shared_ptr<RosInterfaceNode> ros_interface_node);
   ~TopicStreamer();
 
+  void closeStream();
+
 private:
   void updateValue();
   void streamEntry(std::string & stream_frame);

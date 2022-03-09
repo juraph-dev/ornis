@@ -71,9 +71,6 @@ private:
   bool checkEventOnPlane(const ncinput & input, const ncpp::Plane * plane) const;
   bool offerInputMonitor(MonitorInterface * interface, const ncinput & input);
 
-  // Primary loop method
-  void spin();
-
   std::thread * ui_thread_;
 
   std::map<std::string, std::vector<std::pair<std::string, std::string>>> monitor_data_;

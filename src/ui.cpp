@@ -77,7 +77,7 @@ bool Ui::initialise(
 
   // Initialise planes
   for (const auto & interface : interface_map_) {
-    interface.second->initialiseInterface(notcurses_stdplane_, 5, 9);
+    interface.second->initialiseInterface(notcurses_stdplane_, 1, term_width_ / 2);
   }
 
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);
@@ -546,6 +546,5 @@ void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content)
   }
 }
 
+// TBW
 void Ui::renderOptions() {}
-
-void Ui::spin() {}

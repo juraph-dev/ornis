@@ -64,19 +64,18 @@ public:
     std::vector<ncselector_item> & new_vector, std::vector<ncselector_item> & add_values,
     std::vector<ncselector_item> & delete_values)
   {
-    // If we have no current entries
-    if (entries_.empty()) {
+    if (entries_.empty()) {  // If we have no entries currently in selector, add all in new vector
       entries_ = new_vector;
       add_values = new_vector;
       lines_ = new_vector.size();
       return;
-    } else if (new_vector.empty()) {
+    } else if (new_vector.empty()) {  // If new entry list is empty, delete all entries in selector
       delete_values = entries_;
       lines_ = 0;
       return;
     }
 
-    // TODO: Add a check for if the new vector is equal to the current entry,
+    // TODO: Add a check for if the new vector is equal to the current entry list,
     // Maybe convert to a hash for a quick compare?
     // Populate add_values for new values in the new_vector
     const auto t_vec = entries_;

@@ -38,6 +38,7 @@ public:
 private:
   // Class to for storing the current ui state
   enum class UiDisplayingEnum { monitors, selectedMonitor, monitorEntry, streamingTopic };
+  enum class UiLayoutEnum { Vertical, Horizontal, HorizontalClipped};
 
   // Stores the width of the terminal at startup. Used for scaling the ui
   uint term_width_;
@@ -62,6 +63,7 @@ private:
   void transitionUiState(const UiDisplayingEnum & desired_state);
   void resizeUi(const uint & rows, const uint & cols);
   void closeStream(const std::string & stream_name);
+  Ui::UiLayoutEnum calcMonitorLayout();
 
   // Moves a each plane in the vector to their corresponding x/y locations in
   // the tuple.

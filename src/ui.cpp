@@ -95,7 +95,7 @@ bool Ui::initialise(
 
 bool Ui::renderMonitors()
 {
-  // TODO: Rename this. Doesn't actually render, just updates values
+  // TODO: Rename this function. Doesn't actually render, just updates values
   // If the channel hasn't been updated since the last
   // time the Ui checked.
   if (interface_channel_->ui_data_current_.load()) {
@@ -156,7 +156,6 @@ void Ui::updateMonitor(
       char * second_as_char_array = new char[strlen(second_string_ptr) + 1];
       strcpy(first_as_char_array, first_string_ptr);
       strcpy(second_as_char_array, second_string_ptr);
-
       ncselector_item t_item = {
         .option = first_as_char_array,
         .desc = second_as_char_array,
@@ -290,18 +289,44 @@ void Ui::closeStream(const std::string & stream_name)
 
 void Ui::renderHomeLayout()
 {
-  // HACK Hardcoded positions until you sus out how the layout
-  // is actually going to work
-  const int topic_x = 0;
-  const int topic_y = 1;
-
-  const int node_x = (term_width_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
-  const int node_y = 1;
-
-  const int service_x = (term_width_)-interface_map_.at("services")->get_plane()->get_dim_x();
-  const int service_y = 1;
-
   std::vector<std::tuple<const ncpp::Plane *, const int, const int>> plane_loc_vector;
+  int topic_x, topic_y, node_x, node_y, service_x, service_y;
+
+  const auto layout = calcMonitorLayout();
+  switch (layout) {
+    case UiLayoutEnum::Horizontal: {
+      // HACK Hardcoded positions until you sus out how the layout
+      // is actually going to work
+      topic_x = 0;
+      topic_y = 1;
+      node_x = (term_width_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
+      node_y = 1;
+      service_x = (term_width_)-interface_map_.at("services")->get_plane()->get_dim_x();
+      service_y = 1;
+      break;
+    }
+    case UiLayoutEnum::Vertical: {
+      topic_x = 1;
+      topic_y = 0;
+      node_x = 1;
+      node_y = (term_height_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_y() / 2;
+      service_x = 1;
+      service_y = (term_height_)-interface_map_.at("services")->get_plane()->get_dim_y();
+      break;
+    }
+    case UiLayoutEnum::HorizontalClipped: {
+      const uint term_midpoint = term_width_ / 2;
+      const uint node_monitor_width = interface_map_.at("nodes")->get_plane()->get_dim_x();
+
+      topic_x = term_midpoint - node_monitor_width / 2 - interface_map_.at("topics")->get_plane()->get_dim_x();
+      topic_y = 1;
+      node_x = term_midpoint - node_monitor_width / 2;
+      node_y = 1;
+      service_x = term_midpoint + node_monitor_width / 2 + 1;
+      service_y = 1;
+      break;
+    }
+  }
 
   plane_loc_vector.push_back(std::tuple<const ncpp::Plane *, int, int>(
     interface_map_.at("topics")->get_plane(), topic_x, topic_y));
@@ -311,7 +336,6 @@ void Ui::renderHomeLayout()
 
   plane_loc_vector.push_back(std::tuple<const ncpp::Plane *, int, int>(
     interface_map_.at("services")->get_plane(), service_x, service_y));
-
   movePlanesAnimated(plane_loc_vector);
 }
 
@@ -544,6 +568,27 @@ void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content)
       col++;
     }
   }
+}
+
+// Return which layout (If any) will allow for displaying all monitors at once.
+Ui::UiLayoutEnum Ui::calcMonitorLayout()
+{
+  // Get minimum dimensions required to display monitors stacked at edges
+  uint16_t total_plane_width = 0;
+  uint16_t total_plane_height = 0;
+  for (const auto & interface : interface_map_) {
+    total_plane_width += interface.second->get_plane()->get_dim_x();
+    total_plane_height += interface.second->get_plane()->get_dim_y();
+  }
+  if (term_width_ > total_plane_width)
+    return Ui::UiLayoutEnum::Horizontal;
+  else if (term_height_ > total_plane_height)
+    return Ui::UiLayoutEnum::Vertical;
+  else
+    return Ui::UiLayoutEnum::HorizontalClipped;
+
+  // TODO: Return a fail case where window is not large enough to display,
+  // and requires resizing
 }
 
 // TBW

@@ -49,8 +49,6 @@ void TopicMonitor::getEntryInfo(const std::string & entry_name, std::string & en
 
 void TopicMonitor::updateValue()
 {
-  // For now, just list each type net to each node
-  // TODO: Modify to also return the type. That's useful information
   const auto topic_list = ros_interface_node_->get_topic_names_and_types();
   std::vector<std::pair<std::string, std::string>> topic_info;
   for (const auto & topic : topic_list) {

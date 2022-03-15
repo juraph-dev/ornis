@@ -300,7 +300,8 @@ void Ui::renderHomeLayout()
       service_x = (term_width_)-interface_map_.at("services")->get_plane()->get_dim_x();
       service_y = 1;
       // Place Node monitor between topics and services. Placing at mid-point often causes overlap
-      node_x = (service_x + interface_map_.at("topics")->get_plane()->get_dim_x()) / 2 - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
+      node_x = (service_x + interface_map_.at("topics")->get_plane()->get_dim_x()) / 2 -
+               interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
       node_y = 1;
       break;
     }
@@ -317,7 +318,8 @@ void Ui::renderHomeLayout()
       const uint term_midpoint = term_width_ / 2;
       const uint node_monitor_width = interface_map_.at("nodes")->get_plane()->get_dim_x();
 
-      topic_x = term_midpoint - node_monitor_width / 2 - interface_map_.at("topics")->get_plane()->get_dim_x();
+      topic_x = term_midpoint - node_monitor_width / 2 -
+                interface_map_.at("topics")->get_plane()->get_dim_x();
       topic_y = 1;
       node_x = term_midpoint - node_monitor_width / 2;
       node_y = 1;
@@ -363,8 +365,12 @@ void Ui::renderSelectedMonitor()
   planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(left_hand_plane, 0, 1));
   planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
     right_hand_plane, term_width_ - right_hand_plane->get_dim_x(), 1));
+  // Place selected plane between other two planes (Exactly like the node monitor on the home screen)
   planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
-    selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2, 1));
+    selected_plane,
+    (left_hand_plane->get_dim_x() + (term_width_ - right_hand_plane->get_dim_x())) / 2 -
+      selected_plane->get_dim_x() / 2,
+    1));
 
   movePlanesAnimated(planes_locations);
 }

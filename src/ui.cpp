@@ -295,14 +295,13 @@ void Ui::renderHomeLayout()
   const auto layout = calcMonitorLayout();
   switch (layout) {
     case UiLayoutEnum::Horizontal: {
-      // HACK Hardcoded positions until you sus out how the layout
-      // is actually going to work
       topic_x = 0;
       topic_y = 1;
-      node_x = (term_width_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
-      node_y = 1;
       service_x = (term_width_)-interface_map_.at("services")->get_plane()->get_dim_x();
       service_y = 1;
+      // Place Node monitor between topics and services. Placing at mid-point often causes overlap
+      node_x = (service_x + interface_map_.at("topics")->get_plane()->get_dim_x()) / 2 - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
+      node_y = 1;
       break;
     }
     case UiLayoutEnum::Vertical: {

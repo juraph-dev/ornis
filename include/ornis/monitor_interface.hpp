@@ -27,12 +27,11 @@ public:
   {
   }
   ~MonitorInterface() {}
-  void initialiseInterface(std::shared_ptr<ncpp::Plane> parent_plane, int x, int y)
+  void initialiseInterface(int x, int y)
   {
-    parent_plane_ = parent_plane;
     ncpp::Plane selector_plane = ncpp::Plane(2, 2, x, y, nullptr);
 
-    // Set up interface selector.
+    // Blank item array for selector, which needs an items object upon creation
     ncselector_item items[] = {
       {
         nullptr,
@@ -40,9 +39,8 @@ public:
       },
     };
 
-    struct ncselector_options sopts
-    {
-    };
+    // Set up interface selector.
+    struct ncselector_options sopts;
     sopts.maxdisplay = 10;
     sopts.items = items;
     sopts.defidx = 0;
@@ -57,6 +55,17 @@ public:
     sopts.title = selector_title_.c_str();
 
     selector_ = std::make_shared<ncpp::Selector>(selector_plane, &sopts);
+
+    // Create minimised plane (With a border and some text, out of view of the window)
+    minimised_plane_ = std::make_shared<ncpp::Plane>(monitor_name_.size() + 2, 3, -10, 0, nullptr);
+
+    // configure minimised plane
+    for (uint i = 0; i < monitor_name_.size(); i++) {
+      minimised_plane_->putc(i + 1, 1, monitor_name_[i]);
+    }
+
+    uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+    minimised_plane_->perimeter_rounded(0, channel, 0);
   }
 
   unsigned getLines() const { return lines_; }
@@ -108,7 +117,10 @@ public:
   const std::string monitor_name_;
 
   std::shared_ptr<ncpp::Selector> selector_;
-  std::shared_ptr<ncpp::Plane> parent_plane_;
+
+  // Plane that gets displayed in place of the selector when the Ui
+  // wants to display a smaller version of the plane.
+  std::shared_ptr<ncpp::Plane> minimised_plane_;
 
 private:
   int lines_;

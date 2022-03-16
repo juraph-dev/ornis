@@ -77,7 +77,7 @@ bool Ui::initialise(
 
   // Initialise planes
   for (const auto & interface : interface_map_) {
-    interface.second->initialiseInterface(notcurses_stdplane_, 1, term_width_ / 2);
+    interface.second->initialiseInterface(1, term_width_ / 2);
   }
 
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);
@@ -292,6 +292,13 @@ void Ui::renderHomeLayout()
   std::vector<std::tuple<const ncpp::Plane *, const int, const int>> plane_loc_vector;
   int topic_x, topic_y, node_x, node_y, service_x, service_y;
 
+  // Upon displaying an entry, small tabs are displayed either side of the screen showing
+  // which monitors are off screen. When returning from this mode, simply place all tabs off screen, as
+  // it's faster than manually checking which tabs are on-screen.
+  for (const auto & interface : interface_map_) {
+    interface.second->minimised_plane_->move(-10, 0);
+  }
+
   const auto layout = calcMonitorLayout();
   switch (layout) {
     case UiLayoutEnum::Horizontal: {
@@ -358,21 +365,25 @@ void Ui::renderSelectedMonitor()
       return a->get_plane()->get_x() < b->get_plane()->get_x();
     });
 
-  const ncpp::Plane * left_hand_plane = interface_order.front()->selector_->get_plane();
-  const ncpp::Plane * right_hand_plane = interface_order.back()->selector_->get_plane();
+  // Grab the minimised plane for the l/r hand sides,
+  const ncpp::Plane * left_hand_plane = interface_order.front()->get_plane();
+  const ncpp::Plane * right_hand_plane = interface_order.back()->get_plane();
 
   std::vector<std::tuple<const ncpp::Plane *, const int, const int>> planes_locations;
-  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(left_hand_plane, 0, 1));
+  // Move left hand plane off screen
+  planes_locations.push_back(
+    std::tuple<const ncpp::Plane *, int, int>(left_hand_plane, -left_hand_plane->get_dim_x(), 1));
+  // Move right hand plane off screen
+  planes_locations.push_back(
+    std::tuple<const ncpp::Plane *, int, int>(right_hand_plane, term_width_, 1));
+  // Place selected plane in center of screen
   planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
-    right_hand_plane, term_width_ - right_hand_plane->get_dim_x(), 1));
-  // Place selected plane between other two planes (Exactly like the node monitor on the home screen)
-  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
-    selected_plane,
-    (left_hand_plane->get_dim_x() + (term_width_ - right_hand_plane->get_dim_x())) / 2 -
-      selected_plane->get_dim_x() / 2,
-    1));
+    selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2, 1));
 
   movePlanesAnimated(planes_locations);
+  // Place minimised monitors at edge of screen
+  interface_order.front()->minimised_plane_->move(0, 0);
+  interface_order.back()->minimised_plane_->move(0, term_width_ - 3);
 }
 
 std::shared_ptr<ncpp::Plane> Ui::createStreamPlane()

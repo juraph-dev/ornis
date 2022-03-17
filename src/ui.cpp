@@ -380,10 +380,21 @@ void Ui::renderSelectedMonitor()
   planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
     selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2, 1));
 
+  // Place minimised monitors outside of screen
+  interface_order.front()->minimised_plane_->move(0, -3);
+  interface_order.back()->minimised_plane_->move(0, term_width_ + 1);
+
+  // animated Move monitor planes to their locations
   movePlanesAnimated(planes_locations);
-  // Place minimised monitors at edge of screen
-  interface_order.front()->minimised_plane_->move(0, 0);
-  interface_order.back()->minimised_plane_->move(0, term_width_ - 3);
+
+  // Move tabs from outside
+  planes_locations.clear();
+  planes_locations.push_back(
+    std::tuple<const ncpp::Plane *, int, int>(interface_order.front()->minimised_plane_.get(), 0, 0));
+  planes_locations.push_back(
+    std::tuple<const ncpp::Plane *, int, int>(interface_order.back()->minimised_plane_.get(), term_width_ - 3, 0));
+
+  movePlanesAnimated(planes_locations);
 }
 
 std::shared_ptr<ncpp::Plane> Ui::createStreamPlane()

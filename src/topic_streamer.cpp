@@ -1,38 +1,30 @@
+#include "ornis/topic_streamer.hpp"
+
+#include <rmw/qos_profiles.h>
+#include <rmw/types.h>
+
 #include <atomic>
 #include <chrono>
-#include <utility>
 #include <functional>
-
-#include <rmw/types.h>
-#include <rclcpp/qos.hpp>
-#include <rmw/qos_profiles.h>
-#include <rclcpp/qos_event.hpp>
-#include <rclcpp/serialization.hpp>
-#include <std_msgs/msg/float32.hpp>
-#include <rclcpp/subscription_options.hpp>
+#include <utility>
 
 #include "ncpp/Plane.hh"
-#include "rclcpp/node.hpp"
 #include "notcurses/notcurses.h"
-#include "ornis/topic_streamer.hpp"
+#include "ornis/introspection_functions.hpp"
 #include "ornis/stream_interface.hpp"
-#include "ornis/ros_interface_node.hpp"
 
-namespace rclcpp {
-class SerializedMessage;
-}  // namespace rclcpp
-
-using std::placeholders::_1;
 using namespace std::chrono_literals;
 
 TopicStreamer::TopicStreamer(
   const std::string & topic_name, const std::string & topic_type,
   std::shared_ptr<StreamChannel> & interface_channel,
-  std::shared_ptr<RosInterfaceNode> ros_interface_node)
+  std::shared_ptr<rcl_node_t> ros_interface_node, rcl_context_t context)
 : topic_name_(topic_name),
   topic_type_(topic_type),
-  ros_interface_node_(std::move(ros_interface_node))
+  ros_interface_node_(std::move(ros_interface_node)),
+  context_(context)
 {
+  stream_open_ = true;
   interface_channel_ = interface_channel;
   thread_ = new std::thread([this]() { initialise(); });
 }
@@ -47,17 +39,31 @@ void TopicStreamer::closeStream()
 {
   interface_channel_->stream_open_.store(false);
   interface_channel_->stream_plane_->erase();
-  subscription_.reset();
-  // thread_->join();
+  stream_open_.store(false);
 }
 
-void TopicStreamer::callback(const std::shared_ptr<rclcpp::SerializedMessage> msg)
+void TopicStreamer::callback(
+  rcl_subscription_t & subscription, const rosidl_message_type_support_t * type_support)
 {
-  std_msgs::msg::Float32 des_msg;
-  auto serializer = rclcpp::Serialization<std_msgs::msg::Float32>();
-  serializer.deserialize_message(msg.get(), &des_msg);
-  const std::string msg_str = std::to_string(des_msg.data);
-  interface_channel_->stream_plane_->putstr(2, NCALIGN_CENTER, msg_str.c_str());
+  const auto members =
+    static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(type_support->data);
+
+  rcutils_allocator_t allocator = rcutils_get_default_allocator();
+  float * request_data =
+    static_cast<float *>(allocator.allocate(members->size_of_, allocator.state));
+
+  rcl_ret_t rc;
+  rmw_message_info_t info;
+
+  members->init_function(request_data, rosidl_runtime_cpp::MessageInitialization::ALL);
+  rc = rcl_take(&subscription, request_data, &info, NULL);
+  if (rc == RCL_RET_OK) {
+    const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[0];
+    const std::string t_string = "Reply: " + std::to_string(request_data[member.offset_]);
+    interface_channel_->stream_plane_->putstr(2, NCALIGN_CENTER, t_string.c_str());
+  } else {
+    return;
+  }
 }
 
 void TopicStreamer::waitUntilUiReady()
@@ -70,13 +76,42 @@ void TopicStreamer::initialise()
 {
   waitUntilUiReady();
 
+  const auto type_support = introspection::get_message_typesupport(
+    topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
+
   // TODO: Investigate swapping profiles in realtime
   rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
-  rclcpp::SubscriptionOptions options;
 
-  const auto qos =
-    rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, qos_profile.depth), qos_profile);
+  rcl_wait_set_t wait_set = rcl_get_zero_initialized_wait_set();
 
-  subscription_ = ros_interface_node_->create_generic_subscription(
-    topic_name_, topic_type_, qos, std::bind(&TopicStreamer::callback, this, _1), options);
+  rcl_subscription_t subscription = rcl_get_zero_initialized_subscription();
+  rcl_subscription_options_t subscription_options = rcl_subscription_get_default_options();
+  subscription_options.qos = qos_profile;
+
+  auto ret = rcl_subscription_init(
+    &subscription, ros_interface_node_.get(), type_support, topic_name_.c_str(),
+    &subscription_options);
+
+  ret = rcl_wait_set_init(&wait_set, 1, 0, 0, 0, 0, 0, &context_, rcl_get_default_allocator());
+  size_t index;
+
+  while (stream_open_.load()) {
+    ret = rcl_wait_set_clear(&wait_set);
+    ret = rcl_wait_set_add_subscription(&wait_set, &subscription, &index);
+    ret = rcl_wait(&wait_set, RCL_MS_TO_NS(1000));
+
+    if (ret == RCL_RET_TIMEOUT) {
+      continue;
+    }
+
+    if (wait_set.subscriptions[0]) {
+      callback(subscription, type_support);
+    }
+  }
+
+  ret = rcl_subscription_fini(&subscription, ros_interface_node_.get());
+  ret = rcl_wait_set_fini(&wait_set);
+
+  interface_channel_->stream_plane_->erase();
+  interface_channel_->stream_plane_.reset();
 }

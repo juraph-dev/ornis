@@ -16,6 +16,7 @@
 #include "ncpp/Selector.hh"
 #include "notcurses/nckeys.h"
 #include "ornis/channel_interface.hpp"
+#include "ornis/helper_functions.hpp"
 #include "ornis/monitor_interface.hpp"
 #include "ornis/stream_interface.hpp"
 
@@ -58,7 +59,8 @@ bool Ui::initialise(
 
   notcurses_core_->get_inputready_fd();
   notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
-  // TODO: Have UI return early when fails to construct
+  // TODO: Somehow disable the hijacking of the ESC button by Notcurses as an exit code
+  // TODO: Have UI return early if fails to construct
   // if (notcurses_core_ == NULL) {
   //   std::cerr << "UI Failed to initialise!" << std::endl;
   //   return 1;
@@ -82,11 +84,12 @@ bool Ui::initialise(
 
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);
   // Initialise the popup-window for selecting a monitor entry
-  uint64_t popup_channels = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
+  uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 60, 60, 60);
   monitor_info_plane_->move_bottom();
   monitor_info_plane_->set_bg_alpha(NCALPHA_OPAQUE);
   monitor_info_plane_->set_channels(popup_channels);
-  monitor_info_plane_->set_bg_rgb8(100, 100, 0);
+  monitor_info_plane_->set_fg_rgb8(200, 200, 200);
+  monitor_info_plane_->set_bg_rgb8(0, 0, 0);
 
   ui_thread_ = new std::thread([this]() { refreshUi(); });
 
@@ -116,6 +119,7 @@ void Ui::renderMonitorInfo(MonitorInterface * interface)
   ui_displaying_ = UiDisplayingEnum::monitorEntry;
 
   const auto & item = interface->selector_->get_selected();
+
   // Lock the channel mutex
   std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
 
@@ -127,11 +131,63 @@ void Ui::renderMonitorInfo(MonitorInterface * interface)
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
-
   renderPopupPlane(*monitor_info_plane_, interface_channel_->response_string_);
 
-  monitor_info_plane_->perimeter_rounded(0, channel, 0);
+  // Place the monitor info plane in the center of the screen
+  monitor_info_plane_->move(
+    term_height_ / 2 - monitor_info_plane_->get_dim_y() / 2,
+    term_width_ / 2 - monitor_info_plane_->get_dim_x() / 2);
+}
+
+void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
+{
+  ui_displaying_ = UiDisplayingEnum::monitorInteractionResult;
+
+  const auto & item = interface->selector_->get_selected();
+  // Lock the channel mutex
+  std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
+
+  interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInteractionResult;
+  interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
+  interface_channel_->request_details_["monitor_entry"] = item;
+  interface_channel_->request_details_["interaction_request"] = active_interaction_string_;
+  interface_channel_->request_pending_.store(true);
+
+  interface_channel_->condition_variable_.wait_for(
+    data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
+  active_interaction_string_.clear();
+
+  // Request complete, now render the result to the popup plane
+  const std::string reply = interface_channel_->response_string_;
+
+  renderPopupPlane(*monitor_info_plane_, reply);
+
+  // Place the monitor info plane in the center of the screen
+  monitor_info_plane_->move(
+    term_height_ / 2 - monitor_info_plane_->get_dim_y() / 2,
+    term_width_ / 2 - monitor_info_plane_->get_dim_x() / 2);
+}
+
+void Ui::renderMonitorInteraction(MonitorInterface * interface)
+{
+  ui_displaying_ = UiDisplayingEnum::monitorInteraction;
+
+  const auto & item = interface->selector_->get_selected();
+
+  // Lock the channel mutex
+  std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
+
+  interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInteraction;
+  interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
+  interface_channel_->request_details_["monitor_entry"] = item;
+  interface_channel_->request_pending_.store(true);
+
+  interface_channel_->condition_variable_.wait_for(
+    data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
+  // Once we get the information, open the window for editing the text, and we can edit from there
+  active_interaction_string_ = interface_channel_->response_string_;
+
+  renderPopupPlane(*monitor_info_plane_, active_interaction_string_);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -196,7 +252,7 @@ void Ui::refreshUi()
 
     // If we have an input
     notcurses_core_->get(false, nc_input);
-    if (nc_input->id != (uint32_t)-1) {
+    if (nc_input->id != (uint32_t)-1 && nc_input->id != 0) {
       switch (ui_displaying_) {
         case UiDisplayingEnum::monitors: {
           handleInputMonitors(*nc_input);
@@ -204,6 +260,14 @@ void Ui::refreshUi()
         }
         case UiDisplayingEnum::monitorEntry: {
           handleInputMonitorEntry(*nc_input);
+          break;
+        }
+        case UiDisplayingEnum::monitorInteraction: {
+          handleInputMonitorInteraction(*nc_input);
+          break;
+        }
+        case UiDisplayingEnum::monitorInteractionResult: {
+          handleInputMonitorInteractionResult(*nc_input);
           break;
         }
         case UiDisplayingEnum::selectedMonitor: {
@@ -241,6 +305,67 @@ void Ui::handleInputMonitorEntry(const ncinput & input)
     transitionUiState(UiDisplayingEnum::streamingTopic);
     // For now, don't worry about streaming multiple items at once,
     // Just have the UI sit idle until user presses q
+  }
+}
+
+void Ui::handleInputMonitorInteraction(const ncinput & input)
+{
+  // TODO: Refactor, this whole function is ugly as hell
+  bool add_input = false;
+  // This will end up being a big ugly function, handling filling out the message to send
+  if (input.id == NCKEY_ESC) {
+    transitionUiState(UiDisplayingEnum::selectedMonitor);
+    return;
+  }
+
+  if (input.id == NCKEY_ENTER) {
+    // Send the interaction string to the interface.
+    renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
+    return;
+  } else if (input.id == NCKEY_BACKSPACE) {
+    // Remove last character in string.
+  }
+  if (input.id != NCKEY_TAB) {
+    add_input = true;
+  }
+  // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
+  else if (input.id == NCKEY_TAB && input.shift && currently_editing_index_ > 2) {
+    currently_editing_index_ -= 1;
+  } else if (input.id == NCKEY_TAB && !input.shift) {
+    currently_editing_index_ += 1;
+  }
+  // We don't want to be appending a tab character to the string
+  size_t endline_index;
+  if (!helper_functions::getNthIndex(
+        active_interaction_string_, '\n', currently_editing_index_, endline_index)) {
+    // If we have moved past the last instance of the newline character, don't un-iterate the index,
+    // and get the new last line index
+    currently_editing_index_ -= 1;
+    helper_functions::getNthIndex(
+      active_interaction_string_, '\n', currently_editing_index_, endline_index);
+  }
+
+  // Update a block character to the string also
+  if (add_input) {
+    active_interaction_string_.insert(endline_index, input.utf8);
+  } else {
+    // If we don't increment, subtract one
+    endline_index -= 1;
+  }
+
+  // Update the cursor as well as string on plane
+  renderPopupPlane(*monitor_info_plane_, active_interaction_string_, endline_index);
+}
+
+void Ui::handleInputMonitorInteractionResult(const ncinput & input)
+{
+  // Only response is to close.
+  // TODO: Have a think about whether we should instead return to the interaction screen,
+  // allowing the user to quickly send off another request, without having to re-select the
+  // monitor entry
+  if (input.id == NCKEY_ESC || input.id == 'q') {
+    transitionUiState(UiDisplayingEnum::selectedMonitor);
+    return;
   }
 }
 
@@ -389,10 +514,10 @@ void Ui::renderSelectedMonitor()
 
   // Move tabs from outside
   planes_locations.clear();
-  planes_locations.push_back(
-    std::tuple<const ncpp::Plane *, int, int>(interface_order.front()->minimised_plane_.get(), 0, 0));
-  planes_locations.push_back(
-    std::tuple<const ncpp::Plane *, int, int>(interface_order.back()->minimised_plane_.get(), term_width_ - 3, 0));
+  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
+    interface_order.front()->minimised_plane_.get(), 0, 0));
+  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
+    interface_order.back()->minimised_plane_.get(), term_width_ - 3, 0));
 
   movePlanesAnimated(planes_locations);
 }
@@ -450,6 +575,15 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       if (ui_displaying_ == UiDisplayingEnum::monitorEntry) {
         monitor_info_plane_->erase();
         monitor_info_plane_->move_bottom();
+
+        notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
+      } else if (
+        ui_displaying_ == UiDisplayingEnum::monitorInteraction ||
+        ui_displaying_ == UiDisplayingEnum::monitorInteractionResult) {
+        monitor_info_plane_->erase();
+        monitor_info_plane_->move_bottom();
+
+        notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
       }
       renderSelectedMonitor();
       break;
@@ -461,8 +595,17 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
           interface_map_[selected_monitor_]->selector_->get_selected();
         closeStream(selected_entry);
       }
-      // Currently, no ui transitions need to be made
-      // for displaying an entry
+      renderMonitorInfo(interface_map_[selected_monitor_].get());
+      break;
+    }
+    case UiDisplayingEnum::monitorInteraction: {
+      // Disable mouse events
+      notcurses_core_->mouse_disable();
+      // Reset active interaction index (We start at the second (2 index) occurance of newline, as we do not
+      // want to edit the message header.)
+      currently_editing_index_ = 2;
+      // Perform a check for it we are returning from streaming a topic:
+      renderMonitorInteraction(interface_map_[selected_monitor_].get());
       break;
     }
     case UiDisplayingEnum::streamingTopic: {
@@ -525,10 +668,11 @@ void Ui::resizeUi(const uint & rows, const uint & cols)
 
 bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
 {
-  // BUG All keyboard inputs fail this check.
-  if (!checkEventOnPlane(input, interface->get_plane())) {
-    return false;
-  }
+  // BUG All keyboard inputs fail this check. Have a think about whether you REALLY
+  // need it. (Probably not)
+  // if (!checkEventOnPlane(input, interface->get_plane())) {
+  //   return false;
+  // }
   // if (input.id == NCKEY_UP || input.id == NCKEY_SCROLL_UP) {
   //   interface.selector_->previtem();
   //   return true;
@@ -537,12 +681,21 @@ bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
   if (interface->selector_->offer_input(&input)) {
     return true;
   }
+
   if (input.evtype == input.NCTYPE_PRESS || input.id == NCKEY_ENTER) {
     // If we recieve an enter, we neeed to grab the
     // currently selected topic, and view the topic information
     // in a popup window
     transitionUiState(UiDisplayingEnum::monitorEntry);
-    renderMonitorInfo(interface);
+    return true;
+  } else if (input.id == 'i') {
+    transitionUiState(UiDisplayingEnum::monitorInteraction);
+    // FIXME: Shouldn't have to send a fake input
+    // Pass a fake input through, to initialise the cursor
+    ncinput t_input;
+    t_input.id = NCKEY_TAB;
+    t_input.shift = true;
+    handleInputMonitorInteraction(t_input);
     return true;
   }
 
@@ -556,11 +709,8 @@ bool Ui::checkEventOnPlane(const ncinput & input, const ncpp::Plane * plane) con
     input.y > plane->get_y() && input.y < (int)plane->get_dim_y() + plane->get_y());
 }
 
-void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content)
+void Ui::sizePopupPlane(ncpp::Plane & plane, const std::string & content)
 {
-  plane.erase();
-  plane.move_top();
-
   int row = 1;
   int col = 1;
   int longest_col = 0;
@@ -579,11 +729,31 @@ void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content)
       longest_col = col > longest_col ? col : longest_col;
     }
   }
+  // If we haven't found an endline char, artificially add a single row, to prevent
+  // single line strings from being overwritten by the border
+  if (row == 1) {
+    row++;
+  }
   // Add one to longest col to account for boreder
   plane.resize(row + 1, longest_col + 1);
 
-  row = 1;
-  col = 1;
+  // Fill plane, ensures we don't have a transparent background
+  ncpp::Cell c(' ');
+  plane.polyfill(row, longest_col, c);
+}
+
+void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content)
+{
+  plane.erase();
+  plane.move_top();
+
+  sizePopupPlane(plane, content);
+
+  int row = 1;
+  int col = 1;
+
+  ncpp::Cell c(' ');
+  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
   for (const char & c : content) {
     if (c == '\n') {
       row++;
@@ -595,6 +765,45 @@ void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content)
       col++;
     }
   }
+
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+  monitor_info_plane_->perimeter_rounded(0, channel, 0);
+}
+
+
+void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content, const int cursor_index)
+{
+  // Cursor index is a location in string. If -1, place at end of string
+  plane.erase();
+  plane.move_top();
+  sizePopupPlane(plane, content);
+
+  int string_index = 0;
+  int row = 1;
+  int col = 1;
+
+  ncpp::Cell c(' ');
+  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
+  for (const char & c : content) {
+    if (c == '\n') {
+      row++;
+      col = 1;
+    } else {
+      nccell_load(plane.to_ncplane(), &cell, &c);
+      plane.putc(row, col, c);
+      nccell_release(plane.to_ncplane(), &cell);
+      col++;
+    }
+    if (string_index == cursor_index) {
+      nccell_load(plane.to_ncplane(), &cell, &c);
+      plane.putc(row, col, "┃");
+      nccell_release(plane.to_ncplane(), &cell);
+    }
+    string_index++;
+  }
+
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+  monitor_info_plane_->perimeter_rounded(0, channel, 0);
 }
 
 // Return which layout (If any) will allow for displaying all monitors at once.

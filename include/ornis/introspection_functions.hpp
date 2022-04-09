@@ -1,0 +1,41 @@
+/*
+** (Blatantly) Stolen from Rosbag2's message type introspection system:
+** https://github.com/ros2/rosbag2/blob/dashing/rosbag2/src/rosbag2/typesupport_helpers.cpp
+*/
+
+#ifndef INTROSPECTION_FUNCTIONS_H_
+#define INTROSPECTION_FUNCTIONS_H_
+
+#include <Poco/SharedLibrary.h>
+
+#include <ament_index_cpp/get_package_prefix.hpp>
+#include <ament_index_cpp/get_resources.hpp>
+#include <iostream>
+#include <memory>
+#include <rosidl_typesupport_introspection_cpp/field_types.hpp>
+#include <rosidl_typesupport_introspection_cpp/identifier.hpp>
+#include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
+#include <rosidl_typesupport_introspection_cpp/service_introspection.hpp>
+#include <stdexcept>
+#include <string>
+#include <tuple>
+#include <utility>
+
+namespace introspection
+{
+std::string get_typesupport_library_path(
+  const std::string & package_name, const std::string & typesupport_identifier);
+
+const std::tuple<std::string, std::string, std::string> extract_type_identifier(
+  const std::string & full_type);
+
+const std::pair<std::string, std::string> extract_type_and_package(const std::string & full_type);
+
+const rosidl_service_type_support_t * get_service_typesupport(
+  const std::string & type, const std::string & typesupport_identifier);
+
+const rosidl_message_type_support_t * get_message_typesupport(
+  const std::string & type, const std::string & typesupport_identifier);
+}  // namespace introspection
+
+#endif  // INTROSPECTION_FUNCTIONS_H_

@@ -6,16 +6,16 @@
 // MonitorInterface is dedicated to providing the Ui with methods of
 // visualising the data.
 
-#include <mutex>
-#include <atomic>
-#include <memory>
-#include <string>
-#include <thread> // IWYU pragma: keep
-#include <vector>
-#include <iterator>
-#include <iostream>
-#include <stdexcept>
 #include <algorithm>
+#include <atomic>
+#include <iostream>
+#include <iterator>
+#include <memory>
+#include <mutex>
+#include <stdexcept>
+#include <string>
+#include <thread>  // IWYU pragma: keep
+#include <vector>
 
 class Monitor
 {
@@ -24,7 +24,17 @@ public:
   Monitor() : spin_(true) {}
   virtual ~Monitor() {}
 
-  virtual void getEntryInfo(const std::string & entry_name, std::string & entry_info) = 0;
+  virtual void getEntryInfo(
+    const std::string & entry_name, const std::string & entry_details,
+    std::string & entry_info) = 0;
+
+  virtual void getInteractionString(
+    const std::string & entry_name, const std::string & entry_details,
+    std::string & entry_info) = 0;
+
+  virtual void getInteractionResult(
+    const std::string & entry_name, const std::string & entry_details,
+    const std::string &request_string, std::string & response_string) = 0;
 
   bool getValue(std::vector<std::pair<std::string, std::string>> & value)
   {
@@ -40,7 +50,7 @@ public:
   std::atomic<bool> spin_;
 
 protected:
-  // Function to interface with the command line (rostopic list/rostopic info)
+  // Function to interface with the command line (eg: ros2 topic info)
   std::string callConsole(const std::string & cmd)
   {
     std::string result = "";

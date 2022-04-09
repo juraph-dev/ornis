@@ -16,7 +16,7 @@ public:
   Channel(){};
   ~Channel(){};
 
-  enum class RequestEnum { monitorEntryInformation, topicStreamer , closeStream};
+  enum class RequestEnum { monitorEntryInformation, monitorEntryInteraction, monitorEntryInteractionResult, topicStreamer , closeStream};
 
   std::mutex access_mutex_;
   // Structures to facilitate UI requesting information from

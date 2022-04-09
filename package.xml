@@ -7,7 +7,16 @@
   <maintainer email="local.juraph@gmail.com">juraph</maintainer>
   <license>TODO: License declaration</license>
 
-  <depend>rclcpp</depend>
+  <depend>rcl</depend>
+  <depend>rcl_action</depend>
+  <depend>rcl_interfaces</depend>
+
+  <depend>Poco</depend> <!-- TODO: Remove -->
+
+  <depend>rosidl_runtime_cpp</depend>
+  <depend>rosidl_generator_cpp</depend>
+  <depend>rosidl_typesupport_cpp</depend>
+  <depend>rosidl_typesupport_introspection_cpp</depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

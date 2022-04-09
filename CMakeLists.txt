@@ -58,6 +58,14 @@ find_package(Threads REQUIRED)
 find_package(notcurses 3.0.0 CONFIG )
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rcl REQUIRED)
+find_package(rcl_action REQUIRED)
+find_package(rcl_interfaces REQUIRED)
+find_package(Poco COMPONENTS Foundation)
+find_package(rosidl_runtime_cpp REQUIRED)
+find_package(rosidl_generator_cpp REQUIRED)
+find_package(rosidl_typesupport_cpp REQUIRED)
+find_package(rosidl_typesupport_introspection_cpp REQUIRED)
 
 
 # Perform this after find_package to prevent iwyu from running on our external dir
@@ -91,14 +99,20 @@ list(REMOVE_ITEM LIBRARY_SOURCES "main.cpp")
 add_library(${PROJECT_NAME}-lib ${LIBRARY_SOURCES})
 target_include_directories(${PROJECT_NAME}-lib PUBLIC ${PROJECT_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/include ${NCPP_DIR}/include
-  ${rclcpp_INLUDE_DIR})
+  ${rclcpp_INLUDE_DIR} rosidl_generator_cpp
+  Poco
+  rosidl_typesupport_introspection_cpp
+  rosidl_typesupport_cpp)
 
 add_executable(${PROJECT_NAME} src/main.cpp) # The main executables
 
 target_link_libraries(ornis-lib PUBLIC
   notcurses++
   Threads::Threads
+  Poco::Foundation
   ${rclcpp_LIBRARIES}
+  ${rcl_LIBRARIES}
+
   ) # Link our sources to the executable
 
 target_link_libraries(ornis PUBLIC
@@ -106,6 +120,7 @@ target_link_libraries(ornis PUBLIC
   notcurses++
   Threads::Threads
   ${rclcpp_LIBRARIES}
+  ${rcl_LIBRARIES}
   ) # Link our sources to the executable
 
 # Install the built library and executable into the appropriate directory

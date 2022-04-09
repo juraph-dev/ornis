@@ -3,15 +3,13 @@
 
 #include <map>
 #include <memory>
-#include <rclcpp/rclcpp.hpp>
+#include <rcl/rcl.h>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "ornis/channel_interface.hpp"
 #include "ornis/node_monitor.hpp"
-// #include "ornis/ros_interface.hpp"
-#include "ornis/ros_interface_node.hpp"
 #include "ornis/service_monitor.hpp"
 #include "ornis/stream_interface.hpp"
 #include "ornis/topic_monitor.hpp"
@@ -65,9 +63,12 @@ private:
   // Stream thread map
   std::map<std::string, std::shared_ptr<TopicStreamer>> stream_map_;
 
-  // Ros interface and node
-  // std::unique_ptr<RosInterface> ros_interface;
-  std::shared_ptr<RosInterfaceNode> ros_interface_node_;
+  // Ros interface node
+  std::shared_ptr<rcl_node_t> ros_interface_node_;
+
+  // RCL context. Gets passed to topic streamer. Will likely end up being
+  // copied to all of the monitors at some point.
+  rcl_context_t context_;
 };
 
 #endif  // OBJECT_CONTROLLER_H_

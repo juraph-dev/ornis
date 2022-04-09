@@ -37,8 +37,16 @@ public:
 
 private:
   // Class to for storing the current ui state
-  enum class UiDisplayingEnum { monitors, selectedMonitor, monitorEntry, streamingTopic };
-  enum class UiLayoutEnum { Vertical, Horizontal, HorizontalClipped};
+  // TODO: Rename monitorInteraction. That's a silly name.
+  enum class UiDisplayingEnum {
+    monitors,
+    selectedMonitor,
+    monitorEntry,
+    monitorInteraction,
+    monitorInteractionResult,
+    streamingTopic
+  };
+  enum class UiLayoutEnum { Vertical, Horizontal, HorizontalClipped };
 
   // Stores the width of the terminal at startup. Used for scaling the ui
   uint term_width_;
@@ -47,19 +55,31 @@ private:
   void updateMonitor(
     std::vector<std::pair<std::string, std::string>> updated_values,
     const std::unique_ptr<MonitorInterface> & interface);
+
   void renderMonitorInfo(MonitorInterface * interface);
   bool renderMonitors();
   void renderOptions();
   void renderPopupPlane(ncpp::Plane & plane, const std::string & content);
+  void sizePopupPlane(ncpp::Plane & plane, const std::string & content);
+
+  // Functionally identical to previuos renderPopupPlane, but renders a cursor at index of string
+  void renderPopupPlane(ncpp::Plane & plane, const std::string & content, const int cursor_index);
   void renderHomeLayout();
   void renderSelectedMonitor();
+  void renderMonitorInteraction(MonitorInterface * interface);
+  void renderMonitorInteractionResult(MonitorInterface * interface);
+
   std::shared_ptr<ncpp::Plane> createStreamPlane();
   void openStream(const std::string & topic_name);
   void refreshUi();
+
   void handleInputMonitors(const ncinput & input);
   void handleInputSelected(const ncinput & input);
   void handleInputMonitorEntry(const ncinput & input);
   void handleInputStreaming(const ncinput & input);
+  void handleInputMonitorInteraction(const ncinput & input);
+  void handleInputMonitorInteractionResult(const ncinput & input);
+
   void transitionUiState(const UiDisplayingEnum & desired_state);
   void resizeUi(const uint & rows, const uint & cols);
   void closeStream(const std::string & stream_name);
@@ -100,6 +120,10 @@ private:
 
   // Popup Information planes
   std::shared_ptr<ncpp::Plane> notcurses_stdplane_;
+
+  // Storage string for user interactions with the back-end
+  std::string active_interaction_string_;
+  uint currently_editing_index_;
 
   // Number of frames to use for anmations
   // TODO: re-write as a parameter for the user to configure

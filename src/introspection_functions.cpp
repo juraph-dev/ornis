@@ -149,4 +149,76 @@ const rosidl_message_type_support_t * get_message_typesupport(
     throw std::runtime_error(poco_dynamic_loading_error + " Library could not be found.");
   }
 }
+
+
+// Convert an individual member's value from binary to YAML
+void message_data_to_string(
+  const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
+  const uint8_t * member_data,
+  std::string &message_data)
+{
+  switch (member_info.type_id_) {
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
+      message_data = std::to_string(*reinterpret_cast<const float *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
+      message_data =std::to_string( *reinterpret_cast<const double *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
+      message_data = std::to_string(*reinterpret_cast<const long double *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
+      message_data = std::to_string(*reinterpret_cast<const uint8_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
+      message_data = std::to_string(*reinterpret_cast<const uint16_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
+      message_data = std::to_string(*reinterpret_cast<const bool *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_OCTET:
+      message_data = std::to_string(*reinterpret_cast<const uint8_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
+      message_data = std::to_string(*reinterpret_cast<const uint8_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
+      message_data = std::to_string(*reinterpret_cast<const int8_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
+      message_data = std::to_string(*reinterpret_cast<const uint16_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
+      message_data = std::to_string(*reinterpret_cast<const int16_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
+      message_data = std::to_string(*reinterpret_cast<const uint32_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
+      message_data = std::to_string(*reinterpret_cast<const int32_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
+      message_data = std::to_string(*reinterpret_cast<const uint64_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
+      message_data = std::to_string(*reinterpret_cast<const int64_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
+      message_data = *reinterpret_cast<const std::string *>(member_data);
+      break;
+      // TODO Implement Nested. Ignored for now
+    // case rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE:
+    //   // For nested types, don't copy the data out of the buffer directly. Recursively read the
+    //   // nested type into the YAML.
+    //   RosMessage_Cpp nested_member;
+    //   nested_member.type_info = reinterpret_cast<const TypeInfo_Cpp *>(member_info.members_->data);
+    //   nested_member.data = const_cast<uint8_t *>(member_data);
+    //   message_data = message_to_yaml(nested_member);
+    //   break;
+    default:
+      std::cerr << "Recieved unknown message type!!!\n";
+      break;
+  }
+}
+
 }  // namespace introspection

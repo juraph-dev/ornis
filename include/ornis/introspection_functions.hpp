@@ -36,6 +36,11 @@ const rosidl_service_type_support_t * get_service_typesupport(
 
 const rosidl_message_type_support_t * get_message_typesupport(
   const std::string & type, const std::string & typesupport_identifier);
+
+void message_data_to_string(
+  const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
+  const uint8_t * member_data,
+  std::string &message_data);
 }  // namespace introspection
 
 #endif  // INTROSPECTION_FUNCTIONS_H_

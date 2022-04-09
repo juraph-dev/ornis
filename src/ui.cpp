@@ -19,6 +19,7 @@
 #include "ornis/helper_functions.hpp"
 #include "ornis/monitor_interface.hpp"
 #include "ornis/stream_interface.hpp"
+#include "ornis/ui_helpers.hpp"
 
 using namespace std::chrono_literals;
 
@@ -709,45 +710,12 @@ bool Ui::checkEventOnPlane(const ncinput & input, const ncpp::Plane * plane) con
     input.y > plane->get_y() && input.y < (int)plane->get_dim_y() + plane->get_y());
 }
 
-void Ui::sizePopupPlane(ncpp::Plane & plane, const std::string & content)
-{
-  int row = 1;
-  int col = 1;
-  int longest_col = 0;
-  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
-
-  // iterate through string twice, once to find what size
-  // to resize the plane to, second to place the characters on the plane.
-  // It's ugly, but much more efficient than dynamically resizing the
-  // plane as we iterate through the string.
-  for (const char & c : content) {
-    if (c == '\n') {
-      row++;
-      col = 1;
-    } else {
-      col++;
-      longest_col = col > longest_col ? col : longest_col;
-    }
-  }
-  // If we haven't found an endline char, artificially add a single row, to prevent
-  // single line strings from being overwritten by the border
-  if (row == 1) {
-    row++;
-  }
-  // Add one to longest col to account for boreder
-  plane.resize(row + 1, longest_col + 1);
-
-  // Fill plane, ensures we don't have a transparent background
-  ncpp::Cell c(' ');
-  plane.polyfill(row, longest_col, c);
-}
-
 void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content)
 {
   plane.erase();
   plane.move_top();
 
-  sizePopupPlane(plane, content);
+  ui_helpers::size_plane_to_string(plane, content);
 
   int row = 1;
   int col = 1;
@@ -770,13 +738,12 @@ void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content)
   monitor_info_plane_->perimeter_rounded(0, channel, 0);
 }
 
-
 void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content, const int cursor_index)
 {
   // Cursor index is a location in string. If -1, place at end of string
   plane.erase();
   plane.move_top();
-  sizePopupPlane(plane, content);
+  ui_helpers::size_plane_to_string(plane, content);
 
   int string_index = 0;
   int row = 1;

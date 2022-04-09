@@ -60,7 +60,6 @@ private:
   bool renderMonitors();
   void renderOptions();
   void renderPopupPlane(ncpp::Plane & plane, const std::string & content);
-  void sizePopupPlane(ncpp::Plane & plane, const std::string & content);
 
   // Functionally identical to previuos renderPopupPlane, but renders a cursor at index of string
   void renderPopupPlane(ncpp::Plane & plane, const std::string & content, const int cursor_index);

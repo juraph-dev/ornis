@@ -12,6 +12,7 @@
 #include "notcurses/notcurses.h"
 #include "ornis/introspection_functions.hpp"
 #include "ornis/stream_interface.hpp"
+#include "ornis/ui_helpers.hpp"
 
 using namespace std::chrono_literals;
 
@@ -26,6 +27,7 @@ TopicStreamer::TopicStreamer(
 {
   stream_open_ = true;
   interface_channel_ = interface_channel;
+
   thread_ = new std::thread([this]() { initialise(); });
 }
 TopicStreamer::~TopicStreamer()
@@ -49,8 +51,9 @@ void TopicStreamer::callback(
     static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(type_support->data);
 
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
-  float * request_data =
-    static_cast<float *>(allocator.allocate(members->size_of_, allocator.state));
+
+  uint8_t * request_data =
+    static_cast<uint8_t *>(allocator.allocate(members->size_of_, allocator.state));
 
   rcl_ret_t rc;
   rmw_message_info_t info;
@@ -59,8 +62,18 @@ void TopicStreamer::callback(
   rc = rcl_take(&subscription, request_data, &info, NULL);
   if (rc == RCL_RET_OK) {
     const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[0];
-    const std::string t_string = "Reply: " + std::to_string(request_data[member.offset_]);
-    interface_channel_->stream_plane_->putstr(2, NCALIGN_CENTER, t_string.c_str());
+
+    uint8_t * member_data = &request_data[member.offset_];
+    std::string member_as_string;
+    introspection::message_data_to_string(member, member_data, member_as_string);
+
+    const std::string t_string = "stream: " + member_as_string;
+
+    ui_helpers::size_plane_to_string(*interface_channel_->stream_plane_, t_string);
+
+    uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+    interface_channel_->stream_plane_->perimeter_rounded(0, channel, 0);
+    interface_channel_->stream_plane_->putstr(1, NCALIGN_CENTER, t_string.c_str());
   } else {
     return;
   }
@@ -75,6 +88,13 @@ void TopicStreamer::waitUntilUiReady()
 void TopicStreamer::initialise()
 {
   waitUntilUiReady();
+
+  // Make the stream plane pretty
+  uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 60, 60, 60);
+  interface_channel_->stream_plane_->set_bg_alpha(NCALPHA_OPAQUE);
+  interface_channel_->stream_plane_->set_channels(popup_channels);
+  interface_channel_->stream_plane_->set_fg_rgb8(200, 200, 200);
+  interface_channel_->stream_plane_->set_bg_rgb8(0, 0, 0);
 
   const auto type_support = introspection::get_message_typesupport(
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);

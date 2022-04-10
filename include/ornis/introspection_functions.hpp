@@ -23,24 +23,26 @@
 
 namespace introspection
 {
-std::string get_typesupport_library_path(
+std::string getTypeSupportLibraryPath(
   const std::string & package_name, const std::string & typesupport_identifier);
 
-const std::tuple<std::string, std::string, std::string> extract_type_identifier(
+const std::tuple<std::string, std::string, std::string> extractTypeIdentifier(
   const std::string & full_type);
 
-const std::pair<std::string, std::string> extract_type_and_package(const std::string & full_type);
+const std::pair<std::string, std::string> extractTypeAndPackage(const std::string & full_type);
 
-const rosidl_service_type_support_t * get_service_typesupport(
+const rosidl_service_type_support_t * getServiceTypeSupport(
   const std::string & type, const std::string & typesupport_identifier);
 
-const rosidl_message_type_support_t * get_message_typesupport(
+const rosidl_message_type_support_t * getMessageTypeSupport(
   const std::string & type, const std::string & typesupport_identifier);
 
-void message_data_to_string(
+void messageDataToString(
   const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
   const uint8_t * member_data,
   std::string &message_data);
+
+std::string readMessageAsString(  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members);
 }  // namespace introspection
 
 #endif  // INTROSPECTION_FUNCTIONS_H_

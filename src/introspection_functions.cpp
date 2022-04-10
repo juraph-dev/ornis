@@ -2,7 +2,7 @@
 
 namespace introspection
 {
-std::string get_typesupport_library_path(
+std::string getTypeSupportLibraryPath(
   const std::string & package_name, const std::string & typesupport_identifier)
 {
   const char * filename_prefix;
@@ -34,7 +34,7 @@ std::string get_typesupport_library_path(
   return library_path;
 }
 
-const std::tuple<std::string, std::string, std::string> extract_type_identifier(
+const std::tuple<std::string, std::string, std::string> extractTypeIdentifier(
   const std::string & full_type)
 {
   char type_separator = '/';
@@ -45,7 +45,7 @@ const std::tuple<std::string, std::string, std::string> extract_type_identifier(
     sep_position_back == std::string::npos || sep_position_back == 0 ||
     sep_position_back == full_type.length() - 1) {
     throw std::runtime_error(
-      "service type is not of the form package/type and cannot be processed");
+      "service/message type is not of the form package/type and cannot be processed");
   }
 
   std::string package_name = full_type.substr(0, sep_position_front);
@@ -59,30 +59,30 @@ const std::tuple<std::string, std::string, std::string> extract_type_identifier(
   return std::make_tuple(package_name, middle_module, type_name);
 }
 
-const std::pair<std::string, std::string> extract_type_and_package(const std::string & full_type)
+const std::pair<std::string, std::string> extractTypeAndPackage(const std::string & full_type)
 {
   std::string package_name;
   std::string type_name;
 
-  std::tie(package_name, std::ignore, type_name) = extract_type_identifier(full_type);
+  std::tie(package_name, std::ignore, type_name) = extractTypeIdentifier(full_type);
 
   return {package_name, type_name};
 }
 
-const rosidl_service_type_support_t * get_service_typesupport(
+const rosidl_service_type_support_t * getServiceTypeSupport(
   const std::string & type, const std::string & typesupport_identifier)
 {
   std::string package_name;
   std::string middle_module;
   std::string type_name;
-  std::tie(package_name, middle_module, type_name) = extract_type_identifier(type);
+  std::tie(package_name, middle_module, type_name) = extractTypeIdentifier(type);
 
   std::string poco_dynamic_loading_error =
     "Something went wrong loading the typesupport library "
     "for service type " +
     package_name + "/" + type_name + ".";
 
-  auto library_path = get_typesupport_library_path(package_name, typesupport_identifier);
+  auto library_path = getTypeSupportLibraryPath(package_name, typesupport_identifier);
 
   try {
     auto typesupport_library = std::make_shared<Poco::SharedLibrary>(library_path);
@@ -109,20 +109,20 @@ const rosidl_service_type_support_t * get_service_typesupport(
   }
 }
 
-const rosidl_message_type_support_t * get_message_typesupport(
+const rosidl_message_type_support_t * getMessageTypeSupport(
   const std::string & type, const std::string & typesupport_identifier)
 {
   std::string package_name;
   std::string middle_module;
   std::string type_name;
-  std::tie(package_name, middle_module, type_name) = extract_type_identifier(type);
+  std::tie(package_name, middle_module, type_name) = extractTypeIdentifier(type);
 
   std::string poco_dynamic_loading_error =
     "Something went wrong loading the typesupport library "
     "for message type " +
     package_name + "/" + type_name + ".";
 
-  auto library_path = get_typesupport_library_path(package_name, typesupport_identifier);
+  auto library_path = getTypeSupportLibraryPath(package_name, typesupport_identifier);
 
   try {
     // TODO: Un-Poco this.
@@ -150,19 +150,18 @@ const rosidl_message_type_support_t * get_message_typesupport(
   }
 }
 
-
-// Convert an individual member's value from binary to YAML
-void message_data_to_string(
+// Convert an individual member's value from binary to string
+// TODO: Make bool, include failure cases
+void messageDataToString(
   const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
-  const uint8_t * member_data,
-  std::string &message_data)
+  const uint8_t * member_data, std::string & message_data)
 {
   switch (member_info.type_id_) {
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
       message_data = std::to_string(*reinterpret_cast<const float *>(member_data));
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
-      message_data =std::to_string( *reinterpret_cast<const double *>(member_data));
+      message_data = std::to_string(*reinterpret_cast<const double *>(member_data));
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
       message_data = std::to_string(*reinterpret_cast<const long double *>(member_data));
@@ -207,18 +206,43 @@ void message_data_to_string(
       message_data = *reinterpret_cast<const std::string *>(member_data);
       break;
       // TODO Implement Nested. Ignored for now
-    // case rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE:
-    //   // For nested types, don't copy the data out of the buffer directly. Recursively read the
-    //   // nested type into the YAML.
-    //   RosMessage_Cpp nested_member;
-    //   nested_member.type_info = reinterpret_cast<const TypeInfo_Cpp *>(member_info.members_->data);
-    //   nested_member.data = const_cast<uint8_t *>(member_data);
-    //   message_data = message_to_yaml(nested_member);
-    //   break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE:
+      // For nested types, don't copy the data out of the buffer directly. Recursively read the
+      // nested type into the YAML.
+      // RosMessage_Cpp nested_member;
+      // nested_member.type_info = reinterpret_cast<const TypeInfo_Cpp *>(member_info.members_->data);
+      // nested_member.data = const_cast<uint8_t *>(member_data);
+      // message_data = message_to_yaml(nested_member);
+      break;
     default:
-      std::cerr << "Recieved unknown message type!!!\n";
+      // Recieved unkwn message type, fail silently and attempt to parse.
+      // std::cerr << "Recieved unknown message type!!!: " << std::to_string(member_info.type_id_)
+      //           << "\n";
       break;
   }
+}
+
+std::string readMessageAsString(
+  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members)
+{
+  std::string members_string;
+  for (size_t i = 0; i < members->member_count_; i++) {
+    std::string member_string;
+    const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[i];
+    uint8_t * member_data = &message_data[member.offset_];
+
+    // Perform a check for if we're dealing with a ros message type, and recurse if we are
+    if (member.type_id_ == rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
+      const auto sub_members =
+        static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+          member.members_->data);
+      member_string += readMessageAsString(member_data, sub_members) + "\n";
+    } else {
+      introspection::messageDataToString(member, member_data, member_string);
+    }
+    members_string += member_string;
+  }
+  return members_string;
 }
 
 }  // namespace introspection

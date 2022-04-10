@@ -59,10 +59,6 @@ private:
   void renderMonitorInfo(MonitorInterface * interface);
   bool renderMonitors();
   void renderOptions();
-  void renderPopupPlane(ncpp::Plane & plane, const std::string & content);
-
-  // Functionally identical to previuos renderPopupPlane, but renders a cursor at index of string
-  void renderPopupPlane(ncpp::Plane & plane, const std::string & content, const int cursor_index);
   void renderHomeLayout();
   void renderSelectedMonitor();
   void renderMonitorInteraction(MonitorInterface * interface);

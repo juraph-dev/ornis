@@ -132,7 +132,7 @@ void Ui::renderMonitorInfo(MonitorInterface * interface)
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
 
-  renderPopupPlane(*monitor_info_plane_, interface_channel_->response_string_);
+  ui_helpers::writeStringToPlane(*monitor_info_plane_, interface_channel_->response_string_);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -161,7 +161,7 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
   // Request complete, now render the result to the popup plane
   const std::string reply = interface_channel_->response_string_;
 
-  renderPopupPlane(*monitor_info_plane_, reply);
+  ui_helpers::writeStringToPlane(*monitor_info_plane_, reply);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -188,7 +188,7 @@ void Ui::renderMonitorInteraction(MonitorInterface * interface)
   // Once we get the information, open the window for editing the text, and we can edit from there
   active_interaction_string_ = interface_channel_->response_string_;
 
-  renderPopupPlane(*monitor_info_plane_, active_interaction_string_);
+  ui_helpers::writeStringToPlane(*monitor_info_plane_, active_interaction_string_);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -355,7 +355,7 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
   }
 
   // Update the cursor as well as string on plane
-  renderPopupPlane(*monitor_info_plane_, active_interaction_string_, endline_index);
+  ui_helpers::writeStringToPlane(*monitor_info_plane_, active_interaction_string_, endline_index);
 }
 
 void Ui::handleInputMonitorInteractionResult(const ncinput & input)
@@ -708,69 +708,6 @@ bool Ui::checkEventOnPlane(const ncinput & input, const ncpp::Plane * plane) con
   return (
     input.x > plane->get_x() && input.x < (int)plane->get_dim_x() + plane->get_x() &&
     input.y > plane->get_y() && input.y < (int)plane->get_dim_y() + plane->get_y());
-}
-
-void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content)
-{
-  plane.erase();
-  plane.move_top();
-
-  ui_helpers::size_plane_to_string(plane, content);
-
-  int row = 1;
-  int col = 1;
-
-  ncpp::Cell c(' ');
-  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
-  for (const char & c : content) {
-    if (c == '\n') {
-      row++;
-      col = 1;
-    } else {
-      nccell_load(plane.to_ncplane(), &cell, &c);
-      plane.putc(row, col, c);
-      nccell_release(plane.to_ncplane(), &cell);
-      col++;
-    }
-  }
-
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
-  monitor_info_plane_->perimeter_rounded(0, channel, 0);
-}
-
-void Ui::renderPopupPlane(ncpp::Plane & plane, const std::string & content, const int cursor_index)
-{
-  // Cursor index is a location in string. If -1, place at end of string
-  plane.erase();
-  plane.move_top();
-  ui_helpers::size_plane_to_string(plane, content);
-
-  int string_index = 0;
-  int row = 1;
-  int col = 1;
-
-  ncpp::Cell c(' ');
-  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
-  for (const char & c : content) {
-    if (c == '\n') {
-      row++;
-      col = 1;
-    } else {
-      nccell_load(plane.to_ncplane(), &cell, &c);
-      plane.putc(row, col, c);
-      nccell_release(plane.to_ncplane(), &cell);
-      col++;
-    }
-    if (string_index == cursor_index) {
-      nccell_load(plane.to_ncplane(), &cell, &c);
-      plane.putc(row, col, "┃");
-      nccell_release(plane.to_ncplane(), &cell);
-    }
-    string_index++;
-  }
-
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
-  monitor_info_plane_->perimeter_rounded(0, channel, 0);
 }
 
 // Return which layout (If any) will allow for displaying all monitors at once.

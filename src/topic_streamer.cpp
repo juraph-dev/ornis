@@ -61,19 +61,13 @@ void TopicStreamer::callback(
   members->init_function(request_data, rosidl_runtime_cpp::MessageInitialization::ALL);
   rc = rcl_take(&subscription, request_data, &info, NULL);
   if (rc == RCL_RET_OK) {
-    const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[0];
+    const auto message_string = introspection::readMessageAsString(request_data, members);
+    const std::string t_string = topic_name_ + "\n" + message_string;
 
-    uint8_t * member_data = &request_data[member.offset_];
-    std::string member_as_string;
-    introspection::message_data_to_string(member, member_data, member_as_string);
-
-    const std::string t_string = "stream: " + member_as_string;
-
-    ui_helpers::size_plane_to_string(*interface_channel_->stream_plane_, t_string);
+    ui_helpers::writeStringToPlane(*interface_channel_->stream_plane_, t_string);
 
     uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
     interface_channel_->stream_plane_->perimeter_rounded(0, channel, 0);
-    interface_channel_->stream_plane_->putstr(1, NCALIGN_CENTER, t_string.c_str());
   } else {
     return;
   }
@@ -96,7 +90,7 @@ void TopicStreamer::initialise()
   interface_channel_->stream_plane_->set_fg_rgb8(200, 200, 200);
   interface_channel_->stream_plane_->set_bg_rgb8(0, 0, 0);
 
-  const auto type_support = introspection::get_message_typesupport(
+  const auto type_support = introspection::getMessageTypeSupport(
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
   // TODO: Investigate swapping profiles in realtime

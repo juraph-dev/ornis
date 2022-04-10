@@ -53,7 +53,7 @@ void ServiceMonitor::getInteractionString(
   using rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE;
   using rosidl_typesupport_introspection_cpp::ServiceMembers;
 
-  service_info_.type_support = introspection::get_service_typesupport(
+  service_info_.type_support = introspection::getServiceTypeSupport(
     entry_details, rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
   const auto * service_members =
@@ -75,10 +75,10 @@ void ServiceMonitor::getInteractionString(
   strcat(request_char, service_members->request_members_->message_name_);
   strcat(response_char, service_members->response_members_->message_name_);
 
-  service_info_.request_type_support = introspection::get_message_typesupport(
+  service_info_.request_type_support = introspection::getMessageTypeSupport(
     request_char, rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
-  service_info_.response_type_support = introspection::get_message_typesupport(
+  service_info_.response_type_support = introspection::getMessageTypeSupport(
     response_char, rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
   // TODO Add entry data type (uint8, uint16, etc) to this message, so user knows what's expected

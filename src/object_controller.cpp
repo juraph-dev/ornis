@@ -90,6 +90,7 @@ void ObjectController::updateMonitors()
 
 void ObjectController::checkUiRequests()
 {
+  // FIXME: The contents of these switch cases to their own dedicated functions
   if (interface_channel_->request_pending_.load()) {
     // Check to see what the type of request is
     switch (interface_channel_->request_type_) {
@@ -203,7 +204,6 @@ void ObjectController::checkUiRequests()
         const auto & stream_name = interface_channel_->request_details_["stream_name"];
         stream_map_[stream_name]->closeStream();
         stream_map_.erase(stream_name);
-
         interface_channel_->request_pending_ = false;
         interface_channel_->condition_variable_.notify_all();
         break;

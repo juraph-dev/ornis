@@ -411,6 +411,8 @@ void Ui::closeStream(const std::string & stream_name)
   interface_channel_->request_pending_ = true;
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
+
+  stream_map_->erase(stream_name);
 }
 
 void Ui::renderHomeLayout()
@@ -551,7 +553,7 @@ void Ui::openStream(const std::string & topic_name)
 
   std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
   interface_channel_->request_type_ = Channel::RequestEnum::topicStreamer;
-  interface_channel_->request_details_.emplace("topic_name", topic_name);
+  interface_channel_->request_details_["topic_name"] =  topic_name;
   interface_channel_->request_pending_ = true;
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });

@@ -39,9 +39,9 @@ TopicStreamer::~TopicStreamer()
 }
 void TopicStreamer::closeStream()
 {
-  interface_channel_->stream_open_.store(false);
   interface_channel_->stream_plane_->erase();
   stream_open_.store(false);
+  interface_channel_->stream_open_.store(false);
 }
 
 void TopicStreamer::callback(

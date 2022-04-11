@@ -191,10 +191,8 @@ void ObjectController::checkUiRequests()
         // if the streamer needs to make ui scaling requests (Both to and from)
         stream_interface_map_[topic_name] = std::make_shared<StreamChannel>(topic_name);
         // Create the stream thread
-        stream_map_.emplace(
-          topic_name, std::make_shared<TopicStreamer>(
-                        topic_name, topic_type, stream_interface_map_[topic_name],
-                        ros_interface_node_, context_));
+        stream_map_[topic_name] = std::make_shared<TopicStreamer>(
+          topic_name, topic_type, stream_interface_map_[topic_name], ros_interface_node_, context_);
         interface_channel_->request_pending_ = false;
         interface_channel_->condition_variable_.notify_all();
         break;
@@ -204,6 +202,7 @@ void ObjectController::checkUiRequests()
         const auto & stream_name = interface_channel_->request_details_["stream_name"];
         stream_map_[stream_name]->closeStream();
         stream_map_.erase(stream_name);
+        stream_interface_map_.erase(stream_name);
         interface_channel_->request_pending_ = false;
         interface_channel_->condition_variable_.notify_all();
         break;

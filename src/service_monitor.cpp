@@ -91,8 +91,14 @@ void ServiceMonitor::getInteractionString(
       for (size_t i = 0; i < members->member_count_; i++) {
         const MessageMember & member = members->members_[i];
         std::string new_node_name = member.name_;
-        new_node_name += ":";
-        StringTreeNode * new_node = node->addChild(new_node_name.c_str());
+
+        std::string new_node_type;
+        introspection::messageTypeToString(member, new_node_type);
+        if (new_node_type.size()) {
+          new_node_name += ":";
+          new_node_type += " | ";
+        }
+        StringTreeNode * new_node = node->addChild(new_node_type + new_node_name.c_str());
         if (member.is_array_) {
           new_node->children().reserve(1);
           new_node = new_node->addChild("[]");
@@ -129,6 +135,8 @@ void ServiceMonitor::getInteractionResult(
 
   // Allocate space to store the binary representation of the message
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
+
+  // FIXME: This needs to be not hardcoded to uint8
   uint8_t * request_data =
     static_cast<uint8_t *>(allocator.allocate(members->size_of_, allocator.state));
 

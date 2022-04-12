@@ -42,6 +42,10 @@ void messageDataToString(
   const uint8_t * member_data,
   std::string &message_data);
 
+void messageTypeToString(
+  const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
+  std::string &message_type);
+
 std::string readMessageAsString(  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members);
 }  // namespace introspection
 

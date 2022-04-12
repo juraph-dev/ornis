@@ -150,6 +150,76 @@ const rosidl_message_type_support_t * getMessageTypeSupport(
   }
 }
 
+void messageTypeToString(
+  const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
+  std::string & message_type)
+{
+  switch (member_info.type_id_) {
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
+      message_type = "Float32";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
+      message_type = "Double";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
+      message_type = "Long Double";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
+      message_type = "Char";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
+      message_type = "WChar";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
+      message_type = "Bool";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_OCTET:
+      message_type = "Octect";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
+      message_type = "Uint8";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
+      message_type = "Int8";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
+      message_type = "UInt16";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
+      message_type = "Int16";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
+      message_type = "UInt32";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
+      message_type = "Int32";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
+      message_type = "Uint64";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
+      message_type = "Int64";
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
+      message_type = "String";
+      break;
+      // TODO Implement Nested. Ignored for now
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE:
+      // For nested types, don't copy the data out of the buffer directly. Recursively read the
+      // nested type into the YAML.
+      // RosMessage_Cpp nested_member;
+      // nested_member.type_info = reinterpret_cast<const TypeInfo_Cpp *>(member_info.members_->data);
+      // nested_member.data = const_cast<uint8_t *>(member_data);
+      // message_type = message_to_yaml(nested_member);
+      break;
+    default:
+      // Recieved unkwn message type, fail silently and attempt to parse.
+      // std::cerr << "Recieved unknown message type!!!: " << std::to_string(member_info.type_id_)
+      //           << "\n";
+      break;
+  }
+}
+
 // Convert an individual member's value from binary to string
 // TODO: Make bool, include failure cases
 void messageDataToString(

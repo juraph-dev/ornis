@@ -5,7 +5,6 @@
 
 namespace ui_helpers
 {
-
 inline void sizePlaneToString(ncpp::Plane & plane, const std::string & content)
 {
   int row = 1;
@@ -40,13 +39,53 @@ inline void sizePlaneToString(ncpp::Plane & plane, const std::string & content)
   plane.polyfill(row, longest_col, c);
 }
 
-  // Identical to previous, but renders a cursor at index
-inline void writeStringToPlane(ncpp::Plane & plane, const std::string & content, const int &cursor_index)
+// Overload to allow for functions to specify how much white space they want around the string
+inline void sizePlaneToString(
+  ncpp::Plane & plane, const std::string & content, const int & row_buffer, const int & col_buffer)
+{
+  int row = 1;
+  int col = 1;
+  int longest_col = 0;
+
+  // iterate through string twice, once to find what size
+  // to resize the plane to, second to place the characters on the plane.
+  // It's ugly, but much more efficient than dynamically resizing the
+  // plane as we iterate through the string.
+  for (const char & c : content) {
+    if (c == '\n') {
+      row++;
+      col = 1;
+    } else {
+      col++;
+      longest_col = col > longest_col ? col : longest_col;
+    }
+  }
+  // If we haven't found an endline char, artificially add a single row, to prevent
+  // single line strings from being overwritten by the border. We also add one to the
+  // longest col, to account for what would usually be read as the invisible \n
+  if (row == 1) {
+    row++;
+    longest_col++;
+  }
+  row += row_buffer;
+  longest_col += col_buffer;
+  // Add one to longest col to account for border
+  plane.resize(row + 2, longest_col + 1);
+
+  // Fill plane, ensures we don't have a transparent background
+  ncpp::Cell c(' ');
+  plane.polyfill(row, longest_col, c);
+}
+
+// Identical to previous, but renders a cursor at index
+inline void writeStringToPlane(
+  ncpp::Plane & plane, const std::string & content, const int & cursor_index)
 {
   // Cursor index is a location in string. If -1, place at end of string
   plane.erase();
   plane.move_top();
-  ui_helpers::sizePlaneToString(plane, content);
+  // As we have a cursor (And therefore expect to be editing the string), we add a horizontal buffer
+  ui_helpers::sizePlaneToString(plane, content, 0, 2);
 
   int string_index = 0;
   int row = 1;
@@ -105,7 +144,6 @@ inline void writeStringToPlane(ncpp::Plane & plane, const std::string & content)
   uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
   plane.perimeter_rounded(0, channel, 0);
 }
-}
+}  // namespace ui_helpers
 
-
-#endif // UI_HELPERS_H_
+#endif  // UI_HELPERS_H_

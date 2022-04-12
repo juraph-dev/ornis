@@ -32,8 +32,8 @@ inline void sizePlaneToString(ncpp::Plane & plane, const std::string & content)
     row++;
     longest_col++;
   }
-  // Add one to longest col to account for boreder
-  plane.resize(row + 1, longest_col + 1);
+  // Add one to longest col to account for border
+  plane.resize(row + 2, longest_col + 1);
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');

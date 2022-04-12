@@ -50,19 +50,19 @@ void TopicMonitor::getEntryInfo(
   ret = rcl_get_subscriptions_info_by_topic(
     ros_interface_node_.get(), &allocator, entry_name.c_str(), false, &topic_subscribers);
 
-  entry_info = "Publishers: \n";
+  entry_info = "Publishers:";
   for (size_t i = 0; i < topic_publishers.size; i++) {
-    entry_info += topic_publishers.info_array[i].node_name;
     entry_info += '\n';
+    entry_info += topic_publishers.info_array[i].node_name;
   }
 
-  entry_info += "Subscribers: \n";
+  entry_info += "\nSubscribers:";
   if (!topic_subscribers.size) {
-    entry_info += "None\n";
+    entry_info += "\nNone";
   } else {
     for (size_t i = 0; i < topic_subscribers.size; i++) {
-      entry_info += topic_subscribers.info_array[i].node_name;
       entry_info += '\n';
+      entry_info += topic_subscribers.info_array[i].node_name;
     }
   }
 }

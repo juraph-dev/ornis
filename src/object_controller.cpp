@@ -41,7 +41,6 @@ ObjectController::~ObjectController()
   for (const auto & monitor : monitor_map_) {
     monitor.second->spin_.store(false);
   }
-
   // TODO: Think about whether the object controller needs to handle destroying
   // any open streams
   auto ret = rcl_node_fini(ros_interface_node_.get());

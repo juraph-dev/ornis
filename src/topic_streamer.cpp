@@ -55,21 +55,27 @@ void TopicStreamer::callback(
   uint8_t * request_data =
     static_cast<uint8_t *>(allocator.allocate(members->size_of_, allocator.state));
 
-  rcl_ret_t rc;
+  // Initialise the memory that is expected to be used by the message
+  members->init_function(request_data, rosidl_runtime_cpp::MessageInitialization::ALL);
+
   rmw_message_info_t info;
 
-  members->init_function(request_data, rosidl_runtime_cpp::MessageInitialization::ALL);
-  rc = rcl_take(&subscription, request_data, &info, NULL);
+  // Grab the waiting message
+  auto rc = rcl_take(&subscription, request_data, &info, NULL);
+
   if (rc == RCL_RET_OK) {
     const auto message_string = introspection::readMessageAsString(request_data, members);
     const std::string t_string = topic_name_ + "\n" + message_string;
 
     ui_helpers::writeStringToPlane(*interface_channel_->stream_plane_, t_string);
 
-    uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+    // Add decorations to plane, now that it is the correct size
+    const uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
     interface_channel_->stream_plane_->perimeter_rounded(0, channel, 0);
   } else {
-    return;
+    // TODO: Test to make sure this fail string actually writes
+    const std::string error = "Failed to gread message! Error: " + std::to_string(rc);
+    ui_helpers::writeStringToPlane(*interface_channel_->stream_plane_, error);
   }
 }
 
@@ -90,6 +96,7 @@ void TopicStreamer::initialise()
   interface_channel_->stream_plane_->set_fg_rgb8(200, 200, 200);
   interface_channel_->stream_plane_->set_bg_rgb8(0, 0, 0);
 
+  // TODO: This can be allocated to a variable in header, doesn't NEED to be passed at each callback
   const auto type_support = introspection::getMessageTypeSupport(
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
 

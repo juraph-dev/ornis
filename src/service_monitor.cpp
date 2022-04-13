@@ -81,7 +81,7 @@ void ServiceMonitor::getInteractionString(
   service_info_.response_type_support = introspection::getMessageTypeSupport(
     response_char, rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
-  // TODO Add entry data type (uint8, uint16, etc) to this message, so user knows what's expected
+  // TODO: FIgure out how to format this niceley
   std::function<void(StringTreeNode * node, const rosidl_message_type_support_t *)>
     recursivelyCreateTree;
   recursivelyCreateTree =
@@ -91,12 +91,11 @@ void ServiceMonitor::getInteractionString(
       for (size_t i = 0; i < members->member_count_; i++) {
         const MessageMember & member = members->members_[i];
         std::string new_node_name = member.name_;
-
         std::string new_node_type;
         introspection::messageTypeToString(member, new_node_type);
         if (new_node_type.size()) {
           new_node_name += ":";
-          new_node_type += " | ";
+          new_node_type = "(" + new_node_type + ") ";
         }
         StringTreeNode * new_node = node->addChild(new_node_type + new_node_name.c_str());
         if (member.is_array_) {
@@ -136,13 +135,13 @@ void ServiceMonitor::getInteractionResult(
   // Allocate space to store the binary representation of the message
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
 
-  // FIXME: This needs to be not hardcoded to uint8
   uint8_t * request_data =
     static_cast<uint8_t *>(allocator.allocate(members->size_of_, allocator.state));
 
   // Initialise the members
   members->init_function(request_data, rosidl_runtime_cpp::MessageInitialization::ALL);
 
+  // FIXME: This fails for arrays, and members (Strings, for example)
   for (size_t i = 0; i < members->member_count_; i++) {
     const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[i];
     // Get corresponding entry in service req message
@@ -152,11 +151,9 @@ void ServiceMonitor::getInteractionResult(
     helper_functions::getNthIndex(request_string, '\n', i, request_val_end_index);
 
     // Grab the string contents between the : and the \n.
-    // FIXME: Un-hardcode the type here
-    int request_val =
-      stoi(request_string.substr(request_val_start_index + 1, request_val_end_index));
-    // This is te line where we allocate the data to the ros message (Stored in request data)
-    *reinterpret_cast<int *>(request_data + member.offset_) = request_val;
+    const std::string request_val =
+      request_string.substr(request_val_start_index + 1, request_val_end_index);
+    introspection::stringToMessageData(request_data, member, request_val);
   }
 
   // ----------------------------------------Set up client
@@ -174,7 +171,7 @@ void ServiceMonitor::getInteractionResult(
 
   // Send request
   const auto request = rcl_send_request(&client, request_data, &sequence_number);
-  // Check request result here
+  // TODO: Check request result here
 
   const auto * response_members =
     static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
@@ -197,11 +194,7 @@ void ServiceMonitor::getInteractionResult(
     }
   }
 
-  // HACK Currently hardcoded as int, un-hardcode.
-  const auto response_member = response_members->members_[0];
-  const std::string t_string = "reply: " + std::to_string(response_data[response_member.offset_]);
-
-  response_string = t_string;
+  response_string = introspection::readMessageAsString(response_data, response_members);
 }
 
 void ServiceMonitor::updateValue()

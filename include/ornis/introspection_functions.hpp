@@ -39,14 +39,18 @@ const rosidl_message_type_support_t * getMessageTypeSupport(
 
 void messageDataToString(
   const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
-  const uint8_t * member_data,
-  std::string &message_data);
+  const uint8_t * member_data, std::string & message_data);
 
 void messageTypeToString(
   const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
-  std::string &message_type);
+  std::string & message_type);
 
-std::string readMessageAsString(  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members);
+std::string readMessageAsString(
+  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members);
+
+void stringToMessageData(
+  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMember & member,
+  const std::string & data);
 }  // namespace introspection
 
 #endif  // INTROSPECTION_FUNCTIONS_H_

@@ -14,18 +14,20 @@ class MinimalService(Node):
         self.string_srv = self.create_service(AddTwoStrings, 'add_two_strings', self.add_two_strings_callback)
 
     def add_two_ints_callback(self, request, response):
-        response.sum = request.a + request.b
         self.get_logger().info('[Int] Incoming request\na: %d b: %d' % (request.a, request.b))
+        response.sum = request.a + request.b
         return response
 
     def add_two_floats_callback(self, request, response):
+        self.get_logger().info('[Float] Incoming request\na: %f b: %f' % (request.a, request.b))
         response.sum = request.a + request.b
-        self.get_logger().info('[Float] Incoming request\na: %d b: %d' % (request.a, request.b))
         return response
 
     def add_two_strings_callback(self, request, response):
-        response.sum = request.a + request.b
-        self.get_logger().info('[String] Incoming request\na: %d b: %d' % (request.a, request.b))
+        print('[String] Incoming request')
+        print(request.a)
+        print(request.b)
+        response.sum = request.a.data + request.b.data
         return response
 
 

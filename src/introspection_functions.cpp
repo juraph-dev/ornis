@@ -1,5 +1,7 @@
 #include "ornis/introspection_functions.hpp"
 
+#include <cstring>
+
 namespace introspection
 {
 std::string getTypeSupportLibraryPath(
@@ -315,4 +317,79 @@ std::string readMessageAsString(
   return members_string;
 }
 
+void stringToMessageData(
+  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
+  const std::string & data)
+{
+  switch (member_info.type_id_) {
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
+      *reinterpret_cast<float *>(message_data + member_info.offset_) = std::stof(data);
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
+      *reinterpret_cast<double *>(message_data + member_info.offset_) = std::stod(data);
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
+      *reinterpret_cast<long double *>(message_data + member_info.offset_) = std::stold(data);
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
+      *reinterpret_cast<char *>(message_data + member_info.offset_) = data.at(0);
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
+      *reinterpret_cast<wchar_t *>(message_data + member_info.offset_) = data.at(0);
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
+      *reinterpret_cast<bool *>(message_data + member_info.offset_) =
+        (strcasecmp(data.c_str(), "true") == 0 || atoi(data.c_str()) != 0);
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_OCTET:
+      // FIXME: Write this
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
+      *reinterpret_cast<uint8_t *>(message_data + member_info.offset_) =
+        static_cast<uint8_t>(std::stoul(data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
+      *reinterpret_cast<int8_t *>(message_data + member_info.offset_) =
+        static_cast<int8_t>(std::stoi(data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
+      *reinterpret_cast<uint16_t *>(message_data + member_info.offset_) =
+        static_cast<uint16_t>(std::stoul(data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
+      *reinterpret_cast<int16_t *>(message_data + member_info.offset_) =
+        static_cast<int16_t>(std::stoi(data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
+      *reinterpret_cast<uint32_t *>(message_data + member_info.offset_) =
+        static_cast<uint32_t>(std::stoul(data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
+      *reinterpret_cast<int32_t *>(message_data + member_info.offset_) = stoi(data);
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
+      *reinterpret_cast<uint64_t *>(message_data + member_info.offset_) = stoull(data);
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
+      *reinterpret_cast<int64_t *>(message_data + member_info.offset_) = stoi(data);
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
+      *reinterpret_cast<std::string *>(message_data + member_info.offset_) = data;
+      break;
+      // TODO Implement Nested. Ignored for now
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE:
+      // For nested types, don't copy the data out of the buffer directly. Recursively read the
+      // nested type into the YAML.
+      // RosMessage_Cpp nested_member;
+      // nested_member.type_info = reinterpret_cast<const TypeInfo_Cpp *>(member_info.members_->data);
+      // nested_member.data = const_cast<uint8_t *>(member_data);
+      // message_data = message_to_yaml(nested_member);
+      break;
+    default:
+      // Recieved unkwn message type, fail silently and attempt to parse.
+      // std::cerr << "Recieved unknown message type!!!: " << std::to_string(member_info.type_id_)
+      //           << "\n";
+      break;
+  }
+}
 }  // namespace introspection

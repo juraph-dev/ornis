@@ -74,7 +74,7 @@ void TopicStreamer::callback(
     interface_channel_->stream_plane_->perimeter_rounded(0, channel, 0);
   } else {
     // TODO: Test to make sure this fail string actually writes
-    const std::string error = "Failed to gread message! Error: " + std::to_string(rc);
+    const std::string error = "Failed to read message! Error: " + std::to_string(rc);
     ui_helpers::writeStringToPlane(*interface_channel_->stream_plane_, error);
   }
 }

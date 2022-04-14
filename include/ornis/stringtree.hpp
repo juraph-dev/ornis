@@ -36,23 +36,24 @@
 
 #pragma once
 
-#include <vector>
-#include <map>
-#include <iostream>
+#include <fastcdr/FastBuffer.h>
+
 #include <boost/container/small_vector.hpp>
 #include <boost/container/static_vector.hpp>
 #include <boost/utility/string_ref.hpp>
+#include <iostream>
+#include <map>
 #include <ornis/tree.hpp>
-#include <fastcdr/FastBuffer.h>
-
+#include <vector>
 
 using StringView = boost::string_ref;
 
-struct BufferView {
-    const char* data;
-    size_t size;
-    BufferView(): data(nullptr), size(0) {}
-    BufferView(const char* _data, size_t _size): data(_data), size(_size) {}
+struct BufferView
+{
+  const char * data;
+  size_t size;
+  BufferView() : data(nullptr), size(0) {}
+  BufferView(const char * _data, size_t _size) : data(_data), size(_size) {}
 };
 
 using StringTreeNode = TreeNode<std::string>;
@@ -77,19 +78,20 @@ using StringTree = Tree<std::string>;
  * array_size will be equal to two and index_array will contain these numbers {2,3}
  *
  */
-struct StringTreeLeaf{
-
+struct StringTreeLeaf
+{
   StringTreeLeaf();
 
-  const StringTreeNode* node_ptr;
+  const StringTreeNode * node_ptr;
 
-  boost::container::static_vector<uint16_t,8> index_array;
+  boost::container::static_vector<uint16_t, 8> index_array;
 
-  public:
+public:
   /// Utility functions to print the entire branch
-  int toStr(std::string &destination) const;
+  int toStr(std::string & destination) const;
 
-  std::string toStdString() const {
+  std::string toStdString() const
+  {
     std::string out;
     toStr(out);
     return out;
@@ -101,7 +103,7 @@ struct StringTreeLeaf{
 
 //---------------------------------
 
-inline std::ostream& operator<<(std::ostream &os, const StringTreeLeaf& leaf )
+inline std::ostream & operator<<(std::ostream & os, const StringTreeLeaf & leaf)
 {
   std::string dest;
   leaf.toStr(dest);
@@ -109,17 +111,6 @@ inline std::ostream& operator<<(std::ostream &os, const StringTreeLeaf& leaf )
   return os;
 }
 
-inline StringTreeLeaf::StringTreeLeaf(): node_ptr(nullptr)
-{  }
+inline StringTreeLeaf::StringTreeLeaf() : node_ptr(nullptr) {}
 
-
-
-
-
-
-
-
-
-
-
-#endif // STRINGTREE_H_
+#endif  // STRINGTREE_H_

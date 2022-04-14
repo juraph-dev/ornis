@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "ornis/helper_functions.hpp"
+
 namespace introspection
 {
 std::string getTypeSupportLibraryPath(
@@ -315,6 +317,41 @@ std::string readMessageAsString(
     members_string += member_string;
   }
   return members_string;
+}
+
+void writeDataToMessage(
+  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members,
+  std::vector<std::string> & data)
+{
+  // Iterate through message members, when reach member with no submembers, insert data, repeat.
+  for (size_t i = 0; i < members->member_count_; i++) {
+    const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[i];
+    uint8_t * member_data = &message_data[member.offset_];
+
+    // Perform a check for if we're dealing with a ros message type, and recurse if we are
+    if (member.type_id_ == rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
+      const auto sub_members =
+        static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+          member.members_->data);
+      writeDataToMessage(member_data, sub_members, data);
+    } else {
+      stringToMessageData(member_data, member, data.front());
+      data.erase(data.begin());
+    }
+  }
+}
+
+// Populates a mesage with data from string. Looks for data between : and \n. Used for the responses from the service monitor
+bool populateMessage(
+  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members,
+  const std::string & data)
+{
+  std::vector<std::string> data_strings;
+  helper_functions::getDataFromRequestString(data_strings, data);
+
+  writeDataToMessage(message_data, members, data_strings);
+
+  return true;
 }
 
 void stringToMessageData(

@@ -11,7 +11,7 @@
 #include "ornis/stringtree.hpp"
 
 // TODO Rename/Clean up this strcut.
-struct ServiceInfo
+struct serviceInfo
 {
   const rosidl_service_type_support_t * type_support;
   const rosidl_message_type_support_t * request_type_support;
@@ -58,7 +58,7 @@ private:
 
   const std::pair<std::string, std::string> extract_type_and_package(const std::string & full_type);
 
-  ServiceInfo service_info_;
+  serviceInfo service_info_;
 };
 
 #endif  // SERVICE_MONITOR_H_

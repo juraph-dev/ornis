@@ -36,137 +36,124 @@
 
 #pragma once
 
-#include <vector>
+#include <boost/container/stable_vector.hpp>
+#include <boost/noncopyable.hpp>
 #include <deque>
 #include <iostream>
 #include <memory>
-#include <boost/container/stable_vector.hpp>
-#include <boost/noncopyable.hpp>
-
-
+#include <vector>
 
 /**
  * @brief Element of the tree. it has a single parent and N >= 0 children.
  */
-template <typename T> class TreeNode
+template <typename T>
+class TreeNode
 {
 public:
+  typedef std::vector<TreeNode>
+    ChildrenVector;  // dangerous because of pointer invalidation (but faster)
 
-  typedef std::vector<TreeNode> ChildrenVector; // dangerous because of pointer invalidation (but faster)
+  TreeNode(const TreeNode * parent);
 
-  TreeNode(const TreeNode* parent );
+  const TreeNode * parent() const { return _parent; }
 
-  const TreeNode* parent() const  { return _parent; }
+  const T & value() const { return _value; }
+  void setValue(const T & value) { _value = value; }
 
-  const T& value() const          { return _value; }
-  void setValue( const T& value)  { _value = value; }
+  const ChildrenVector & children() const { return _children; }
+  ChildrenVector & children() { return _children; }
 
-  const ChildrenVector& children()const   { return _children; }
-  ChildrenVector& children()              { return _children; }
+  const TreeNode * child(size_t index) const { return &(_children[index]); }
+  TreeNode * child(size_t index) { return &(_children[index]); }
 
-  const TreeNode* child(size_t index) const { return &(_children[index]); }
-  TreeNode* child(size_t index) { return &(_children[index]); }
-
-  TreeNode *addChild(const T& child );
+  TreeNode * addChild(const T & child);
 
   bool isLeaf() const { return _children.empty(); }
 
 private:
-  const TreeNode*   _parent;
-  T                 _value;
-  ChildrenVector    _children;
+  const TreeNode * _parent;
+  T _value;
+  ChildrenVector _children;
 };
 
-
-template <typename T> class Tree
+template <typename T>
+class Tree
 {
 public:
-  Tree(): _root( new TreeNode<T>(nullptr) ) {}
+  Tree() : _root(new TreeNode<T>(nullptr)) {}
 
-   /// Mutable pointer to the root of the tree.
-  TreeNode<T>* root() { return _root.get(); }
+  /// Mutable pointer to the root of the tree.
+  TreeNode<T> * root() { return _root.get(); }
 
-  const TreeNode<T>* root() const { return _root.get(); }
+  const TreeNode<T> * root() const { return _root.get(); }
 
-  friend std::ostream& operator<<(std::ostream& os, const Tree& _this){
-    _this.print_impl(os, _this.root() , 0);
+  friend std::ostream & operator<<(std::ostream & os, const Tree & _this)
+  {
+    _this.print_impl(os, _this.root(), 0);
     return os;
   }
 
 private:
-
-  void print_impl(std::ostream& os, const TreeNode<T> *node, int indent ) const;
+  void print_impl(std::ostream & os, const TreeNode<T> * node, int indent) const;
 
   std::unique_ptr<TreeNode<T>> _root;
 };
 
 //-----------------------------------------
 
-
-template <typename T> inline
-std::ostream& operator<<(std::ostream &os, const std::pair<const TreeNode<T>*, const TreeNode<T>* >& tail_head )
+template <typename T>
+inline std::ostream & operator<<(
+  std::ostream & os, const std::pair<const TreeNode<T> *, const TreeNode<T> *> & tail_head)
 {
-  const TreeNode<T>* tail = tail_head.first;
-  const TreeNode<T>* head = tail_head.second;
+  const TreeNode<T> * tail = tail_head.first;
+  const TreeNode<T> * head = tail_head.second;
 
-  if( !head ) return os;
+  if (!head) return os;
 
-  const TreeNode<T>* array[64];
+  const TreeNode<T> * array[64];
   int index = 0;
   array[index++] = head;
 
-  while( !head || head != tail)
-  {
+  while (!head || head != tail) {
     head = head->parent();
     array[index++] = head;
   };
   array[index] = nullptr;
   index--;
 
-  while ( index >=0)
-  {
-    if( array[index] ){
+  while (index >= 0) {
+    if (array[index]) {
       os << array[index]->value();
     }
-    if( index >0 )  os << ".";
+    if (index > 0) os << ".";
     index--;
   }
   return os;
 }
 
-template <typename T> inline
-void Tree<T>::print_impl(std::ostream &os, const TreeNode<T>* node, int indent) const
+template <typename T>
+inline void Tree<T>::print_impl(std::ostream & os, const TreeNode<T> * node, int indent) const
 {
-  for (int i=0; i<indent; i++) os << " ";
+  for (int i = 0; i < indent; i++) os << " ";
   os << node->value() << std::endl;
 
-  for (const auto& child: node->children() )
-  {
-    print_impl(os, &child, indent+3);
+  for (const auto & child : node->children()) {
+    print_impl(os, &child, indent + 3);
   }
 }
 
-template <typename T> inline
-TreeNode<T>::TreeNode(const TreeNode *parent):
-  _parent(parent)
+template <typename T>
+inline TreeNode<T>::TreeNode(const TreeNode * parent) : _parent(parent)
 {
-
 }
 
-template <typename T> inline
-TreeNode<T> *TreeNode<T>::addChild(const T& value)
+template <typename T>
+inline TreeNode<T> * TreeNode<T>::addChild(const T & value)
 {
-  assert(_children.capacity() > _children.size() );
-  _children.push_back( TreeNode<T>(this) );
-  _children.back().setValue( value );
+  assert(_children.capacity() > _children.size());
+  _children.push_back(TreeNode<T>(this));
+  _children.back().setValue(value);
   return &_children.back();
 }
 
-
-
-
-
-
-
-
-#endif // TREE_H_
+#endif  // TREE_H_

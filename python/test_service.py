@@ -25,9 +25,8 @@ class MinimalService(Node):
 
     def add_two_strings_callback(self, request, response):
         print('[String] Incoming request')
-        print(request.a)
-        print(request.b)
-        response.sum = request.a.data + request.b.data
+        print(request)
+        response.sum.data = request.a.data + request.b.data
         return response
 
 

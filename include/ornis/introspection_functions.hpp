@@ -20,6 +20,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 namespace introspection
 {
@@ -47,6 +48,14 @@ void messageTypeToString(
 
 std::string readMessageAsString(
   uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members);
+
+void writeDataToMessage(
+  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members,
+  const std::vector<std::string> & data);
+
+bool populateMessage(
+  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members,
+  const std::string & data);
 
 void stringToMessageData(
   uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMember & member,

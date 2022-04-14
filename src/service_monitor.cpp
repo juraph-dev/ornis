@@ -110,6 +110,7 @@ void ServiceMonitor::getInteractionString(
 
   service_info_.request_field_tree.root()->setValue(entry_name);
   service_info_.response_field_tree.root()->setValue(entry_name);
+
   auto request_starting_node = service_info_.request_field_tree.root();
   auto response_starting_node = service_info_.response_field_tree.root();
 
@@ -141,20 +142,7 @@ void ServiceMonitor::getInteractionResult(
   // Initialise the members
   members->init_function(request_data, rosidl_runtime_cpp::MessageInitialization::ALL);
 
-  // FIXME: This fails for arrays, and members (Strings, for example)
-  for (size_t i = 0; i < members->member_count_; i++) {
-    const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[i];
-    // Get corresponding entry in service req message
-    size_t request_val_start_index;
-    size_t request_val_end_index;
-    helper_functions::getNthIndex(request_string, ':', i, request_val_start_index);
-    helper_functions::getNthIndex(request_string, '\n', i, request_val_end_index);
-
-    // Grab the string contents between the : and the \n.
-    const std::string request_val =
-      request_string.substr(request_val_start_index + 1, request_val_end_index);
-    introspection::stringToMessageData(request_data, member, request_val);
-  }
+  introspection::populateMessage(request_data, members, request_string);
 
   // ----------------------------------------Set up client
   rcl_client_t client = rcl_get_zero_initialized_client();

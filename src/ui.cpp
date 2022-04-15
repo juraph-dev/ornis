@@ -85,12 +85,13 @@ bool Ui::initialise(
 
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);
   // Initialise the popup-window for selecting a monitor entry
-  uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 60, 60, 60);
   monitor_info_plane_->move_bottom();
-  monitor_info_plane_->set_bg_alpha(NCALPHA_OPAQUE);
-  monitor_info_plane_->set_channels(popup_channels);
+  monitor_info_plane_->set_bg_alpha(NCALPHA_TRANSPARENT);
   monitor_info_plane_->set_fg_rgb8(200, 200, 200);
-  monitor_info_plane_->set_bg_rgb8(0, 0, 0);
+
+  uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 0, 0, 0);
+  ncchannels_set_bg_alpha(&popup_channels, NCALPHA_TRANSPARENT);
+  monitor_info_plane_->set_channels(popup_channels);
 
   ui_thread_ = new std::thread([this]() { refreshUi(); });
 
@@ -535,14 +536,6 @@ std::shared_ptr<ncpp::Plane> Ui::createStreamPlane()
   stream_plane->move(
     monitor_info_plane_->get_abs_y(),
     monitor_info_plane_->get_abs_x() + monitor_info_plane_->get_dim_x());
-  stream_plane->resize(20, 20);
-
-  uint64_t channel = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
-  stream_plane->set_bg_alpha(NCALPHA_OPAQUE);
-  stream_plane->set_channels(channel);
-  stream_plane->set_bg_rgb8(100, 20, 0);
-  stream_plane->set_fg_rgb8(100, 100, 100);
-  stream_plane->perimeter_rounded(0, channel, 0);
 
   return stream_plane;
 }

@@ -70,7 +70,8 @@ void TopicStreamer::callback(
     ui_helpers::writeStringToPlane(*interface_channel_->stream_plane_, t_string);
 
     // Add decorations to plane, now that it is the correct size
-    const uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+    uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+    ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
     interface_channel_->stream_plane_->perimeter_rounded(0, channel, 0);
   } else {
     // TODO: Test to make sure this fail string actually writes
@@ -89,18 +90,20 @@ void TopicStreamer::initialise()
 {
   waitUntilUiReady();
 
+  // FIXME Should take ownership of the stream plane, instead of leaving it in the channel. Once
+  // Ornis moves to support multiple streams, this will cause issues.
   // Make the stream plane pretty
-  uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 60, 60, 60);
-  interface_channel_->stream_plane_->set_bg_alpha(NCALPHA_OPAQUE);
-  interface_channel_->stream_plane_->set_channels(popup_channels);
-  interface_channel_->stream_plane_->set_fg_rgb8(200, 200, 200);
-  interface_channel_->stream_plane_->set_bg_rgb8(0, 0, 0);
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+  ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+  interface_channel_->stream_plane_->set_bg_alpha(NCALPHA_TRANSPARENT);
+  interface_channel_->stream_plane_->set_channels(channel);
+  interface_channel_->stream_plane_->set_fg_rgb8(255, 255, 255);
 
   // TODO: This can be allocated to a variable in header, doesn't NEED to be passed at each callback
   const auto type_support = introspection::getMessageTypeSupport(
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
-  // TODO: Investigate swapping profiles in realtime
+  // TODO: Investigate swapping profiles at runtime
   rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
 
   rcl_wait_set_t wait_set = rcl_get_zero_initialized_wait_set();
@@ -119,12 +122,11 @@ void TopicStreamer::initialise()
   while (stream_open_.load()) {
     ret = rcl_wait_set_clear(&wait_set);
     ret = rcl_wait_set_add_subscription(&wait_set, &subscription, &index);
-    ret = rcl_wait(&wait_set, RCL_MS_TO_NS(100));
+    ret = rcl_wait(&wait_set, RCL_MS_TO_NS(10000));
 
     if (ret == RCL_RET_TIMEOUT) {
       continue;
     }
-
     if (wait_set.subscriptions[0]) {
       callback(subscription, type_support);
     }

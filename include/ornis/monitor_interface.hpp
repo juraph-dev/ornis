@@ -44,14 +44,19 @@ public:
     sopts.maxdisplay = 10;
     sopts.items = items;
     sopts.defidx = 0;
-    sopts.boxchannels = NCCHANNELS_INITIALIZER(0x20, 0xe0, 0x40, 0x20, 0x20, 0x20);
-    sopts.opchannels = NCCHANNELS_INITIALIZER(0xe0, 0x80, 0x40, 0, 0, 0);
-    sopts.descchannels = NCCHANNELS_INITIALIZER(0x80, 0xe0, 0x40, 0, 0, 0);
+    sopts.boxchannels = NCCHANNELS_INITIALIZER(0xe0, 0xe0, 0xe0, 0x00, 0x00, 0x00);
+    sopts.opchannels = NCCHANNELS_INITIALIZER(0x00, 0x00, 0xe0, 0, 0, 0);
+    sopts.descchannels = NCCHANNELS_INITIALIZER(0x00, 0x00, 0x80, 0, 0, 0);
     sopts.footchannels = NCCHANNELS_INITIALIZER(0xe0, 0, 0x40, 0x20, 0, 0);
-    sopts.titlechannels = NCCHANNELS_INITIALIZER(0xff, 0xff, 0x80, 0, 0, 0x20);
-    uint64_t bgchannels = NCCHANNELS_INITIALIZER(0, 0x20, 0, 0, 0x20, 0);
-    ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
-    ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
+    sopts.titlechannels = NCCHANNELS_INITIALIZER(0xff, 0xff, 0xff, 0, 0, 0x20);
+
+    uint64_t bgchannels = NCCHANNELS_INITIALIZER(0, 0x00, 0x40, 0, 0x20, 0);
+    ncchannels_set_bg_alpha(&bgchannels, NCALPHA_TRANSPARENT);
+    ncchannels_set_bg_alpha(&sopts.boxchannels, NCALPHA_TRANSPARENT);
+    ncchannels_set_bg_alpha(&sopts.opchannels, NCALPHA_TRANSPARENT);
+    ncchannels_set_bg_alpha(&sopts.descchannels, NCALPHA_TRANSPARENT);
+    ncchannels_set_bg_alpha(&sopts.titlechannels, NCALPHA_TRANSPARENT);
+
     sopts.title = selector_title_.c_str();
 
     selector_ = std::make_shared<ncpp::Selector>(selector_plane, &sopts);
@@ -65,6 +70,7 @@ public:
     }
 
     uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+    ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
     minimised_plane_->perimeter_rounded(0, channel, 0);
   }
 

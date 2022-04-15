@@ -442,11 +442,11 @@ void Ui::renderHomeLayout()
       break;
     }
     case UiLayoutEnum::Vertical: {
-      topic_x = 1;
+      topic_x = (term_width_ / 2) - interface_map_.at("topics")->get_plane()->get_dim_x() / 2;
       topic_y = 0;
-      node_x = 1;
+      node_x = (term_width_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;;
       node_y = (term_height_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_y() / 2;
-      service_x = 1;
+      service_x = (term_width_ / 2) - interface_map_.at("services")->get_plane()->get_dim_x() / 2;
       service_y = (term_height_)-interface_map_.at("services")->get_plane()->get_dim_y();
       break;
     }

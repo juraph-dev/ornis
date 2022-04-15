@@ -52,7 +52,8 @@ void NodeMonitor::getEntryInfo(
 {
   // Currently, the simple console call is the best way to grab node information.
   // I will change this once more features become needed
-  std::istringstream t_value(callConsole(ros2_info_string_ + entry_name));
+  const std::string node_prefix = "/";
+  std::istringstream t_value(callConsole(ros2_info_string_ + node_prefix + entry_name));
   entry_info = t_value.str();
 }
 

@@ -16,9 +16,6 @@ struct serviceInfo
   const rosidl_service_type_support_t * type_support;
   const rosidl_message_type_support_t * request_type_support;
   const rosidl_message_type_support_t * response_type_support;
-
-  StringTree request_field_tree;
-  StringTree response_field_tree;
 };
 
 class ServiceMonitor : public Monitor

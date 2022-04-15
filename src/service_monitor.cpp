@@ -108,18 +108,20 @@ void ServiceMonitor::getInteractionString(
       }
     };
 
-  service_info_.request_field_tree.root()->setValue(entry_name);
-  service_info_.response_field_tree.root()->setValue(entry_name);
+  StringTree request_field_tree, response_field_tree;
 
-  auto request_starting_node = service_info_.request_field_tree.root();
-  auto response_starting_node = service_info_.response_field_tree.root();
+  request_field_tree.root()->setValue(entry_name);
+  response_field_tree.root()->setValue(entry_name);
+
+  auto request_starting_node = request_field_tree.root();
+  auto response_starting_node = response_field_tree.root();
 
   // start building recursively
   recursivelyCreateTree(request_starting_node, service_info_.request_type_support);
   recursivelyCreateTree(response_starting_node, service_info_.response_type_support);
 
   std::stringstream request_string;
-  request_string << service_info_.request_field_tree;
+  request_string << request_field_tree;
   entry_info = request_string.str().c_str();
 }
 

@@ -119,7 +119,7 @@ void TopicStreamer::initialise()
   while (stream_open_.load()) {
     ret = rcl_wait_set_clear(&wait_set);
     ret = rcl_wait_set_add_subscription(&wait_set, &subscription, &index);
-    ret = rcl_wait(&wait_set, RCL_MS_TO_NS(1000));
+    ret = rcl_wait(&wait_set, RCL_MS_TO_NS(100));
 
     if (ret == RCL_RET_TIMEOUT) {
       continue;
@@ -130,6 +130,7 @@ void TopicStreamer::initialise()
     }
   }
 
+  // Clean up
   ret = rcl_subscription_fini(&subscription, ros_interface_node_.get());
   ret = rcl_wait_set_fini(&wait_set);
 

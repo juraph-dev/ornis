@@ -327,7 +327,6 @@ void writeDataToMessage(
   for (size_t i = 0; i < members->member_count_; i++) {
     const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[i];
     uint8_t * member_data = &message_data[member.offset_];
-
     // Perform a check for if we're dealing with a ros message type, and recurse if we are
     if (member.type_id_ == rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
       const auto sub_members =
@@ -335,7 +334,7 @@ void writeDataToMessage(
           member.members_->data);
       writeDataToMessage(member_data, sub_members, data);
     } else {
-      stringToMessageData(member_data, member, data.front());
+      stringToMessageData(message_data, member, data.front());
       data.erase(data.begin());
     }
   }
@@ -408,7 +407,8 @@ void stringToMessageData(
       *reinterpret_cast<uint64_t *>(message_data + member_info.offset_) = stoull(data);
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
-      *reinterpret_cast<int64_t *>(message_data + member_info.offset_) = stoi(data);
+      *reinterpret_cast<int64_t *>(message_data + member_info.offset_) =
+        static_cast<int64_t>(std::stoll(data));
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
       *reinterpret_cast<std::string *>(message_data + member_info.offset_) = data;

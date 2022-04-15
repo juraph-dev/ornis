@@ -157,10 +157,6 @@ void ServiceMonitor::getInteractionResult(
   // Sequence number of the request (Populated in rcl_send_request)
   int64_t sequence_number;
 
-  // Send request
-  const auto request = rcl_send_request(&client, request_data, &sequence_number);
-  // TODO: Check request result here
-
   const auto * response_members =
     static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
       service_info_.response_type_support->data);
@@ -168,21 +164,31 @@ void ServiceMonitor::getInteractionResult(
   uint8_t * response_data =
     static_cast<uint8_t *>(allocator.allocate(response_members->size_of_, allocator.state));
 
-  using namespace std::chrono_literals;
-
   rmw_service_info_t req_header;
-  // FIXME: Change to use an rcl_waitset, instead of this crap
-  for (int i = 0; i < 5; i++) {
-    std::this_thread::sleep_for(0.1s);
-    // const auto response = rcl_take_response_with_info(&client, &req_header, response_data);
-    // Place into loop, trying repeatedly until either we time-out, or have successes in grabbing message
-    const auto response = rcl_take_response_with_info(&client, &req_header, response_data);
-    if (response == 0) {
+  rcl_wait_set_t wait_set = rcl_get_zero_initialized_wait_set();
+  ret = rcl_wait_set_init(
+    &wait_set, 0, 0, 0, 1, 0, 0, ros_interface_node_->context, rcl_get_default_allocator());
+
+  // Send request
+  // TODO: Check request result here
+  const auto request = rcl_send_request(&client, request_data, &sequence_number);
+
+  size_t index;
+  while (true) {
+    ret = rcl_wait_set_clear(&wait_set);
+    ret = rcl_wait_set_add_client(&wait_set, &client, &index);
+    ret = rcl_wait(&wait_set, RCL_MS_TO_NS(100));
+    if (ret == RCL_RET_TIMEOUT) {
       break;
+    }
+    if (wait_set.clients[0]) {
+      // TODO: Throw error when when response indicates fail
+      const auto response = rcl_take_response_with_info(&client, &req_header, response_data);
     }
   }
 
   response_string = introspection::readMessageAsString(response_data, response_members);
+  // Clean up
 }
 
 void ServiceMonitor::updateValue()

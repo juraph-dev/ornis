@@ -110,8 +110,8 @@ void ServiceMonitor::getInteractionString(
 
   StringTree request_field_tree, response_field_tree;
 
-  request_field_tree.root()->setValue(entry_name);
-  response_field_tree.root()->setValue(entry_name);
+  request_field_tree.root()->setValue("");
+  response_field_tree.root()->setValue("");
 
   auto request_starting_node = request_field_tree.root();
   auto response_starting_node = response_field_tree.root();
@@ -122,6 +122,7 @@ void ServiceMonitor::getInteractionString(
 
   std::stringstream request_string;
   request_string << request_field_tree;
+
   entry_info = request_string.str().c_str();
 }
 
@@ -146,7 +147,7 @@ void ServiceMonitor::getInteractionResult(
 
   introspection::populateMessage(request_data, members, request_string);
 
-  // ----------------------------------------Set up client
+  // Set up client
   rcl_client_t client = rcl_get_zero_initialized_client();
   rcl_client_options_t client_ops = rcl_client_get_default_options();
   auto ret =

@@ -133,7 +133,8 @@ void Ui::renderMonitorInfo(MonitorInterface * interface)
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
 
-  ui_helpers::writeStringToPlane(*monitor_info_plane_, interface_channel_->response_string_);
+  ui_helpers::writeStringToTitledPlane(
+    *monitor_info_plane_, item, interface_channel_->response_string_);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -162,7 +163,7 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
   // Request complete, now render the result to the popup plane
   const std::string reply = interface_channel_->response_string_;
 
-  ui_helpers::writeStringToPlane(*monitor_info_plane_, reply);
+  ui_helpers::writeStringToTitledPlane(*monitor_info_plane_, item, reply);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -189,7 +190,7 @@ void Ui::renderMonitorInteraction(MonitorInterface * interface)
   // Once we get the information, open the window for editing the text, and we can edit from there
   active_interaction_string_ = interface_channel_->response_string_;
 
-  ui_helpers::writeStringToPlane(*monitor_info_plane_, active_interaction_string_);
+  ui_helpers::writeStringToTitledPlane(*monitor_info_plane_, item, active_interaction_string_);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -354,9 +355,10 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
     // If we don't increment, subtract one
     endline_index -= 1;
   }
-
   // Update the cursor as well as string on plane
-  ui_helpers::writeStringToPlane(*monitor_info_plane_, active_interaction_string_, endline_index);
+  ui_helpers::writeStringToTitledPlane(
+    *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
+    active_interaction_string_, endline_index);
 }
 
 void Ui::handleInputMonitorInteractionResult(const ncinput & input)
@@ -444,7 +446,8 @@ void Ui::renderHomeLayout()
     case UiLayoutEnum::Vertical: {
       topic_x = (term_width_ / 2) - interface_map_.at("topics")->get_plane()->get_dim_x() / 2;
       topic_y = 0;
-      node_x = (term_width_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;;
+      node_x = (term_width_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
+      ;
       node_y = (term_height_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_y() / 2;
       service_x = (term_width_ / 2) - interface_map_.at("services")->get_plane()->get_dim_x() / 2;
       service_y = (term_height_)-interface_map_.at("services")->get_plane()->get_dim_y();

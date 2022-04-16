@@ -310,7 +310,7 @@ std::string readMessageAsString(
       const auto sub_members =
         static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
           member.members_->data);
-      member_string += readMessageAsString(member_data, sub_members) + "\n";
+      member_string += readMessageAsString(member_data, sub_members);
     } else {
       introspection::messageDataToString(member, member_data, member_string);
     }

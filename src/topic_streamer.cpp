@@ -65,14 +65,11 @@ void TopicStreamer::callback(
 
   if (rc == RCL_RET_OK) {
     const auto message_string = introspection::readMessageAsString(request_data, members);
-    const std::string t_string = topic_name_ + "\n" + message_string;
 
-    ui_helpers::writeStringToPlane(*interface_channel_->stream_plane_, t_string);
+    ui_helpers::writeStringToTitledPlane(
+      *interface_channel_->stream_plane_, topic_name_, message_string);
 
     // Add decorations to plane, now that it is the correct size
-    uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
-    ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
-    interface_channel_->stream_plane_->perimeter_rounded(0, channel, 0);
   } else {
     // TODO: Test to make sure this fail string actually writes
     const std::string error = "Failed to read message! Error: " + std::to_string(rc);

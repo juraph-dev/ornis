@@ -117,6 +117,47 @@ inline void writeStringToPlane(
   plane.perimeter_rounded(0, channel, 0);
 }
 
+inline void writeStringToTitledPlane(
+  ncpp::Plane & plane, const std::string & title, const std::string & content)
+{
+  plane.erase();
+  plane.move_top();
+
+  // Add some white space to the front and end of the title string.
+  title.size() > content.size() ? ui_helpers::sizePlaneToString(plane, title)
+                                : ui_helpers::sizePlaneToString(plane, content);
+
+  int row = 1;
+  int col = 1;
+
+  // TODO These cell writing loops should be moved to their own functions
+  ncpp::Cell c(' ');
+  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
+  for (const char & c : content) {
+    if (c == '\n') {
+      row++;
+      col = 1;
+    } else {
+      nccell_load(plane.to_ncplane(), &cell, &c);
+      plane.putc(row, col, c);
+      nccell_release(plane.to_ncplane(), &cell);
+      col++;
+    }
+  }
+
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+  ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+  plane.perimeter_rounded(0, channel, 0);
+
+  col = (plane.get_dim_x() - title.size()) / 2;
+  for (const char & c : title) {
+    nccell_load(plane.to_ncplane(), &cell, &c);
+    plane.putc(0, col, c);
+    nccell_release(plane.to_ncplane(), &cell);
+    col++;
+  }
+}
+
 inline void writeStringToPlane(ncpp::Plane & plane, const std::string & content)
 {
   plane.erase();

@@ -325,10 +325,7 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
     // Send the interaction string to the interface.
     renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
     return;
-  } else if (input.id == NCKEY_BACKSPACE) {
-    // Remove last character in string.
-  }
-  if (input.id != NCKEY_TAB) {
+  } else if (input.id != NCKEY_TAB) {
     add_input = true;
   }
   // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
@@ -346,6 +343,12 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
     currently_editing_index_ -= 1;
     helper_functions::getNthIndex(
       active_interaction_string_, '\n', currently_editing_index_, endline_index);
+  }
+  if (input.id == NCKEY_BACKSPACE) {
+    // Remove last character in string.
+    active_interaction_string_.erase(active_interaction_string_.begin() + endline_index - 1);
+    add_input = true;
+    endline_index -= 2;
   }
 
   // Update a block character to the string also

@@ -45,8 +45,8 @@ public:
     sopts.items = items;
     sopts.defidx = 0;
     sopts.boxchannels = NCCHANNELS_INITIALIZER(0xe0, 0xe0, 0xe0, 0x00, 0x00, 0x00);
-    sopts.opchannels = NCCHANNELS_INITIALIZER(0x00, 0x00, 0xe0, 0, 0, 0);
-    sopts.descchannels = NCCHANNELS_INITIALIZER(0x00, 0x00, 0x80, 0, 0, 0);
+    sopts.opchannels = NCCHANNELS_INITIALIZER(173, 126, 77, 0, 0, 0);
+    sopts.descchannels = NCCHANNELS_INITIALIZER(204, 145, 109, 0, 0, 0);
     sopts.footchannels = NCCHANNELS_INITIALIZER(0xe0, 0, 0x40, 0x20, 0, 0);
     sopts.titlechannels = NCCHANNELS_INITIALIZER(0xff, 0xff, 0xff, 0, 0, 0x20);
 

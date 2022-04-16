@@ -437,25 +437,25 @@ void Ui::renderHomeLayout()
   switch (layout) {
     case UiLayoutEnum::Horizontal: {
       topic_x = 0;
-      topic_y = 1;
+      topic_y = (term_height_ / 2) - interface_map_.at("topics")->get_plane()->get_dim_y() / 2;
       service_x = (term_width_)-interface_map_.at("services")->get_plane()->get_dim_x();
-      service_y = 1;
-      // Place Node monitor between topics and services. Placing at mid-point often causes overlap
+      service_y = (term_height_ / 2) - interface_map_.at("services")->get_plane()->get_dim_y() / 2;
+      // Place Node monitor between topics and services. It may be off-center, but placing at mid-point can cause overlap
       node_x = (service_x + interface_map_.at("topics")->get_plane()->get_dim_x()) / 2 -
                interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
-      node_y = 1;
+      node_y = (term_height_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_y() / 2;
       break;
     }
     case UiLayoutEnum::Vertical: {
       topic_x = (term_width_ / 2) - interface_map_.at("topics")->get_plane()->get_dim_x() / 2;
       topic_y = 0;
       node_x = (term_width_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
-      ;
       node_y = (term_height_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_y() / 2;
       service_x = (term_width_ / 2) - interface_map_.at("services")->get_plane()->get_dim_x() / 2;
       service_y = (term_height_)-interface_map_.at("services")->get_plane()->get_dim_y();
       break;
     }
+    // FIXME: This doesn't work very well
     case UiLayoutEnum::HorizontalClipped: {
       const uint term_midpoint = term_width_ / 2;
       const uint node_monitor_width = interface_map_.at("nodes")->get_plane()->get_dim_x();
@@ -513,7 +513,8 @@ void Ui::renderSelectedMonitor()
     std::tuple<const ncpp::Plane *, int, int>(right_hand_plane, term_width_, 1));
   // Place selected plane in center of screen
   planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
-    selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2, 1));
+    selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2,
+    term_height_ / 2 - selected_plane->get_dim_y() / 2));
 
   // Place minimised monitors outside of screen
   interface_order.front()->minimised_plane_->move(0, -3);
@@ -577,14 +578,12 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       if (ui_displaying_ == UiDisplayingEnum::monitorEntry) {
         monitor_info_plane_->erase();
         monitor_info_plane_->move_bottom();
-
         notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
       } else if (
         ui_displaying_ == UiDisplayingEnum::monitorInteraction ||
         ui_displaying_ == UiDisplayingEnum::monitorInteractionResult) {
         monitor_info_plane_->erase();
         monitor_info_plane_->move_bottom();
-
         notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
       }
       renderSelectedMonitor();

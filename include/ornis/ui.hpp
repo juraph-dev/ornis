@@ -48,7 +48,17 @@ private:
   };
   enum class UiLayoutEnum { Vertical, Horizontal, HorizontalClipped };
 
-  // Stores the width of the terminal at startup. Used for scaling the ui
+  struct UserHelpStrings
+  {
+     static constexpr auto home_layout_prompt_ = "Press s/t/m to select a type";
+     static constexpr auto selected_monitor_prompt = "Press Enter for entry information, i to interact, or esc to go back";
+     static constexpr auto monitor_entry_prompt = "Press Enter for more information, Esc/q to go back";
+     static constexpr auto stream_prompt = "Esc";
+     static constexpr auto interaction_request_prompt = "Type to enter data, Enter to send, Tab to change fields, Esc to give up";
+  };
+
+  UserHelpStrings userHelpStrings_;
+  // Stores the width of the terminal at startup, and when recieving sigwinch. Used for scaling the ui
   uint term_width_;
   uint term_height_;
 

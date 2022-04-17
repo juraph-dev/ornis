@@ -302,7 +302,7 @@ void Ui::handleInputSelected(const ncinput & input)
 
 void Ui::handleInputMonitorEntry(const ncinput & input)
 {
-  if (input.id == 'q') {
+  if (input.id == 'q' || input.id == NCKEY_ESC){
     transitionUiState(UiDisplayingEnum::selectedMonitor);
   } else if (input.id == NCKEY_ENTER) {
     transitionUiState(UiDisplayingEnum::streamingTopic);
@@ -571,6 +571,7 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
         monitor_info_plane_->erase();
         monitor_info_plane_->move_bottom();
       }
+      ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.home_layout_prompt_);
       renderHomeLayout();
       break;
     }
@@ -586,6 +587,7 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
         monitor_info_plane_->move_bottom();
         notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
       }
+      ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.selected_monitor_prompt);
       renderSelectedMonitor();
       break;
     }
@@ -596,6 +598,7 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
           interface_map_[selected_monitor_]->selector_->get_selected();
         closeStream(selected_entry);
       }
+      ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.monitor_entry_prompt);
       renderMonitorInfo(interface_map_[selected_monitor_].get());
       break;
     }
@@ -606,6 +609,7 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       // want to edit the message header.)
       currently_editing_index_ = 2;
       // Perform a check for it we are returning from streaming a topic:
+      ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.interaction_request_prompt);
       renderMonitorInteraction(interface_map_[selected_monitor_].get());
       break;
     }
@@ -613,6 +617,7 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       const std::string selected_entry =
         interface_map_[selected_monitor_]->selector_->get_selected();
       openStream(selected_entry);
+      ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.stream_prompt);
       ui_displaying_ = UiDisplayingEnum::monitorEntry;
       break;
     }

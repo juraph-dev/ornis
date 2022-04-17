@@ -77,6 +77,36 @@ inline void sizePlaneToString(
   plane.polyfill(row, longest_col, c);
 }
 
+inline void writeStringToPlane(ncpp::Plane & plane, const std::string & content)
+{
+  plane.erase();
+  plane.move_top();
+
+  ui_helpers::sizePlaneToString(plane, content);
+
+  int row = 1;
+  int col = 1;
+
+  ncpp::Cell c(' ');
+  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
+  for (const char & c : content) {
+    if (c == '\n') {
+      row++;
+      col = 1;
+    } else {
+      nccell_load(plane.to_ncplane(), &cell, &c);
+      plane.putc(row, col, c);
+      nccell_release(plane.to_ncplane(), &cell);
+      col++;
+    }
+  }
+
+  // FIXME: SHouldn't be doing any styling here
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+  ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+  plane.perimeter_rounded(0, channel, 0);
+}
+
 // Identical to previous, but renders a cursor at index
 inline void writeStringToPlane(
   ncpp::Plane & plane, const std::string & content, const int & cursor_index)
@@ -115,54 +145,6 @@ inline void writeStringToPlane(
   uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
   ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
   plane.perimeter_rounded(0, channel, 0);
-}
-
-inline void writeStringToTitledPlane(
-  ncpp::Plane & plane, const std::string & title, const std::string & content, const int & cursor_index)
-{
-  plane.erase();
-  plane.move_top();
-
-  // Add some white space to the front and end of the title string.
-  title.size() > content.size() ? ui_helpers::sizePlaneToString(plane, title, 0, 2)
-                                : ui_helpers::sizePlaneToString(plane, content, 0, 2);
-
-  int row = 1;
-  int col = 1;
-  int string_index = 0;
-
-  // TODO These cell writing loops should be moved to their own functions
-  ncpp::Cell c(' ');
-  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
-  for (const char & c : content) {
-    if (c == '\n') {
-      row++;
-      col = 1;
-    } else {
-      nccell_load(plane.to_ncplane(), &cell, &c);
-      plane.putc(row, col, c);
-      nccell_release(plane.to_ncplane(), &cell);
-      col++;
-    }
-    if (string_index == cursor_index) {
-      nccell_load(plane.to_ncplane(), &cell, &c);
-      plane.putc(row, col, "┃");
-      nccell_release(plane.to_ncplane(), &cell);
-    }
-    string_index++;
-  }
-
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
-  ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
-  plane.perimeter_rounded(0, channel, 0);
-
-  col = (plane.get_dim_x() - title.size()) / 2;
-  for (const char & c : title) {
-    nccell_load(plane.to_ncplane(), &cell, &c);
-    plane.putc(0, col, c);
-    nccell_release(plane.to_ncplane(), &cell);
-    col++;
-  }
 }
 
 inline void writeStringToTitledPlane(
@@ -206,17 +188,23 @@ inline void writeStringToTitledPlane(
   }
 }
 
-inline void writeStringToPlane(ncpp::Plane & plane, const std::string & content)
+// Identical to previous, but renders a cursor at index
+inline void writeStringToTitledPlane(
+  ncpp::Plane & plane, const std::string & title, const std::string & content,
+  const int & cursor_index)
 {
   plane.erase();
   plane.move_top();
 
-  ui_helpers::sizePlaneToString(plane, content);
+  // Add some white space to the front and end of the title string.
+  title.size() > content.size() ? ui_helpers::sizePlaneToString(plane, title, 0, 2)
+                                : ui_helpers::sizePlaneToString(plane, content, 0, 2);
 
   int row = 1;
   int col = 1;
+  int string_index = 0;
 
-  ncpp::Cell c(' ');
+  // TODO These cell writing loops should be moved to their own functions
   nccell cell = NCCELL_TRIVIAL_INITIALIZER;
   for (const char & c : content) {
     if (c == '\n') {
@@ -228,12 +216,45 @@ inline void writeStringToPlane(ncpp::Plane & plane, const std::string & content)
       nccell_release(plane.to_ncplane(), &cell);
       col++;
     }
+    if (string_index == cursor_index) {
+      nccell_load(plane.to_ncplane(), &cell, &c);
+      plane.putc(row, col, "┃");
+      nccell_release(plane.to_ncplane(), &cell);
+    }
+    string_index++;
   }
 
-  // FIXME: SHouldn't be doing any styling here
   uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
   ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
   plane.perimeter_rounded(0, channel, 0);
+
+  col = (plane.get_dim_x() - title.size()) / 2;
+  for (const char & c : title) {
+    nccell_load(plane.to_ncplane(), &cell, &c);
+    plane.putc(0, col, c);
+    nccell_release(plane.to_ncplane(), &cell);
+    col++;
+  }
+}
+
+// Draws a bar of plane's BG color at top of plane, spanning entire width, with content string centered
+inline void drawHelperBar(ncpp::Plane * plane, const std::string content)
+{
+  const int bar_length = plane->get_dim_x();
+  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
+  const auto fill_char = "─";
+
+  for (int i = 0; i < bar_length; i++) {
+    plane->putstr(0, i, fill_char);
+  }
+
+  int col = bar_length / 2 - content.size() / 2;
+  for (const auto & c : content) {
+    nccell_load(plane->to_ncplane(), &cell, &c);
+    plane->putc(0, col, c);
+    nccell_release(plane->to_ncplane(), &cell);
+    col++;
+  }
 }
 }  // namespace ui_helpers
 

@@ -86,11 +86,11 @@ bool Ui::initialise(
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);
   // Initialise the popup-window for selecting a monitor entry
   monitor_info_plane_->move_bottom();
-  monitor_info_plane_->set_bg_alpha(NCALPHA_TRANSPARENT);
+  monitor_info_plane_->set_bg_alpha(NCALPHA_OPAQUE);
   monitor_info_plane_->set_fg_rgb8(200, 200, 200);
 
   uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 0, 0, 0);
-  ncchannels_set_bg_alpha(&popup_channels, NCALPHA_TRANSPARENT);
+  ncchannels_set_bg_alpha(&popup_channels, NCALPHA_OPAQUE);
   monitor_info_plane_->set_channels(popup_channels);
 
   ui_thread_ = new std::thread([this]() { refreshUi(); });

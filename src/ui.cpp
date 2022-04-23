@@ -9,6 +9,7 @@
 #include <condition_variable>
 #include <iostream>
 #include <mutex>
+#include <random>
 #include <thread>  // IWYU pragma: keep
 
 #include "ncpp/NotCurses.hh"
@@ -69,7 +70,7 @@ bool Ui::initialise(
 
   notcurses_stdplane_ = std::shared_ptr<ncpp::Plane>(notcurses_core_->get_stdplane());
 
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255 , 32, 51, 70);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
   notcurses_stdplane_->set_base("", 0, bgchannels);
@@ -83,9 +84,18 @@ bool Ui::initialise(
   interface_map_["services"] =
     std::unique_ptr<MonitorInterface>(new MonitorInterface("services", "[s]ervices"));
 
+  // TODO: Think about if I REALLY want the initial locations to be random, or
+  // if I want them to be placed somewhere reasonable
+  std::random_device dev;
+  std::mt19937 rng(dev());
+  std::uniform_int_distribution<int> width_dist(1, term_width_);
+  std::uniform_int_distribution<int> height_dist(1, term_height_);
+
   // Initialise planes
   for (const auto & interface : interface_map_) {
-    interface.second->initialiseInterface(0, 0, notcurses_stdplane_.get());
+    const int x_loc = width_dist(rng);
+    const int y_loc = height_dist(rng);
+    interface.second->initialiseInterface(y_loc, x_loc, notcurses_stdplane_.get());
   }
 
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);

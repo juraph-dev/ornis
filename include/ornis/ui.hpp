@@ -54,7 +54,7 @@ private:
      static constexpr auto selected_monitor_prompt = "Press Enter for entry information, i to interact, or esc to go back";
      static constexpr auto streamable_entry_prompt = "Press Enter for more information, Esc/q to go back";
      static constexpr auto standard_entry_prompt = "Esc/q to go back";
-     static constexpr auto stream_prompt = "Esc to escape";
+     static constexpr auto stream_prompt = "Esc/q to to go back";
      static constexpr auto interaction_request_prompt = "Type to enter data, Enter to send, Tab to change fields, Esc to give up";
   };
 

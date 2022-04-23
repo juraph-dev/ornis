@@ -101,10 +101,10 @@ bool Ui::initialise(
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);
   // Initialise the popup-window for selecting a monitor entry
   monitor_info_plane_->move_bottom();
-  monitor_info_plane_->set_bg_alpha(NCALPHA_OPAQUE);
-  monitor_info_plane_->set_fg_rgb8(200, 200, 200);
+  // Give info plane the same background color as main plane
+  monitor_info_plane_->set_base("", 0, bgchannels);
 
-  uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 0, 0, 0);
+  uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
   ncchannels_set_bg_alpha(&popup_channels, NCALPHA_OPAQUE);
   monitor_info_plane_->set_channels(popup_channels);
 

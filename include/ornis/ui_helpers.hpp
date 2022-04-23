@@ -153,8 +153,10 @@ inline void writeStringToPlane(ncpp::Plane & plane, const std::string & content)
   }
 
   // FIXME: SHouldn't be doing any styling here
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
-  ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+  // uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
+  // ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+
+  uint64_t channel = plane.get_channels();
   plane.perimeter_rounded(0, channel, 0);
 }
 
@@ -193,8 +195,10 @@ inline void writeStringToPlane(
   }
 
   // FIXME: SHouldn't be doing any styling here
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
-  ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+  // uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
+  // ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+
+  uint64_t channel = plane.get_channels();
   plane.perimeter_rounded(0, channel, 0);
 }
 
@@ -226,7 +230,7 @@ inline void writeStringToTitledPlane(
     }
   }
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
+  uint64_t channel = plane.get_channels();
   // ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
   plane.perimeter_rounded(0, channel, 0);
 
@@ -275,8 +279,10 @@ inline void writeStringToTitledPlane(
     string_index++;
   }
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
-  ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+  // uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
+  // ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+
+  uint64_t channel = plane.get_channels();
   plane.perimeter_rounded(0, channel, 0);
 
   col = (plane.get_dim_x() - title.size()) / 2;
@@ -339,8 +345,10 @@ inline void writeMapToTitledPlane(
     }
   }
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
-  ncchannels_set_bg_alpha(&channel, NCALPHA_OPAQUE);
+  // uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
+  // ncchannels_set_bg_alpha(&channel, NCALPHA_OPAQUE);
+
+  uint64_t channel = plane.get_channels();
   plane.perimeter_rounded(0, channel, 0);
 
   // // Write planes title

@@ -38,6 +38,8 @@ inline void sizePlaneToString(ncpp::Plane & plane, const std::string & content)
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
+  c.set_bg_rgb8(32, 51, 70);
+  c.set_fg_rgb8(32, 51, 70);
   plane.polyfill(row, longest_col, c);
 }
 
@@ -87,6 +89,8 @@ inline void sizePlaneToMap(
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
+  c.set_bg_rgb8(32, 51, 70);
+  c.set_fg_rgb8(32, 51, 70);
   plane.polyfill(row, longest_col, c);
 }
 
@@ -125,6 +129,8 @@ inline void sizePlaneToString(
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
+  c.set_bg_rgb8(32, 51, 70);
+  c.set_fg_rgb8(32, 51, 70);
   plane.polyfill(row, longest_col, c);
 }
 
@@ -345,18 +351,13 @@ inline void writeMapToTitledPlane(
     }
   }
 
-  // uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
-  // ncchannels_set_bg_alpha(&channel, NCALPHA_OPAQUE);
-
   uint64_t channel = plane.get_channels();
   plane.perimeter_rounded(0, channel, 0);
 
-  // // Write planes title
+  // Write planes title
   col = (plane.get_dim_x() - title.size()) / 2;
   for (const char & c : title) {
-    // nccell_load(plane.to_ncplane(), &cell, &c);
     plane.putc(0, col, c);
-    // nccell_release(plane.to_ncplane(), &cell);
     col++;
   }
 }

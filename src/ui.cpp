@@ -321,7 +321,15 @@ void Ui::handleInputMonitorEntry(const ncinput & input)
   } else if (selected_monitor_ == "topics" && input.id == NCKEY_ENTER) {
     transitionUiState(UiDisplayingEnum::streamingTopic);
     // For now, don't worry about streaming multiple items at once,
-    // Just have the UI sit idle until user presses q
+    // Just have the UI sit idle until user presses q/esc
+  } else if (selected_monitor_ == "services" && input.id == NCKEY_ENTER) {
+    transitionUiState(UiDisplayingEnum::monitorInteraction);
+    // FIXME: Shouldn't have to send a fake input
+    // Pass a fake input through, to initialise the cursor
+    ncinput t_input;
+    t_input.id = NCKEY_TAB;
+    t_input.shift = true;
+    handleInputMonitorInteraction(t_input);
   }
 }
 
@@ -608,6 +616,9 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       if (selected_monitor_ == "topics") {
         ui_helpers::drawHelperBar(
           notcurses_stdplane_.get(), userHelpStrings_.streamable_entry_prompt);
+      } else if (selected_monitor_ == "services") {
+        ui_helpers::drawHelperBar(
+          notcurses_stdplane_.get(), userHelpStrings_.interactable_entry_prompt);
       } else {
         ui_helpers::drawHelperBar(
           notcurses_stdplane_.get(), userHelpStrings_.standard_entry_prompt);
@@ -688,30 +699,11 @@ void Ui::resizeUi(const uint & rows, const uint & cols)
 
 bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
 {
-  // BUG All keyboard inputs fail this check. Have a think about whether you REALLY
-  // need it. (Probably not)
-  // if (!checkEventOnPlane(input, interface->get_plane())) {
-  //   return false;
-  // }
-  // if (input.id == NCKEY_UP || input.id == NCKEY_SCROLL_UP) {
-  //   interface.selector_->previtem();
-  //   return true;
-  // }
-
   if (input.evtype == input.NCTYPE_PRESS || input.id == NCKEY_ENTER) {
     // If we recieve an enter, we neeed to grab the
     // currently selected topic, and view the topic information
     // in a popup window
     transitionUiState(UiDisplayingEnum::monitorEntry);
-    return true;
-  } else if (input.id == 'i') {
-    transitionUiState(UiDisplayingEnum::monitorInteraction);
-    // FIXME: Shouldn't have to send a fake input
-    // Pass a fake input through, to initialise the cursor
-    ncinput t_input;
-    t_input.id = NCKEY_TAB;
-    t_input.shift = true;
-    handleInputMonitorInteraction(t_input);
     return true;
   }
 

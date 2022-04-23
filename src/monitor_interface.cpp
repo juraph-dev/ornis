@@ -48,15 +48,15 @@ void MonitorInterface::initialiseInterface(
   // Create minimised plane (With a border and some text, out of view of the window)
   minimised_plane_ = std::make_shared<ncpp::Plane>(std_plane, monitor_name_.size() + 2, 3, -10, 0);
 
+  uint64_t channel = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+
+  minimised_plane_->set_base("", 0, channel);
+  minimised_plane_->perimeter_rounded(0, channel, 0);
+
   // configure minimised plane
   for (uint i = 0; i < monitor_name_.size(); i++) {
     minimised_plane_->putc(i + 1, 1, monitor_name_[i]);
   }
-
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 32, 51, 70);
-  ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
-  minimised_plane_->perimeter_rounded(0, channel, 0);
-
 
 }
 

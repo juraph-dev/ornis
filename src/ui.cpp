@@ -69,6 +69,11 @@ bool Ui::initialise(
 
   notcurses_stdplane_ = std::shared_ptr<ncpp::Plane>(notcurses_core_->get_stdplane());
 
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255 , 32, 51, 70);
+  ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
+  ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
+  notcurses_stdplane_->set_base("", 0, bgchannels);
+
   notcurses_stdplane_->get_dim(term_height_, term_width_);
 
   interface_map_["nodes"] =

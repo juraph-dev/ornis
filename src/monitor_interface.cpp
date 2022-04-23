@@ -13,6 +13,12 @@ void MonitorInterface::initialiseInterface(
 {
   ncpp::Plane selector_plane = ncpp::Plane(std_plane, 2, 2, x, y);
 
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255 , 32, 51, 70);
+  ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
+  ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
+  selector_plane.set_base("", 0, bgchannels);
+
+
   // Blank item array for selector, which needs an items object upon creation
   ncselector_item items[] = {
     {
@@ -26,7 +32,7 @@ void MonitorInterface::initialiseInterface(
   sopts.maxdisplay = 10;
   sopts.items = items;
   sopts.defidx = 0;
-  sopts.boxchannels = NCCHANNELS_INITIALIZER(0xe0, 0xe0, 0xe0, 0x00, 0x00, 0x00);
+  sopts.boxchannels = NCCHANNELS_INITIALIZER(0xe0, 0xe0, 0xe0, 32, 51, 70);
   sopts.opchannels = NCCHANNELS_INITIALIZER(173, 126, 77, 32, 51, 70);
   sopts.descchannels = NCCHANNELS_INITIALIZER(204, 145, 109, 32, 51, 70);
   sopts.footchannels = NCCHANNELS_INITIALIZER(0xe0, 0, 0x40, 0x20, 0, 0);
@@ -36,12 +42,6 @@ void MonitorInterface::initialiseInterface(
   ncchannels_set_bg_alpha(&sopts.titlechannels, NCALPHA_TRANSPARENT);
 
   sopts.title = selector_title_.c_str();
-
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(32, 51, 70, 32, 51, 70 );
-  ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
-  ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
-
-  selector_plane.set_base("", 0, bgchannels);
 
   selector_ = std::make_shared<ncpp::Selector>(selector_plane, &sopts);
 
@@ -53,7 +53,7 @@ void MonitorInterface::initialiseInterface(
     minimised_plane_->putc(i + 1, 1, monitor_name_[i]);
   }
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 32, 51, 70);
   ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
   minimised_plane_->perimeter_rounded(0, channel, 0);
 

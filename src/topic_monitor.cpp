@@ -36,7 +36,8 @@ void TopicMonitor::spin()
 }
 
 void TopicMonitor::getEntryInfo(
-  const std::string & entry_name, const std::string & entry_details, std::string & entry_info)
+  const std::string & entry_name, const std::string & entry_details,
+  std::map<std::string, std::vector<std::string>> & entry_info)
 {
   rcl_allocator_t allocator = rcl_get_default_allocator();
   rcl_topic_endpoint_info_array_t topic_publishers =
@@ -50,19 +51,15 @@ void TopicMonitor::getEntryInfo(
   ret = rcl_get_subscriptions_info_by_topic(
     ros_interface_node_.get(), &allocator, entry_name.c_str(), false, &topic_subscribers);
 
-  entry_info = "Publishers:";
   for (size_t i = 0; i < topic_publishers.size; i++) {
-    entry_info += '\n';
-    entry_info += topic_publishers.info_array[i].node_name;
+    entry_info["Publishers"].push_back(topic_publishers.info_array[i].node_name);
   }
 
-  entry_info += "\nSubscribers:";
   if (!topic_subscribers.size) {
-    entry_info += "\nNone";
+    entry_info["Subscribers"].push_back("None");
   } else {
     for (size_t i = 0; i < topic_subscribers.size; i++) {
-      entry_info += '\n';
-      entry_info += topic_subscribers.info_array[i].node_name;
+      entry_info["Subscribers"].push_back(topic_subscribers.info_array[i].node_name);
     }
   }
 }

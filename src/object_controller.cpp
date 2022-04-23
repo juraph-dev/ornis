@@ -1,4 +1,3 @@
-
 #include "ornis/object_controller.hpp"
 
 #include <signal.h>
@@ -111,10 +110,12 @@ void ObjectController::checkUiRequests()
             });
           entry_details = it->second;
         }
+        // Ensure response map is clear before sending
+        interface_channel_->response_map_.clear();
 
         monitor_map_[interface_channel_->request_details_["monitor_name"]]->getEntryInfo(
           interface_channel_->request_details_["monitor_entry"], entry_details,
-          interface_channel_->response_string_);
+          interface_channel_->response_map_);
 
         std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
         interface_channel_->request_pending_ = false;
@@ -252,4 +253,5 @@ void ObjectController::spin()
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(0.1s);
   }
+  ret = rcl_node_options_fini(&node_options);
 }

@@ -25,10 +25,11 @@ public:
   ~ServiceMonitor();
 
   void getEntryInfo(
-    const std::string & entry_name, const std::string & entry_details, std::string & entry_info);
+    const std::string & entry_name, const std::string & entry_details,
+    std::map<std::string, std::vector<std::string>> & entry_info);
 
   void getInteractionString(
-    const std::string & entry_name, const std::string & entry_details, std::string & entry_info);
+  const std::string & entry_name, const std::string & entry_details, std::string & entry_info);
 
   void getInteractionResult(
     const std::string & entry_name, const std::string & entry_details,
@@ -40,20 +41,11 @@ private:
   void spin();
   void updateValue();
 
+  void get_request_response_strings(
+    const std::string service_type, std::pair<std::string, std::string> & req_resp_strings);
+
   std::thread * thread_;
-
   std::shared_ptr<rcl_node_t> ros_interface_node_;
-
-  const rosidl_message_type_support_t * get_typesupport(
-    const std::string & type, const std::string & typesupport_identifier);
-
-  const std::tuple<std::string, std::string, std::string> extract_type_identifier(
-    const std::string & full_type);
-
-  std::string get_typesupport_library_path(
-    const std::string & package_name, const std::string & typesupport_identifier);
-
-  const std::pair<std::string, std::string> extract_type_and_package(const std::string & full_type);
 
   serviceInfo service_info_;
 };

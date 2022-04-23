@@ -112,6 +112,7 @@ target_link_libraries(ornis-lib PUBLIC
   Poco::Foundation
   ${rclcpp_LIBRARIES}
   ${rcl_LIBRARIES}
+  ${rcl_action_LIBRARIES}
 
   ) # Link our sources to the executable
 
@@ -121,6 +122,7 @@ target_link_libraries(ornis PUBLIC
   Threads::Threads
   ${rclcpp_LIBRARIES}
   ${rcl_LIBRARIES}
+  ${rcl_action_LIBRARIES}
   ) # Link our sources to the executable
 
 # Install the built library and executable into the appropriate directory

@@ -38,14 +38,18 @@ void ServiceMonitor::spin()
 }
 
 void ServiceMonitor::getEntryInfo(
-  const std::string & entry_name, const std::string & entry_details, std::string & entry_info)
+  const std::string & entry_name, const std::string & entry_details,
+  std::map<std::string, std::vector<std::string>> & entry_info)
 {
-  std::istringstream t_value(callConsole(ros2_info_string_ + entry_name));
-  entry_info = t_value.str();
+  std::pair<std::string, std::string> req_resp_strings;
+  get_request_response_strings(entry_details, req_resp_strings);
+  // Show the request, and response messages
+  entry_info["Request"].push_back(req_resp_strings.first);
+  entry_info["Response"].push_back(req_resp_strings.second);
 }
 
-void ServiceMonitor::getInteractionString(
-  const std::string & entry_name, const std::string & entry_details, std::string & entry_info)
+void ServiceMonitor::get_request_response_strings(
+  const std::string service_type, std::pair<std::string, std::string> & req_resp_strings)
 {
   // Use namespace to shorten up some of the longer names
   using rosidl_typesupport_introspection_cpp::MessageMember;
@@ -54,7 +58,7 @@ void ServiceMonitor::getInteractionString(
   using rosidl_typesupport_introspection_cpp::ServiceMembers;
 
   service_info_.type_support = introspection::getServiceTypeSupport(
-    entry_details, rosidl_typesupport_introspection_cpp::typesupport_identifier);
+    service_type, rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
   const auto * service_members =
     static_cast<const ServiceMembers *>(service_info_.type_support->data);
@@ -121,9 +125,19 @@ void ServiceMonitor::getInteractionString(
   recursivelyCreateTree(response_starting_node, service_info_.response_type_support);
 
   std::stringstream request_string;
+  std::stringstream response_string;
   request_string << request_field_tree;
+  response_string << response_field_tree;
+  req_resp_strings.first = request_string.str();
+  req_resp_strings.second = response_string.str();
+}
 
-  entry_info = request_string.str().c_str();
+void ServiceMonitor::getInteractionString(
+  const std::string & entry_name, const std::string & entry_details, std::string & entry_info)
+{
+  std::pair<std::string, std::string> req_resp_strings;
+  get_request_response_strings(entry_details, req_resp_strings);
+  entry_info = req_resp_strings.first;
 }
 
 void ServiceMonitor::getInteractionResult(

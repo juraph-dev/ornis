@@ -23,6 +23,7 @@ public:
   // Object controller
   RequestEnum request_type_;
   std::string response_string_;
+  std::map<std::string, std::vector<std::string>> response_map_;
   std::atomic<bool> request_pending_ = false;
   std::condition_variable condition_variable_;
   std::map<std::string, std::string> request_details_;

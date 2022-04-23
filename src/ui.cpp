@@ -47,12 +47,12 @@ bool Ui::initialise(
 
   struct notcurses_options nopts = {
     .termtype = NULL,
-    .loglevel = NCLOGLEVEL_PANIC,
+    .loglevel = NCLOGLEVEL_FATAL,
     .margin_t = 0,
     .margin_r = 0,
     .margin_b = 0,
     .margin_l = 0,
-    .flags = NCOPTION_SUPPRESS_BANNERS  // | NCOPTION_NO_ALTERNATE_SCREEN
+    .flags =  NCOPTION_SUPPRESS_BANNERS  | NCOPTION_NO_ALTERNATE_SCREEN
                                         // Use if need cout
   };
 
@@ -80,7 +80,7 @@ bool Ui::initialise(
 
   // Initialise planes
   for (const auto & interface : interface_map_) {
-    interface.second->initialiseInterface(1, term_width_ / 2);
+    interface.second->initialiseInterface(0, 0, notcurses_stdplane_.get());
   }
 
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);
@@ -130,16 +130,15 @@ void Ui::renderMonitorInfo(MonitorInterface * interface)
   interface_channel_->request_details_["monitor_entry"] = item;
   interface_channel_->request_pending_.store(true);
 
-  interface_channel_->condition_variable_.wait_for(
-    data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
-
-  ui_helpers::writeStringToTitledPlane(
-    *monitor_info_plane_, item, interface_channel_->response_string_);
-
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
     term_height_ / 2 - monitor_info_plane_->get_dim_y() / 2,
     term_width_ / 2 - monitor_info_plane_->get_dim_x() / 2);
+
+  interface_channel_->condition_variable_.wait_for(
+    data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
+
+  ui_helpers::writeMapToTitledPlane(*monitor_info_plane_, item, interface_channel_->response_map_);
 }
 
 void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
@@ -292,7 +291,7 @@ void Ui::refreshUi()
 }
 void Ui::handleInputSelected(const ncinput & input)
 {
-  if (input.id == 'q') {
+  if (input.id == 'q' || input.id == NCKEY_ESC) {
     transitionUiState(UiDisplayingEnum::monitors);
     return;
   } else {
@@ -302,9 +301,9 @@ void Ui::handleInputSelected(const ncinput & input)
 
 void Ui::handleInputMonitorEntry(const ncinput & input)
 {
-  if (input.id == 'q' || input.id == NCKEY_ESC){
+  if (input.id == 'q' || input.id == NCKEY_ESC) {
     transitionUiState(UiDisplayingEnum::selectedMonitor);
-  } else if (input.id == NCKEY_ENTER) {
+  } else if (selected_monitor_ == "topics" && input.id == NCKEY_ENTER) {
     transitionUiState(UiDisplayingEnum::streamingTopic);
     // For now, don't worry about streaming multiple items at once,
     // Just have the UI sit idle until user presses q
@@ -398,14 +397,6 @@ void Ui::handleInputMonitors(const ncinput & input)
   } else if (input.id == 's') {
     selected_monitor_ = "services";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
-  } else {
-    // Check if input is for the monitors
-    for (const auto & interface : interface_map_) {
-      // If the input is both within the monitor plane, and
-      // is usable, the interface will accept the input, and return true,
-      // "Consuming" the input.
-      if (offerInputMonitor(interface.second.get(), input)) break;
-    }
   }
 }
 
@@ -455,7 +446,7 @@ void Ui::renderHomeLayout()
       service_y = (term_height_)-interface_map_.at("services")->get_plane()->get_dim_y();
       break;
     }
-    // FIXME: This doesn't work very well
+    // FIXME: This doesn't work very well, right hand plane gets placed off screen, left hand has whitespace
     case UiLayoutEnum::HorizontalClipped: {
       const uint term_midpoint = term_width_ / 2;
       const uint node_monitor_width = interface_map_.at("nodes")->get_plane()->get_dim_x();
@@ -587,7 +578,8 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
         monitor_info_plane_->move_bottom();
         notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
       }
-      ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.selected_monitor_prompt);
+      ui_helpers::drawHelperBar(
+        notcurses_stdplane_.get(), userHelpStrings_.selected_monitor_prompt);
       renderSelectedMonitor();
       break;
     }
@@ -598,7 +590,13 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
           interface_map_[selected_monitor_]->selector_->get_selected();
         closeStream(selected_entry);
       }
-      ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.monitor_entry_prompt);
+      if (selected_monitor_ == "topics") {
+        ui_helpers::drawHelperBar(
+          notcurses_stdplane_.get(), userHelpStrings_.streamable_entry_prompt);
+      } else {
+        ui_helpers::drawHelperBar(
+          notcurses_stdplane_.get(), userHelpStrings_.standard_entry_prompt);
+      }
       renderMonitorInfo(interface_map_[selected_monitor_].get());
       break;
     }
@@ -609,7 +607,8 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       // want to edit the message header.)
       currently_editing_index_ = 2;
       // Perform a check for it we are returning from streaming a topic:
-      ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.interaction_request_prompt);
+      ui_helpers::drawHelperBar(
+        notcurses_stdplane_.get(), userHelpStrings_.interaction_request_prompt);
       renderMonitorInteraction(interface_map_[selected_monitor_].get());
       break;
     }
@@ -684,9 +683,6 @@ bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
   //   return true;
   // }
 
-  if (interface->selector_->offer_input(&input)) {
-    return true;
-  }
 
   if (input.evtype == input.NCTYPE_PRESS || input.id == NCKEY_ENTER) {
     // If we recieve an enter, we neeed to grab the
@@ -702,6 +698,10 @@ bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
     t_input.id = NCKEY_TAB;
     t_input.shift = true;
     handleInputMonitorInteraction(t_input);
+    return true;
+  }
+
+  if (interface->selector_->offer_input(&input)) {
     return true;
   }
 

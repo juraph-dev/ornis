@@ -1,6 +1,8 @@
 #ifndef UI_HELPERS_H_
 #define UI_HELPERS_H_
 
+#include <vector>
+
 #include "ncpp/Plane.hh"
 
 namespace ui_helpers
@@ -33,6 +35,55 @@ inline void sizePlaneToString(ncpp::Plane & plane, const std::string & content)
   }
   // Add one to longest col to account for border
   plane.resize(row + 2, longest_col + 1);
+
+  // Fill plane, ensures we don't have a transparent background
+  ncpp::Cell c(' ');
+  plane.polyfill(row, longest_col, c);
+}
+
+inline void sizePlaneToMap(
+  ncpp::Plane & plane, const std::string & title,
+  const std::map<std::string, std::vector<std::string>> & content_map)
+{
+  size_t row = 1;
+  size_t col = 1;
+  size_t longest_col = 0;
+
+  // iterate through string twice, once to find what size
+  // to resize the plane to, second to place the characters on the plane.
+  // It's ugly, but much more efficient than dynamically resizing the
+  // plane as we iterate through the string.
+  for (const auto & entry : content_map) {
+    row++;
+    // Check length of map key (Which is used as the divider name)
+    longest_col = entry.first.size() > longest_col ? entry.first.size() : longest_col;
+    for (const auto & entry_string : entry.second) {
+      col = 1;
+      for (const char & c : entry_string) {
+        if (c == '\n') {
+          row++;
+          col = 1;
+        } else {
+          col++;
+          longest_col = col > longest_col ? col : longest_col;
+        }
+      }
+      row++;
+    }
+  }
+
+  // If we haven't found an endline char, artificially add a single row, to prevent
+  // single line strings from being overwritten by the border. We also add one to the
+  // longest col, to account for what would usually be read as the invisible \n
+  if (row == 1) {
+    row++;
+    longest_col++;
+  }
+
+  longest_col = title.size() > longest_col ? title.size() : longest_col;
+
+  // Add one to longest col to account for border
+  plane.resize(row + 1, longest_col + 2);
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
@@ -102,7 +153,7 @@ inline void writeStringToPlane(ncpp::Plane & plane, const std::string & content)
   }
 
   // FIXME: SHouldn't be doing any styling here
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
   ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
   plane.perimeter_rounded(0, channel, 0);
 }
@@ -142,7 +193,7 @@ inline void writeStringToPlane(
   }
 
   // FIXME: SHouldn't be doing any styling here
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
   ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
   plane.perimeter_rounded(0, channel, 0);
 }
@@ -175,8 +226,8 @@ inline void writeStringToTitledPlane(
     }
   }
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
-  ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
+  // ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
   plane.perimeter_rounded(0, channel, 0);
 
   col = (plane.get_dim_x() - title.size()) / 2;
@@ -224,7 +275,7 @@ inline void writeStringToTitledPlane(
     string_index++;
   }
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0x10, 0x10, 0x60);
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
   ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
   plane.perimeter_rounded(0, channel, 0);
 
@@ -233,6 +284,71 @@ inline void writeStringToTitledPlane(
     nccell_load(plane.to_ncplane(), &cell, &c);
     plane.putc(0, col, c);
     nccell_release(plane.to_ncplane(), &cell);
+    col++;
+  }
+}
+
+inline void writeMapToTitledPlane(
+  ncpp::Plane & plane, const std::string & title,
+  const std::map<std::string, std::vector<std::string>> & content)
+{
+  plane.erase();
+  plane.move_top();
+
+  ui_helpers::sizePlaneToMap(plane, title, content);
+
+  const int bar_length = plane.get_dim_x();
+  const auto fill_char = "─";
+
+  int row = 1;
+  int col = 1;
+
+  // TODO These cell writing loops should be moved to their own functions
+  // ncpp::Cell cell;
+  for (const auto & entry : content) {
+    // Use map key as divider title
+    for (int i = 0; i < bar_length; i++) {
+      plane.putstr(row, i, fill_char);
+    }
+    col = bar_length / 2 - entry.first.size() / 2;
+    for (const char & c : entry.first) {
+      // plane.get_at(row, col, &cell);
+      // cell.
+      // nccell_load(plane.to_ncplane(), &cell, &c);
+      plane.putc(row, col, c);
+      // plane.release(cell);
+      // nccell_release(plane.to_ncplane(), &cell);
+      col++;
+    }
+    col = 1;
+    row++;
+    for (const auto & content : entry.second) {
+      for (const char & c : content) {
+        if (c == '\n') {
+          row++;
+          col = 1;
+        } else {
+          // nccell_load(plane.to_ncplane(), &cell, &c);
+          plane.putc(row, col, c);
+          // nccell_release(plane.to_ncplane(), &cell);
+          col++;
+        }
+      }
+      row++;
+      col = 1;
+    }
+  }
+
+  uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
+  ncchannels_set_bg_alpha(&channel, NCALPHA_OPAQUE);
+  plane.perimeter_rounded(0, channel, 0);
+
+  // // Write planes title
+  col = (plane.get_dim_x() - title.size()) / 2;
+  for (const char & c : title) {
+    // nccell_load(plane.to_ncplane(), &cell, &c);
+    plane.putc(0, col, c);
+    // nccell_release(plane.to_ncplane(), &cell);
     col++;
   }
 }

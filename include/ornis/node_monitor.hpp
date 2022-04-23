@@ -1,8 +1,10 @@
 #ifndef NODE_MONITOR_H_
 #define NODE_MONITOR_H_
 
-#include <memory>
+#include <rcl/graph.h>
 #include <rcl/rcl.h>
+
+#include <memory>
 #include <string>
 #include <thread>  // IWYU pragma: keep
 
@@ -18,15 +20,14 @@ public:
 
   void getEntryInfo(
     const std::string & entry_name, const std::string & entry_details,
-    std::string & entry_info);
+    std::map<std::string, std::vector<std::string>> & entry_info);
 
   void getInteractionString(
-    const std::string & entry_name, const std::string & entry_details,
-    std::string & entry_info);
+    const std::string & entry_name, const std::string & entry_details, std::string & entry_info);
 
   void getInteractionResult(
     const std::string & entry_name, const std::string & entry_details,
-    const std::string &request_string, std::string & response_string);
+    const std::string & request_string, std::string & response_string);
 
 private:
   static constexpr auto ros2_list_string_ = "ros2 node list";
@@ -34,6 +35,10 @@ private:
 
   void spin();
   void updateValue();
+
+  void namesAndTypesToMap(
+    const std::string & entry_name, const rcl_names_and_types_t & names_and_types,
+    std::map<std::string, std::vector<std::string>> & entry_map);
 
   std::thread * thread_;
 

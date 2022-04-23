@@ -19,7 +19,8 @@ public:
   ~TopicMonitor();
 
   void getEntryInfo(
-    const std::string & entry_name, const std::string & entry_details, std::string & entry_info);
+    const std::string & entry_name, const std::string & entry_details,
+    std::map<std::string, std::vector<std::string>> & entry_info);
 
   void getInteractionString(
     const std::string & entry_name, const std::string & entry_details, std::string & entry_info);

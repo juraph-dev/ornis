@@ -16,6 +16,7 @@
 #include <string>
 #include <thread>  // IWYU pragma: keep
 #include <vector>
+#include <map>
 
 class Monitor
 {
@@ -26,7 +27,7 @@ public:
 
   virtual void getEntryInfo(
     const std::string & entry_name, const std::string & entry_details,
-    std::string & entry_info) = 0;
+    std::map<std::string, std::vector<std::string>> & entry_info) = 0;
 
   virtual void getInteractionString(
     const std::string & entry_name, const std::string & entry_details,
@@ -34,7 +35,7 @@ public:
 
   virtual void getInteractionResult(
     const std::string & entry_name, const std::string & entry_details,
-    const std::string &request_string, std::string & response_string) = 0;
+    const std::string & request_string, std::string & response_string) = 0;
 
   bool getValue(std::vector<std::pair<std::string, std::string>> & value)
   {

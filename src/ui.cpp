@@ -52,7 +52,7 @@ bool Ui::initialise(
     .margin_r = 0,
     .margin_b = 0,
     .margin_l = 0,
-    .flags =  NCOPTION_SUPPRESS_BANNERS  | NCOPTION_NO_ALTERNATE_SCREEN
+    .flags = NCOPTION_SUPPRESS_BANNERS  // | NCOPTION_NO_ALTERNATE_SCREEN
                                         // Use if need cout
   };
 
@@ -130,15 +130,15 @@ void Ui::renderMonitorInfo(MonitorInterface * interface)
   interface_channel_->request_details_["monitor_entry"] = item;
   interface_channel_->request_pending_.store(true);
 
-  // Place the monitor info plane in the center of the screen
-  monitor_info_plane_->move(
-    term_height_ / 2 - monitor_info_plane_->get_dim_y() / 2,
-    term_width_ / 2 - monitor_info_plane_->get_dim_x() / 2);
-
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
 
   ui_helpers::writeMapToTitledPlane(*monitor_info_plane_, item, interface_channel_->response_map_);
+
+  // Place the monitor info plane in the center of the screen
+  monitor_info_plane_->move(
+    term_height_ / 2 - monitor_info_plane_->get_dim_y() / 2,
+    term_width_ / 2 - monitor_info_plane_->get_dim_x() / 2);
 }
 
 void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
@@ -166,8 +166,8 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
-    term_height_ / 2 - monitor_info_plane_->get_dim_y() / 2,
-    term_width_ / 2 - monitor_info_plane_->get_dim_x() / 2);
+    (term_height_ / 2) - (monitor_info_plane_->get_dim_y() / 2),
+    (term_width_ / 2) - (monitor_info_plane_->get_dim_x() / 2));
 }
 
 void Ui::renderMonitorInteraction(MonitorInterface * interface)
@@ -682,7 +682,6 @@ bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
   //   interface.selector_->previtem();
   //   return true;
   // }
-
 
   if (input.evtype == input.NCTYPE_PRESS || input.id == NCKEY_ENTER) {
     // If we recieve an enter, we neeed to grab the

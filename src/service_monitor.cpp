@@ -147,19 +147,20 @@ void ServiceMonitor::getInteractionResult(
   // Set up service message (Need to convert from string to actual service)
   const char * service_name = entry_name.c_str();
   const rosidl_service_type_support_t * type_support = service_info_.type_support;
-  const auto * members = static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
-    service_info_.request_type_support->data);
+  auto * request_members =
+    static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+      service_info_.request_type_support->data);
 
   // Allocate space to store the binary representation of the message
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
 
   uint8_t * request_data =
-    static_cast<uint8_t *>(allocator.allocate(members->size_of_, allocator.state));
+    static_cast<uint8_t *>(allocator.allocate(request_members->size_of_, allocator.state));
 
   // Initialise the members
-  members->init_function(request_data, rosidl_runtime_cpp::MessageInitialization::ALL);
+  request_members->init_function(request_data, rosidl_runtime_cpp::MessageInitialization::ALL);
 
-  introspection::populateMessage(request_data, members, request_string);
+  introspection::populateMessage(request_data, request_members, request_string);
 
   // Set up client
   rcl_client_t client = rcl_get_zero_initialized_client();
@@ -174,7 +175,7 @@ void ServiceMonitor::getInteractionResult(
   // Sequence number of the request (Populated in rcl_send_request)
   int64_t sequence_number;
 
-  const auto * response_members =
+  auto * response_members =
     static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
       service_info_.response_type_support->data);
 

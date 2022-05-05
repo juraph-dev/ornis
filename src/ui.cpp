@@ -450,13 +450,13 @@ void Ui::renderHomeLayout()
   const auto layout = calcMonitorLayout();
   switch (layout) {
     case UiLayoutEnum::Horizontal: {
-      topic_x = 0;
+      topic_x = 1;
       topic_y = (term_height_ / 2) - interface_map_.at("topics")->get_plane()->get_dim_y() / 2;
-      service_x = (term_width_)-interface_map_.at("services")->get_plane()->get_dim_x();
+      service_x = (term_width_)-interface_map_.at("services")->get_plane()->get_dim_x() - 1;
       service_y = (term_height_ / 2) - interface_map_.at("services")->get_plane()->get_dim_y() / 2;
       // Place Node monitor between topics and services. It may be off-center, but placing at mid-point can cause overlap
       node_x = (service_x + interface_map_.at("topics")->get_plane()->get_dim_x()) / 2 -
-               interface_map_.at("nodes")->get_plane()->get_dim_x() / 2;
+               interface_map_.at("nodes")->get_plane()->get_dim_x() / 2 + 1;
       node_y = (term_height_ / 2) - interface_map_.at("nodes")->get_plane()->get_dim_y() / 2;
       break;
     }

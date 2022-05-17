@@ -1,6 +1,6 @@
 #include "doctest.h"
 
-#include <project-abbr/hello_world.hpp>
+#include <ornis/hello_world.hpp>
 
 #include <iostream> // Needed in OSX builds for some weird reason.
                     // See https://github.com/onqtam/doctest/issues/126#issuecomment-381742003

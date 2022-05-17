@@ -37,7 +37,7 @@ A Terminal User Interface for ROS2.
 [ros2_introspection](https://github.com/facontidavide/ros2_introspection) I blatantly stole a ton of code from here \
 [dynamic message introspection tools](https://github.com/osrf/dynamic_message_introspection) And here \
 [rosshow](https://github.com/dheera/rosshow) I actually started ORNIS _before_ I found rosshow (Promise), but once I saw it, it really fueled the fire, having shown me the potential of clever data visualisation. It's a pretty great piece of software. \
-[Nick Black](https://github.com/dankamongmen) TODO
+[Notcurses](https://github.com/dankamongmen/notcurses), the library powering the visuals of ORNIS. [Nick Black](https://github.com/dankamongmen) (The creator) is a super interesting dude, and I've enjoyed reading his [guidebook](https://nick-black.com/htp-notcurses.pdf), which is how I was introduced to Notcurses. \
 [Arnav Borborah](https://github.com/arnavb/cpp14-project-template) Their cpp14 template is pretty great, allowed me to quickly get ORNIS up and running with barely any hassle. Having a template to look at how things like CI and test modules should be layed out was also extremely useful (Even though I don't use either, ha)
 
 ## Further reading

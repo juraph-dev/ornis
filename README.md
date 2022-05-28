@@ -27,7 +27,7 @@ A waste of time (A Terminal User Interface for ROS2).
 Windows and mac aren't currently supported. Mac might work, feel free to try it and let me know how it goes. 
 
 ## Installation
-You're going to need Notcurses. You can either initialise it as a submodule to this repo, and compile alongside ORNIS, or you can install it [https://repology.org/project/notcurses/versions](using your package manager).
+You're going to need Notcurses. You can either initialise it as a submodule to this repo, and compile alongside ORNIS, or you can install it [using your favourite package manager](https://repology.org/project/notcurses/versions).
 Ensure you have ROS2 (Foxy or newer) installed and sourced. 
 ``` sh
 $git clone https://gitlab.com/juraph/ornis.git

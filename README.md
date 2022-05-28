@@ -25,6 +25,18 @@ A Terminal User Interface for ROS2.
 ## Videos
 
 ## Installation
+You're going to need Notcurses. You can either initialise it as a submodule to this repo, and compile alongside ORNIS, or you can install it [https://repology.org/project/notcurses/versions](using your package manager).
+Ensure you have ROS2 (Foxy or newer) installed and sourced. 
+``` sh
+$git clone https://gitlab.com/juraph/ornis.git
+$cd ornis
+$git submodule init
+$git submodule update
+$cd tools && ./compile.sh
+$cd ../../build/ornis
+$./ornis
+```
+
 ### Prerequisites
 [Notcurses](https://github.com/dankamongmen/notcurses) \
 [ROS2 Foxy or above](https://docs.ros.org/en/foxy/index.html) \

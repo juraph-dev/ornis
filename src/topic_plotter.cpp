@@ -5,16 +5,26 @@
 #include "ornis/introspection_functions.hpp"
 #include "ornis/ui_helpers.hpp"
 
-TopicPlotter::TopicPlotter() {}
+TopicPlotter::TopicPlotter(ncpp::Plane * plane) : initialised_(false), data_buffer_(10, 0.0)
+{
+  timestep_ = 0;
+  plane_ = plane;
+}
 
 TopicPlotter::~TopicPlotter() {}
 
-void TopicPlotter::renderData(
-  ncpp::Plane * plane, const rosidl_typesupport_introspection_cpp::MessageMembers * members)
+void TopicPlotter::initialisePlot() {}
+
+void TopicPlotter::renderData(const rosidl_typesupport_introspection_cpp::MessageMembers * members, uint8_t * data)
 {
-  rcutils_allocator_t allocator = rcutils_get_default_allocator();
-  uint8_t * request_data =
-    static_cast<uint8_t *>(allocator.allocate(members->size_of_, allocator.state));
-  const auto message_string = introspection::readMessageAsString(request_data, members);
-  ui_helpers::writeStringToTitledPlane(*plane, "Topic", message_string);
+  if (!initialised_)
+  {
+    initialisePlot();
+  }
+
+  const double message_double = introspection::readMessageAsDouble(data, members);
+
+  std::cout << "Message: " << message_double << std::endl;
+  // plot_->add_sample(timestep_, stod(message_string));
+  timestep_++;
 }

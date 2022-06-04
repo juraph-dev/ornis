@@ -65,7 +65,7 @@ void TopicStreamer::callback(
   auto rc = rcl_take(&subscription, request_data, &info, NULL);
 
   if (rc == RCL_RET_OK) {
-    topic_visualiser_->renderData(interface_channel_->stream_plane_.get(), members);
+    topic_visualiser_->renderData(members, request_data);
 
     // Add decorations to plane, now that it is the correct size
   } else {
@@ -103,7 +103,8 @@ void TopicStreamer::initialise()
 
   // Determine how to visualise the message
   // HACK Hardcoded for now
-  topic_visualiser_ = std::make_unique<TopicPlotter>(TopicPlotter());
+  topic_visualiser_ =
+    std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get()));
 
   // TODO: Investigate swapping profiles at runtime
   rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;

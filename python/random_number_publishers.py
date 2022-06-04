@@ -23,7 +23,7 @@ class MinimalPublisher(Node):
         self.i = 0
 
     def timer_callback(self):
-        msg_seed = random.random()
+        msg_seed = 100 * random.random()
         float_msg = Float32()
         float_msg.data = msg_seed
         int_msg = Int32()

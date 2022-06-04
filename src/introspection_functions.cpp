@@ -1,4 +1,5 @@
 #include "ornis/introspection_functions.hpp"
+
 #include <dlfcn.h>
 
 #include <cstring>
@@ -93,8 +94,8 @@ const rosidl_service_type_support_t * getServiceTypeSupport(
     void * typesupport_library = dlopen(library_path.c_str(), RTLD_LAZY);
 
     const auto symbol_name = typesupport_identifier + "__get_service_type_support_handle__" +
-                       package_name + "__" + (middle_module.empty() ? "srv" : middle_module) +
-                       "__" + type_name;
+                             package_name + "__" + (middle_module.empty() ? "srv" : middle_module) +
+                             "__" + type_name;
 
     if (typesupport_library == nullptr) {
       throw std::runtime_error(dynamic_loading_error + " Symbol not found.");
@@ -133,8 +134,8 @@ const rosidl_message_type_support_t * getMessageTypeSupport(
     void * typesupport_library = dlopen(library_path.c_str(), RTLD_LAZY);
 
     const auto symbol_name = typesupport_identifier + "__get_message_type_support_handle__" +
-                       package_name + "__" + (middle_module.empty() ? "msg" : middle_module) +
-                       "__" + type_name;
+                             package_name + "__" + (middle_module.empty() ? "msg" : middle_module) +
+                             "__" + type_name;
 
     if (typesupport_library == nullptr) {
       throw std::runtime_error(dynamic_loading_error + " Symbol not found.");
@@ -296,6 +297,64 @@ void messageDataToString(
   }
 }
 
+void messageDataToDouble(
+  const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
+  const uint8_t * member_data, double & message_data)
+{
+  switch (member_info.type_id_) {
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
+      message_data = double(*reinterpret_cast<const float *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
+      message_data = (*reinterpret_cast<const double *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
+      message_data = (*reinterpret_cast<const long double *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
+      message_data = double(*reinterpret_cast<const uint8_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_WCHAR:
+      message_data = double(*reinterpret_cast<const uint16_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
+      message_data = double(*reinterpret_cast<const bool *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_OCTET:
+      message_data = double(*reinterpret_cast<const uint8_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
+      message_data = double(*reinterpret_cast<const uint8_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
+      message_data = double(*reinterpret_cast<const int8_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
+      message_data = double(*reinterpret_cast<const uint16_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
+      message_data = double(*reinterpret_cast<const int16_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
+      message_data = double(*reinterpret_cast<const uint32_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
+      message_data = double(*reinterpret_cast<const int32_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
+      message_data = double(*reinterpret_cast<const uint64_t *>(member_data));
+      break;
+    case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
+      message_data = double(*reinterpret_cast<const int64_t *>(member_data));
+      break;
+    default:
+      // Recieved unkwn message type, fail silently and attempt to parse.
+      std::cerr << "Could not convert to double!!!: " << std::to_string(member_info.type_id_)
+                << "\n";
+      break;
+  }
+}
+
 std::string readMessageAsString(
   uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members)
 {
@@ -317,6 +376,20 @@ std::string readMessageAsString(
     members_string += member_string;
   }
   return members_string;
+}
+
+double readMessageAsDouble(
+  uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members)
+{
+  if (members->member_count_ > 1) {
+    std::cerr << "Attempted to read a member with more than one submembers!";
+    return 0.0;
+  }
+  const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[0];
+  uint8_t * member_data = &message_data[member.offset_];
+    double member_double;
+      introspection::messageDataToDouble(member, member_data, member_double);
+  return member_double;
 }
 
 void writeDataToMessage(

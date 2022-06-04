@@ -1,4 +1,5 @@
 #include "ornis/introspection_functions.hpp"
+#include <dlfcn.h>
 
 #include <cstring>
 
@@ -42,8 +43,8 @@ const std::tuple<std::string, std::string, std::string> extractTypeIdentifier(
   const std::string & full_type)
 {
   char type_separator = '/';
-  auto sep_position_back = full_type.find_last_of(type_separator);
-  auto sep_position_front = full_type.find_first_of(type_separator);
+  const auto sep_position_back = full_type.find_last_of(type_separator);
+  const auto sep_position_front = full_type.find_first_of(type_separator);
 
   if (
     sep_position_back == std::string::npos || sep_position_back == 0 ||
@@ -81,7 +82,7 @@ const rosidl_service_type_support_t * getServiceTypeSupport(
   std::string type_name;
   std::tie(package_name, middle_module, type_name) = extractTypeIdentifier(type);
 
-  std::string poco_dynamic_loading_error =
+  std::string dynamic_loading_error =
     "Something went wrong loading the typesupport library "
     "for service type " +
     package_name + "/" + type_name + ".";
@@ -89,27 +90,27 @@ const rosidl_service_type_support_t * getServiceTypeSupport(
   auto library_path = getTypeSupportLibraryPath(package_name, typesupport_identifier);
 
   try {
-    auto typesupport_library = std::make_shared<Poco::SharedLibrary>(library_path);
+    void * typesupport_library = dlopen(library_path.c_str(), RTLD_LAZY);
 
-    auto symbol_name = typesupport_identifier + "__get_service_type_support_handle__" +
+    const auto symbol_name = typesupport_identifier + "__get_service_type_support_handle__" +
                        package_name + "__" + (middle_module.empty() ? "srv" : middle_module) +
                        "__" + type_name;
 
-    if (!typesupport_library->hasSymbol(symbol_name)) {
-      throw std::runtime_error(poco_dynamic_loading_error + " Symbol not found.");
+    if (typesupport_library == nullptr) {
+      throw std::runtime_error(dynamic_loading_error + " Symbol not found.");
     }
 
-    const rosidl_service_type_support_t * (*get_ts)() = nullptr;
-    get_ts = (decltype(get_ts))typesupport_library->getSymbol(symbol_name);
-    auto type_support = get_ts();
+    typedef const rosidl_service_type_support_t * (*get_service_ts_func)();
 
-    if (!type_support) {
-      throw std::runtime_error(poco_dynamic_loading_error + " Symbol of wrong type.");
-    }
+    get_service_ts_func introspection_type_support_handle_func =
+      reinterpret_cast<get_service_ts_func>(dlsym(typesupport_library, symbol_name.c_str()));
 
-    return type_support;
-  } catch (Poco::LibraryLoadException &) {
-    throw std::runtime_error(poco_dynamic_loading_error + " Library could not be found.");
+    const rosidl_service_type_support_t * introspection_ts =
+      introspection_type_support_handle_func();
+
+    return introspection_ts;
+  } catch (...) {
+    throw std::runtime_error(dynamic_loading_error + " Library could not be found.");
   }
 }
 
@@ -121,7 +122,7 @@ const rosidl_message_type_support_t * getMessageTypeSupport(
   std::string type_name;
   std::tie(package_name, middle_module, type_name) = extractTypeIdentifier(type);
 
-  std::string poco_dynamic_loading_error =
+  std::string dynamic_loading_error =
     "Something went wrong loading the typesupport library "
     "for message type " +
     package_name + "/" + type_name + ".";
@@ -129,28 +130,27 @@ const rosidl_message_type_support_t * getMessageTypeSupport(
   auto library_path = getTypeSupportLibraryPath(package_name, typesupport_identifier);
 
   try {
-    // TODO: Un-Poco this.
-    auto typesupport_library = std::make_shared<Poco::SharedLibrary>(library_path);
+    void * typesupport_library = dlopen(library_path.c_str(), RTLD_LAZY);
 
-    auto symbol_name = typesupport_identifier + "__get_message_type_support_handle__" +
+    const auto symbol_name = typesupport_identifier + "__get_message_type_support_handle__" +
                        package_name + "__" + (middle_module.empty() ? "msg" : middle_module) +
                        "__" + type_name;
 
-    if (!typesupport_library->hasSymbol(symbol_name)) {
-      throw std::runtime_error(poco_dynamic_loading_error + " Symbol not found.");
+    if (typesupport_library == nullptr) {
+      throw std::runtime_error(dynamic_loading_error + " Symbol not found.");
     }
 
-    const rosidl_message_type_support_t * (*get_ts)() = nullptr;
-    get_ts = (decltype(get_ts))typesupport_library->getSymbol(symbol_name);
-    auto type_support = get_ts();
+    typedef const rosidl_message_type_support_t * (*get_message_ts_func)();
 
-    if (!type_support) {
-      throw std::runtime_error(poco_dynamic_loading_error + " Symbol of wrong type.");
-    }
+    get_message_ts_func introspection_type_support_handle_func =
+      reinterpret_cast<get_message_ts_func>(dlsym(typesupport_library, symbol_name.c_str()));
 
-    return type_support;
-  } catch (Poco::LibraryLoadException &) {
-    throw std::runtime_error(poco_dynamic_loading_error + " Library could not be found.");
+    const rosidl_message_type_support_t * introspection_ts =
+      introspection_type_support_handle_func();
+
+    return introspection_ts;
+  } catch (...) {
+    throw std::runtime_error(dynamic_loading_error + " Library could not be found.");
   }
 }
 

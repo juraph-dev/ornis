@@ -11,8 +11,6 @@
   <depend>rcl_action</depend>
   <depend>rcl_interfaces</depend>
 
-  <depend>Poco</depend> <!-- TODO: Remove -->
-
   <depend>rosidl_runtime_cpp</depend>
   <depend>rosidl_generator_cpp</depend>
   <depend>rosidl_typesupport_cpp</depend>

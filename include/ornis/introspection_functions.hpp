@@ -6,7 +6,7 @@
 #ifndef INTROSPECTION_FUNCTIONS_H_
 #define INTROSPECTION_FUNCTIONS_H_
 
-#include <Poco/SharedLibrary.h>
+#include <dlfcn.h>
 
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_resources.hpp>

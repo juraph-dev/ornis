@@ -61,7 +61,6 @@ find_package(rclcpp REQUIRED)
 find_package(rcl REQUIRED)
 find_package(rcl_action REQUIRED)
 find_package(rcl_interfaces REQUIRED)
-find_package(Poco COMPONENTS Foundation)
 find_package(rosidl_runtime_cpp REQUIRED)
 find_package(rosidl_generator_cpp REQUIRED)
 find_package(rosidl_typesupport_cpp REQUIRED)
@@ -100,7 +99,6 @@ add_library(${PROJECT_NAME}-lib ${LIBRARY_SOURCES})
 target_include_directories(${PROJECT_NAME}-lib PUBLIC ${PROJECT_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/include ${NCPP_DIR}/include
   ${rclcpp_INLUDE_DIR} rosidl_generator_cpp
-  Poco
   rosidl_typesupport_introspection_cpp
   rosidl_typesupport_cpp)
 
@@ -109,7 +107,6 @@ add_executable(${PROJECT_NAME} src/main.cpp) # The main executables
 target_link_libraries(ornis-lib PUBLIC
   notcurses++
   Threads::Threads
-  Poco::Foundation
   ${rclcpp_LIBRARIES}
   ${rcl_LIBRARIES}
   ${rcl_action_LIBRARIES}

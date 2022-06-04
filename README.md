@@ -40,7 +40,6 @@ $./ornis
 ### Prerequisites
 [Notcurses](https://github.com/dankamongmen/notcurses) \
 [ROS2 Foxy or above](https://docs.ros.org/en/foxy/index.html) \
-[Poco Foundation](https://pocoproject.org/) (This will most likely be changed very soon. I don't really need to be using it)
 
 ## Future roadmap
 

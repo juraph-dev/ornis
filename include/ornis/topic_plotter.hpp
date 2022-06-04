@@ -1,8 +1,9 @@
 #ifndef TOPIC_PLOTTER_H_
 #define TOPIC_PLOTTER_H_
 
-#include "ornis/topic_visualiser.hpp"
 #include <vector>
+
+#include "ornis/topic_visualiser.hpp"
 
 template <typename T>
 class DataBuffer
@@ -19,12 +20,12 @@ public:
   {
     buffer[i_] = xn;
     i_++;
-    if (i_ == n_)
-    {
+    if (i_ == n_) {
       filled_ = true;
       i_ = 0;
     }
   }
+
   int i_ = 0;    // index currently being addressed
   int n_;        // Size of buffer
   bool filled_;  // Flag indicating the buffer has been completely filled
@@ -43,6 +44,8 @@ public:
 
 private:
   void initialisePlot();
+  void drawAxis(const bool & rescale_vertical);
+  void drawPlot();
 
   unsigned long timestep_;
 
@@ -50,8 +53,9 @@ private:
 
   ncpp::Plane * plane_;
 
-  DataBuffer<int> data_buffer_;
+  DataBuffer<double> data_buffer_;
 
+  uint width_, height_;
 };
 
 #endif  // TOPIC_PLOTTER_H_

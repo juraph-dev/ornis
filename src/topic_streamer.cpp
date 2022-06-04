@@ -12,6 +12,7 @@
 #include "notcurses/notcurses.h"
 #include "ornis/introspection_functions.hpp"
 #include "ornis/stream_interface.hpp"
+#include "ornis/topic_plotter.hpp"
 #include "ornis/ui_helpers.hpp"
 
 using namespace std::chrono_literals;
@@ -64,10 +65,7 @@ void TopicStreamer::callback(
   auto rc = rcl_take(&subscription, request_data, &info, NULL);
 
   if (rc == RCL_RET_OK) {
-    const auto message_string = introspection::readMessageAsString(request_data, members);
-
-    ui_helpers::writeStringToTitledPlane(
-      *interface_channel_->stream_plane_, topic_name_, message_string);
+    topic_visualiser_->renderData(interface_channel_->stream_plane_.get(), members);
 
     // Add decorations to plane, now that it is the correct size
   } else {
@@ -102,6 +100,10 @@ void TopicStreamer::initialise()
   // TODO: This can be allocated to a variable in header, doesn't NEED to be passed at each callback
   const auto type_support = introspection::getMessageTypeSupport(
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
+
+  // Determine how to visualise the message
+  // HACK Hardcoded for now
+  topic_visualiser_ = std::make_unique<TopicPlotter>(TopicPlotter());
 
   // TODO: Investigate swapping profiles at runtime
   rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;

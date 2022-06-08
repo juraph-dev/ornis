@@ -21,7 +21,7 @@ A waste of time (A Terminal User Interface for ROS2).
 
 ### Prerequisites
 [Notcurses](https://github.com/dankamongmen/notcurses) \
-[ROS2 Foxy or above (Or below, I'm still working of figuring that out)](https://docs.ros.org/en/foxy/index.html) \
+[ROS2 Foxy or above (Or below, I'm still working on figuring that out)](https://docs.ros.org/en/foxy/index.html) 
 
 Windows and mac aren't currently supported. Mac might work, feel free to try it and let me know how it goes. 
 
@@ -38,9 +38,6 @@ $cd ../../build/ornis
 $./ornis
 ```
 
-### Prerequisites
-[Notcurses](https://github.com/dankamongmen/notcurses) \
-[ROS2 Foxy or above](https://docs.ros.org/en/foxy/index.html) \
 ## Usage
 Just run ./ornis, then trust the bar at the top that tells you how to use it. You can probably click things too, if you're one of those kinds of people. 
 

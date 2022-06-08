@@ -9,11 +9,10 @@ template <typename T>
 class DataBuffer
 {
 public:
-  DataBuffer(const int n, const T x0) : buffer(n), filled_(false)
+  DataBuffer(const int n) :  n_(n), filled_(false)
   {
-    n_ = n;
     buffer.resize(n_);
-    step(x0);
+    ascii_buffer.resize(n_);
   }
 
   void step(T xn)
@@ -26,11 +25,14 @@ public:
     }
   }
 
-  int i_ = 0;    // index currently being addressed
-  int n_;        // Size of buffer
-  bool filled_;  // Flag indicating the buffer has been completely filled
 
   std::vector<T> buffer;
+  std::vector<wchar_t> ascii_buffer; // Used as the graphical representation of the plot
+                                     //
+  const size_t n_;        // Size of buffer
+  size_t i_ = 0;    // index currently being addressed
+  bool filled_;  // Flag indicating the buffer has been completely filled
+
 };
 
 class TopicPlotter : public TopicVisualiser
@@ -46,6 +48,7 @@ private:
   void initialisePlot();
   void drawAxis(const bool & rescale_vertical);
   void drawPlot();
+  void TopicPlotter::drawSlice(const int &curr_point, const int &next_point);
 
   unsigned long timestep_;
 
@@ -56,6 +59,8 @@ private:
   DataBuffer<double> data_buffer_;
 
   uint width_, height_;
+
+  double highest_value_, lowest_value_;
 };
 
 #endif  // TOPIC_PLOTTER_H_

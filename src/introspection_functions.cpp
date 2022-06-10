@@ -387,8 +387,8 @@ double readMessageAsDouble(
   }
   const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[0];
   uint8_t * member_data = &message_data[member.offset_];
-    double member_double;
-      introspection::messageDataToDouble(member, member_data, member_double);
+  double member_double;
+  introspection::messageDataToDouble(member, member_data, member_double);
   return member_double;
 }
 

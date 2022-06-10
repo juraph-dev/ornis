@@ -9,7 +9,8 @@
 #include "ornis/introspection_functions.hpp"
 #include "ornis/ui_helpers.hpp"
 
-TopicPlotter::TopicPlotter(ncpp::Plane * plane) : initialised_(false), data_buffer_(77) // Should be plane->Width - 3
+TopicPlotter::TopicPlotter(ncpp::Plane * plane)
+: initialised_(false), data_buffer_(78), scaled_data_buffer_(78)  // Should be plane->Width - 3
 {
   // Hard coded dimensions for now
   width_ = 80;
@@ -22,18 +23,13 @@ TopicPlotter::TopicPlotter(ncpp::Plane * plane) : initialised_(false), data_buff
 }
 
 TopicPlotter::~TopicPlotter() {}
-
-void TopicPlotter::initialisePlot()
-{
-}
-
-void TopicPlotter::drawAxis(const bool & rescale_vertical)
-{}
-
-
+//
+// void TopicPlotter::initialisePlot() {}
+//
+// void TopicPlotter::drawAxis(const bool & rescale_vertical) {}
+//
 void TopicPlotter::drawPlot()
 {
-
   plane_->resize(height_, width_);
   plane_->erase();
   ncpp::Cell c(' ');
@@ -61,24 +57,26 @@ void TopicPlotter::drawPlot()
   for (uint i = 1; i < height_ - 2; i++) {
     plane_->putc(i, 1, vert_line);
   }
-  const char plot_char = '-';
+
   // If not filled, simply draw from right to left, continously through the buffer
-  if (!data_buffer_.filled_) {
-    for (size_t i = 0; i < data_buffer_.i_ - 1; i++) {
-      const int scaled_data_point = (height_ - 3) * (data_buffer_.buffer[i] - lowest_value_) / (highest_value_ - lowest_value_) + 1;
-      plane_->putc(scaled_data_point, width_ - 1 - data_buffer_.i_ + i, plot_char);
+  if (!scaled_data_buffer_.filled_) {
+    for (size_t i = 0; i < scaled_data_buffer_.i_ - 1; i++) {
+      drawSlice(
+        scaled_data_buffer_.buffer[i], scaled_data_buffer_.buffer[i + 1],
+        width_ - scaled_data_buffer_.i_ + i);
     }
-  } else { // If buffer is filled, fill from current buffer index to end
-    for (size_t i = data_buffer_.i_ ; i < data_buffer_.buffer.size() - 1; i++) {
-      const int scaled_data_point = (height_ - 3) * (data_buffer_.buffer[i] - lowest_value_) / (highest_value_ - lowest_value_) + 1;
-      plane_->putc(scaled_data_point, i - data_buffer_.i_ + 2, plot_char);
-    } // Then from start to current buffer index, to allow 
-    for (size_t i = 0; i < data_buffer_.i_; i++) {
-      const int scaled_data_point = (height_ - 3) * (data_buffer_.buffer[i] - lowest_value_) / (highest_value_ - lowest_value_) + 1;
-      plane_->putc(scaled_data_point, width_ - 1 - data_buffer_.i_ + i, plot_char);
+  } else {  // If buffer is filled, fill from current buffer index to end
+    for (size_t i = scaled_data_buffer_.i_; i < scaled_data_buffer_.buffer.size() - 1; i++) {
+      drawSlice(
+        scaled_data_buffer_.buffer[i], scaled_data_buffer_.buffer[i + 1],
+        i - scaled_data_buffer_.i_ + 2);
+    }  // Then from start to current buffer index
+    for (size_t i = 0; i < scaled_data_buffer_.i_ ; i++) {
+      drawSlice(
+        scaled_data_buffer_.buffer[i], scaled_data_buffer_.buffer[i + 1],
+        width_ - 1 - scaled_data_buffer_.i_ + i);
     }
   }
-  // Place final point manually, as drawSlice() would require future knowledge for it.
 
   // Draw vertical axis steps last, to prevent graph from overlapping with numbers
   const double step = (highest_value_ - lowest_value_) / 4;
@@ -92,32 +90,63 @@ void TopicPlotter::drawPlot()
   }
 }
 
-void TopicPlotter::drawSlice(const int &curr_point, const int &next_point)
+void TopicPlotter::drawSlice(
+  const uint64_t & curr_point, const uint64_t & next_point, const uint64_t & horizontal_loc)
 {
-   // ╯, ╭,  │  ╮,╰ , 
-   //
-    // This will be the function that draws the vertical line between ponints when delta p1. p2 > 1
-//int ncplane_vline_interp(struct ncplane* n, const nccell* c, unsigned len, uint64_t c1, uint64_t c2);
+  const int diff = next_point - curr_point;
 
+  if (diff == 0) {  // Straight horizontal line
+    plane_->putc(curr_point, horizontal_loc, "─");
+  } else if (abs(diff) == 1) {  // Single step
+    if (diff > 0) {
+      plane_->putc(curr_point, horizontal_loc, "╮");
+      plane_->putc(next_point, horizontal_loc, "╰");
+    } else {
+      plane_->putc(curr_point, horizontal_loc, "╯");
+      plane_->putc(next_point, horizontal_loc, "╭");
+    }
+  } else {  // Greater than single step
+    if (diff > 0) {
+      ui_helpers::drawVertLine(plane_, curr_point + 1, next_point - 1, horizontal_loc, "│");
+      plane_->putc(curr_point, horizontal_loc, "╮");
+      plane_->putc(next_point, horizontal_loc, "╰");
+    } else {
+      ui_helpers::drawVertLine(plane_, curr_point - 1, next_point + 1, horizontal_loc, "│");
+      plane_->putc(curr_point, horizontal_loc, "╯");
+      plane_->putc(next_point, horizontal_loc, "╭");
+    }
+  }
 }
 
 void TopicPlotter::renderData(
   const rosidl_typesupport_introspection_cpp::MessageMembers * members, uint8_t * data)
 {
-  if (!initialised_) {
-    initialisePlot();
-    initialised_ = true;
-  }
-
   const double message_double = introspection::readMessageAsDouble(data, members);
-  if (message_double > highest_value_)
-      highest_value_ = message_double;
-  else if (message_double < lowest_value_)
-      lowest_value_ = message_double;
-  // Increment buffer
   data_buffer_.step(message_double);
 
-  drawAxis(false);
+  // If the newest datapoint is outside current bounds
+  bool rescale_required = false;
+  if (message_double > highest_value_) {
+    highest_value_ = message_double;
+    rescale_required = true;
+  } else if (message_double < lowest_value_) {
+    lowest_value_ = message_double;
+    rescale_required = true;
+  }
+
+  if (rescale_required) {
+    // If we need to rescale the data, do so before adding latest data point
+    for (size_t i = 0; i < data_buffer_.buffer.size(); i++) {
+      scaled_data_buffer_.buffer[i] = (height_ - 3) * (data_buffer_.buffer[i] - lowest_value_) /
+                                        (highest_value_ - lowest_value_) +
+                                      1;
+    }
+  }
+
+  const int scaled_data_point =
+    (height_ - 3) * (message_double - lowest_value_) / (highest_value_ - lowest_value_) + 1;
+  scaled_data_buffer_.step(scaled_data_point);
+
   drawPlot();
   timestep_++;
 }

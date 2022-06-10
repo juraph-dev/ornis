@@ -253,7 +253,6 @@ void Ui::updateMonitor(
 
 void Ui::refreshUi()
 {
-  ncinput * nc_input = new ncinput;
   notcurses_core_->get_term_dim(term_height_, term_width_);
   while (screen_loop_) {
     // Check to see if we have re-drawn the monitors, or if the size of the
@@ -267,32 +266,34 @@ void Ui::refreshUi()
       transitionUiState(ui_displaying_);
     }
 
+    ncinput nc_input;
     // If we have an input
-    notcurses_core_->get(false, nc_input);
-    if (nc_input->id != (uint32_t)-1 && nc_input->id != 0) {
+    notcurses_core_->get(false, &nc_input);
+    if (nc_input.id != (uint32_t)-1 && nc_input.id != 0) {
+      // std::cout << "Have input" << nc_input.id << '\n';
       switch (ui_displaying_) {
         case UiDisplayingEnum::monitors: {
-          handleInputMonitors(*nc_input);
+          handleInputMonitors(nc_input);
           break;
         }
         case UiDisplayingEnum::monitorEntry: {
-          handleInputMonitorEntry(*nc_input);
+          handleInputMonitorEntry(nc_input);
           break;
         }
         case UiDisplayingEnum::monitorInteraction: {
-          handleInputMonitorInteraction(*nc_input);
+          handleInputMonitorInteraction(nc_input);
           break;
         }
         case UiDisplayingEnum::monitorInteractionResult: {
-          handleInputMonitorInteractionResult(*nc_input);
+          handleInputMonitorInteractionResult(nc_input);
           break;
         }
         case UiDisplayingEnum::selectedMonitor: {
-          handleInputSelected(*nc_input);
+          handleInputSelected(nc_input);
           break;
         }
         case UiDisplayingEnum::streamingTopic: {
-          handleInputStreaming(*nc_input);
+          handleInputStreaming(nc_input);
           break;
         }
         default:
@@ -302,8 +303,8 @@ void Ui::refreshUi()
     notcurses_core_->render();
     std::this_thread::sleep_for(0.01s);
   }
-  delete nc_input;
 }
+
 void Ui::handleInputSelected(const ncinput & input)
 {
   if (input.id == 'q' || input.id == NCKEY_ESC) {
@@ -699,7 +700,8 @@ void Ui::resizeUi(const uint & rows, const uint & cols)
 
 bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
 {
-  if (input.evtype == input.NCTYPE_PRESS || input.id == NCKEY_ENTER) {
+
+  if (input.evtype == ncintype_e::NCTYPE_PRESS || input.id == NCKEY_ENTER) {
     // If we recieve an enter, we neeed to grab the
     // currently selected topic, and view the topic information
     // in a popup window

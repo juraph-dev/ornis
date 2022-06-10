@@ -9,11 +9,7 @@ template <typename T>
 class DataBuffer
 {
 public:
-  DataBuffer(const int n) :  n_(n), filled_(false)
-  {
-    buffer.resize(n_);
-    ascii_buffer.resize(n_);
-  }
+  DataBuffer(const int n) : n_(n), filled_(false) { buffer.resize(n_); }
 
   void step(T xn)
   {
@@ -25,14 +21,11 @@ public:
     }
   }
 
-
   std::vector<T> buffer;
-  std::vector<wchar_t> ascii_buffer; // Used as the graphical representation of the plot
-                                     //
-  const size_t n_;        // Size of buffer
-  size_t i_ = 0;    // index currently being addressed
-  bool filled_;  // Flag indicating the buffer has been completely filled
 
+  const size_t n_;  // Size of buffer
+  size_t i_ = 0;    // index currently being addressed
+  bool filled_;     // Flag indicating the buffer has been completely filled
 };
 
 class TopicPlotter : public TopicVisualiser
@@ -45,10 +38,11 @@ public:
     const rosidl_typesupport_introspection_cpp::MessageMembers * members, uint8_t * data);
 
 private:
-  void initialisePlot();
-  void drawAxis(const bool & rescale_vertical);
+  // void initialisePlot();
+  // void drawAxis(const bool & rescale_vertical);
   void drawPlot();
-  void TopicPlotter::drawSlice(const int &curr_point, const int &next_point);
+  void drawSlice(
+  const uint64_t & curr_point, const uint64_t & next_point, const uint64_t & horizontal_loc);
 
   unsigned long timestep_;
 
@@ -56,7 +50,9 @@ private:
 
   ncpp::Plane * plane_;
 
-  DataBuffer<double> data_buffer_;
+  DataBuffer<double> data_buffer_;      // Storage of actual message data
+  DataBuffer<int> scaled_data_buffer_;  // Storage of scaled message data.
+    // Gets rescaled upon recieving a datapoint beyond previous bounds
 
   uint width_, height_;
 

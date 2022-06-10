@@ -31,7 +31,8 @@ class MinimalPublisher(Node):
 
     def timer_callback(self):
          
-        msg_seed = self.scale * math.sin(self.i / 10) 
+        # msg_seed = self.scale * math.sin(self.i / 5) 
+        msg_seed = self.scale * math.sin(self.i/10) 
         float_msg = Float32()
         float_msg.data = msg_seed
         self.float_publisher_.publish(float_msg)

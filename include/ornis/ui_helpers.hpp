@@ -381,6 +381,18 @@ inline void drawHelperBar(ncpp::Plane * plane, const std::string content)
     col++;
   }
 }
+
+inline void drawVertLine(
+  ncpp::Plane * plane, const uint64_t & p1, const uint64_t & p2, const uint64_t & horz_location,
+  const char * symbol)
+{
+  const int direction = p1 < p2 ? 1 : -1;
+  for (uint64_t index = p1; index != p2; index += direction) {
+    plane->putc(index, horz_location, symbol);
+  }
+  plane->putc(p2, horz_location, symbol);
+}
+
 }  // namespace ui_helpers
 
 #endif  // UI_HELPERS_H_

@@ -10,7 +10,7 @@
 #include "ornis/ui_helpers.hpp"
 
 TopicPlotter::TopicPlotter(ncpp::Plane * plane)
-: initialised_(false), data_buffer_(78), scaled_data_buffer_(78)  // Should be plane->Width - 3
+: initialised_(false), data_buffer_(77), scaled_data_buffer_(77)  // Should be plane->Width - 3
 {
   // Hard coded dimensions for now
   width_ = 80;
@@ -20,6 +20,13 @@ TopicPlotter::TopicPlotter(ncpp::Plane * plane)
 
   timestep_ = 0;
   plane_ = plane;
+  plane_->resize(height_, width_);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+  ncchannels_set_fg_alpha(&bgchannels, NCALPHA_OPAQUE);
+  ncchannels_set_bg_alpha(&bgchannels, NCALPHA_OPAQUE);
+  plane_->set_channels(bgchannels);
+  plane->move_top();
+
 }
 
 TopicPlotter::~TopicPlotter() {}
@@ -30,15 +37,14 @@ TopicPlotter::~TopicPlotter() {}
 //
 void TopicPlotter::drawPlot()
 {
-  plane_->resize(height_, width_);
   plane_->erase();
-  ncpp::Cell c(' ');
-  c.set_bg_rgb8(32, 51, 70);
-  c.set_fg_rgb8(32, 51, 70);
-  plane_->polyfill(width_, height_, c);
+
   // For now, we will use 5 values in vertical axis, 10 in horizontal
   uint64_t channel = plane_->get_channels();
   plane_->perimeter_rounded(0, channel, 0);
+
+  ncpp::Cell c(' ');
+  plane_->polyfill(2, 2, c);
 
   // Horizontal plane
   const char horz_line = '-';
@@ -65,13 +71,17 @@ void TopicPlotter::drawPlot()
         scaled_data_buffer_.buffer[i], scaled_data_buffer_.buffer[i + 1],
         width_ - scaled_data_buffer_.i_ + i);
     }
-  } else {  // If buffer is filled, fill from current buffer index to end
+  }
+
+  else {  // If buffer is filled, fill from current buffer index to end (Left side of graph)
     for (size_t i = scaled_data_buffer_.i_; i < scaled_data_buffer_.buffer.size() - 1; i++) {
       drawSlice(
         scaled_data_buffer_.buffer[i], scaled_data_buffer_.buffer[i + 1],
         i - scaled_data_buffer_.i_ + 2);
-    }  // Then from start to current buffer index
-    for (size_t i = 0; i < scaled_data_buffer_.i_ ; i++) {
+    }  // Then from start to current buffer index (Right side of graph)
+    for (size_t i = 0;
+         i < (scaled_data_buffer_.i_ == 0 ? scaled_data_buffer_.i_ : scaled_data_buffer_.i_ - 1);
+         i++) {
       drawSlice(
         scaled_data_buffer_.buffer[i], scaled_data_buffer_.buffer[i + 1],
         width_ - 1 - scaled_data_buffer_.i_ + i);
@@ -88,6 +98,7 @@ void TopicPlotter::drawPlot()
     std::string axis_str = ss.str();
     plane_->putstr(i * height_ / 5 + 1, 1, axis_str.c_str());
   }
+
 }
 
 void TopicPlotter::drawSlice(
@@ -137,14 +148,18 @@ void TopicPlotter::renderData(
   if (rescale_required) {
     // If we need to rescale the data, do so before adding latest data point
     for (size_t i = 0; i < data_buffer_.buffer.size(); i++) {
-      scaled_data_buffer_.buffer[i] = (height_ - 3) * (data_buffer_.buffer[i] - lowest_value_) /
-                                        (highest_value_ - lowest_value_) +
-                                      1;
+      // We subtract the scale from height_, as the plane is inexed with 0,0 from the top left, meaning
+      // we need to invert the data
+      scaled_data_buffer_.buffer[i] = height_ -
+                                      (height_ - 3) * (data_buffer_.buffer[i] - lowest_value_) /
+                                        (highest_value_ - lowest_value_) -
+                                      2;
     }
   }
 
   const int scaled_data_point =
-    (height_ - 3) * (message_double - lowest_value_) / (highest_value_ - lowest_value_) + 1;
+    height_ - (height_ - 3) * (message_double - lowest_value_) / (highest_value_ - lowest_value_) -
+    2;
   scaled_data_buffer_.step(scaled_data_point);
 
   drawPlot();

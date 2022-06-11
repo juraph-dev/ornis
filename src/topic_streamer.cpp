@@ -89,11 +89,6 @@ void TopicStreamer::initialise()
   // Ornis moves to support multiple streams, this will cause issues.
   // Make the stream plane pretty
 
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
-  ncchannels_set_fg_alpha(&bgchannels, NCALPHA_OPAQUE);
-  ncchannels_set_bg_alpha(&bgchannels, NCALPHA_OPAQUE);
-  interface_channel_->stream_plane_->set_base("", 0, bgchannels);
-
   ui_helpers::writeStringToTitledPlane(
     *interface_channel_->stream_plane_, topic_name_, "Waiting for message");
 

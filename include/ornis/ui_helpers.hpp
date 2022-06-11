@@ -158,10 +158,6 @@ inline void writeStringToPlane(ncpp::Plane & plane, const std::string & content)
     }
   }
 
-  // FIXME: SHouldn't be doing any styling here
-  // uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
-  // ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
-
   uint64_t channel = plane.get_channels();
   plane.perimeter_rounded(0, channel, 0);
 }
@@ -199,10 +195,6 @@ inline void writeStringToPlane(
     }
     string_index++;
   }
-
-  // FIXME: SHouldn't be doing any styling here
-  // uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
-  // ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
 
   uint64_t channel = plane.get_channels();
   plane.perimeter_rounded(0, channel, 0);
@@ -285,9 +277,6 @@ inline void writeStringToTitledPlane(
     string_index++;
   }
 
-  // uint64_t channel = NCCHANNELS_INITIALIZER(0xf0, 0xa0, 0xf0, 0, 0, 0);
-  // ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
-
   uint64_t channel = plane.get_channels();
   plane.perimeter_rounded(0, channel, 0);
 
@@ -316,7 +305,6 @@ inline void writeMapToTitledPlane(
   int col = 1;
 
   // TODO These cell writing loops should be moved to their own functions
-  // ncpp::Cell cell;
   for (const auto & entry : content) {
     // Use map key as divider title
     for (int i = 0; i < bar_length; i++) {
@@ -324,12 +312,7 @@ inline void writeMapToTitledPlane(
     }
     col = bar_length / 2 - entry.first.size() / 2;
     for (const char & c : entry.first) {
-      // plane.get_at(row, col, &cell);
-      // cell.
-      // nccell_load(plane.to_ncplane(), &cell, &c);
       plane.putc(row, col, c);
-      // plane.release(cell);
-      // nccell_release(plane.to_ncplane(), &cell);
       col++;
     }
     col = 1;
@@ -340,9 +323,7 @@ inline void writeMapToTitledPlane(
           row++;
           col = 1;
         } else {
-          // nccell_load(plane.to_ncplane(), &cell, &c);
           plane.putc(row, col, c);
-          // nccell_release(plane.to_ncplane(), &cell);
           col++;
         }
       }

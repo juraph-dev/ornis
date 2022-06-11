@@ -16,8 +16,6 @@ TopicPlotter::TopicPlotter(ncpp::Plane * plane)
   width_ = 80;
   height_ = 20;
 
-  // plot_width = width_ - 3;
-
   timestep_ = 0;
   plane_ = plane;
   plane_->resize(height_, width_);
@@ -26,15 +24,10 @@ TopicPlotter::TopicPlotter(ncpp::Plane * plane)
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_OPAQUE);
   plane_->set_channels(bgchannels);
   plane->move_top();
-
 }
 
 TopicPlotter::~TopicPlotter() {}
-//
-// void TopicPlotter::initialisePlot() {}
-//
-// void TopicPlotter::drawAxis(const bool & rescale_vertical) {}
-//
+
 void TopicPlotter::drawPlot()
 {
   plane_->erase();
@@ -98,7 +91,6 @@ void TopicPlotter::drawPlot()
     std::string axis_str = ss.str();
     plane_->putstr(i * height_ / 5 + 1, 1, axis_str.c_str());
   }
-
 }
 
 void TopicPlotter::drawSlice(

@@ -38,11 +38,9 @@ public:
     const rosidl_typesupport_introspection_cpp::MessageMembers * members, uint8_t * data);
 
 private:
-  // void initialisePlot();
-  // void drawAxis(const bool & rescale_vertical);
   void drawPlot();
   void drawSlice(
-  const uint64_t & curr_point, const uint64_t & next_point, const uint64_t & horizontal_loc);
+    const uint64_t & curr_point, const uint64_t & next_point, const uint64_t & horizontal_loc);
 
   unsigned long timestep_;
 

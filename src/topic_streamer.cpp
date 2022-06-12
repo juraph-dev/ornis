@@ -13,6 +13,7 @@
 #include "ornis/introspection_functions.hpp"
 #include "ornis/stream_interface.hpp"
 #include "ornis/topic_plotter.hpp"
+#include "ornis/topic_string_viewer.hpp"
 #include "ornis/ui_helpers.hpp"
 
 using namespace std::chrono_literals;
@@ -66,8 +67,6 @@ void TopicStreamer::callback(
 
   if (rc == RCL_RET_OK) {
     topic_visualiser_->renderData(members, request_data);
-
-    // Add decorations to plane, now that it is the correct size
   } else {
     // TODO: Test to make sure this fail string actually writes
     const std::string error = "Failed to read message! Error: " + std::to_string(rc);
@@ -97,9 +96,14 @@ void TopicStreamer::initialise()
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
   // Determine how to visualise the message
-  // HACK Hardcoded for now
-  topic_visualiser_ =
-    std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get()));
+  // TODO: Handle non-std_msgs data types
+  if (topic_type_ == "std_msgs/msg/String") {
+    topic_visualiser_ =
+      std::make_unique<TopicStringViewer>(TopicStringViewer(interface_channel_->stream_plane_.get(), 20, 80));
+  } else {
+    topic_visualiser_ =
+      std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80));
+  }
 
   // TODO: Investigate swapping profiles at runtime
   rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;

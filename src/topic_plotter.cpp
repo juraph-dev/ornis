@@ -9,13 +9,12 @@
 #include "ornis/introspection_functions.hpp"
 #include "ornis/ui_helpers.hpp"
 
-TopicPlotter::TopicPlotter(ncpp::Plane * plane)
-: initialised_(false), data_buffer_(77), scaled_data_buffer_(77)  // Should be plane->Width - 3
+TopicPlotter::TopicPlotter(ncpp::Plane * plane, uint height, uint width)
+: height_(height),
+  width_(width),
+  data_buffer_(width - 3),
+  scaled_data_buffer_(width - 3)
 {
-  // Hard coded dimensions for now
-  width_ = 80;
-  height_ = 20;
-
   timestep_ = 0;
   plane_ = plane;
   plane_->resize(height_, width_);
@@ -32,10 +31,10 @@ void TopicPlotter::drawPlot()
 {
   plane_->erase();
 
-  // For now, we will use 5 values in vertical axis, 10 in horizontal
   uint64_t channel = plane_->get_channels();
   plane_->perimeter_rounded(0, channel, 0);
 
+  // Polyfill to prevent transparent background
   ncpp::Cell c(' ');
   plane_->polyfill(2, 2, c);
 

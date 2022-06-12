@@ -12,6 +12,8 @@
 #include "notcurses/notcurses.h"
 #include "ornis/introspection_functions.hpp"
 #include "ornis/stream_interface.hpp"
+#include "ornis/topic_plotter.hpp"
+#include "ornis/topic_string_viewer.hpp"
 #include "ornis/ui_helpers.hpp"
 
 using namespace std::chrono_literals;
@@ -64,12 +66,7 @@ void TopicStreamer::callback(
   auto rc = rcl_take(&subscription, request_data, &info, NULL);
 
   if (rc == RCL_RET_OK) {
-    const auto message_string = introspection::readMessageAsString(request_data, members);
-
-    ui_helpers::writeStringToTitledPlane(
-      *interface_channel_->stream_plane_, topic_name_, message_string);
-
-    // Add decorations to plane, now that it is the correct size
+    topic_visualiser_->renderData(members, request_data);
   } else {
     // TODO: Test to make sure this fail string actually writes
     const std::string error = "Failed to read message! Error: " + std::to_string(rc);
@@ -91,17 +88,22 @@ void TopicStreamer::initialise()
   // Ornis moves to support multiple streams, this will cause issues.
   // Make the stream plane pretty
 
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
-  ncchannels_set_fg_alpha(&bgchannels, NCALPHA_OPAQUE);
-  ncchannels_set_bg_alpha(&bgchannels, NCALPHA_OPAQUE);
-  interface_channel_->stream_plane_->set_base("", 0, bgchannels);
-
   ui_helpers::writeStringToTitledPlane(
     *interface_channel_->stream_plane_, topic_name_, "Waiting for message");
 
   // TODO: This can be allocated to a variable in header, doesn't NEED to be passed at each callback
   const auto type_support = introspection::getMessageTypeSupport(
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
+
+  // Determine how to visualise the message
+  // TODO: Handle non-std_msgs data types
+  if (topic_type_ == "std_msgs/msg/String") {
+    topic_visualiser_ =
+      std::make_unique<TopicStringViewer>(TopicStringViewer(interface_channel_->stream_plane_.get(), 20, 80));
+  } else {
+    topic_visualiser_ =
+      std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80));
+  }
 
   // TODO: Investigate swapping profiles at runtime
   rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;

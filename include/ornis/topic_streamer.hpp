@@ -10,6 +10,7 @@
 #include <thread>  // IWYU pragma: keep
 
 #include "ornis/stream_interface.hpp"
+#include "ornis/topic_visualiser.hpp"
 
 class StreamChannel;
 
@@ -51,6 +52,8 @@ private:
   rcl_context_t context_;
 
   std::atomic<bool> stream_open_;
+
+  std::unique_ptr<TopicVisualiser> topic_visualiser_;
 };
 
 #endif  // TOPIC_STREAMER_H_

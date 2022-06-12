@@ -21,7 +21,6 @@
 class Monitor
 {
 public:
-  // Monitor() {}
   Monitor() : spin_(true) {}
   virtual ~Monitor() {}
 

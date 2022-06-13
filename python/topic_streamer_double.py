@@ -21,7 +21,7 @@ import math, random
 class MinimalPublisher(Node):
 
     def __init__(self):
-        super().__init__('random_number_pub')
+        super().__init__('sin_wave_pub')
 
         self.float_publisher_ = self.create_publisher(Float32, 'sin_wave', qos_profile_sensor_data)
         timer_period = 0.1  # Start with 10hz
@@ -32,7 +32,7 @@ class MinimalPublisher(Node):
     def timer_callback(self):
          
         # msg_seed = self.scale * math.sin(self.i / 5) 
-        msg_seed = self.scale * math.sin(self.i/10) 
+        msg_seed = self.scale * math.sin(self.i/5) 
         float_msg = Float32()
         float_msg.data = msg_seed
         self.float_publisher_.publish(float_msg)

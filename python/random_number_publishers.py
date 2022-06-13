@@ -18,7 +18,7 @@ class MinimalPublisher(Node):
         self.int_publisher_ = self.create_publisher(Int32, 'random_int', qos_profile_sensor_data)
         self.string_publisher_ = self.create_publisher(String, 'random_string', qos_profile_sensor_data)
         self.multi_publisher_ = self.create_publisher(MultiFormat, 'multi_format', qos_profile_sensor_data)
-        timer_period = 0.3  # Start with 10hz
+        timer_period = 0.2  # Start with 10hz
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.i = 0
 

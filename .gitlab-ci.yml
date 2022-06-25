@@ -1,4 +1,4 @@
-image: ros:galactic-ros-base-focal
+image: registry.gitlab.com/juraph/ornis:latest
 
 workflow:
   # Only run on master branch and merge requests
@@ -10,31 +10,16 @@ variables:
   PROJECT_BASE_DIR: $CI_PROJECT_DIR
 
 stages:
-  # - lint
   - build
-
-cpplint:
-  stage: lint
-  image: python:3.8-alpine
-  dependencies: []
-  before_script:
-    - python3 -m pip install cpplint
-  script:
-    - cpplint --recursive --output=junit . > cpplint-results.xml 2>&1
-  variables:
-    GIT_SUBMODULE_STRATEGY: none
-  artifacts:
-    expire_in: 30 days
-    reports:
-      junit: cpplint-results.xml
 
 build:
   stage: build
   before_script:
     # Install ROS package dependencies
-    # - apt-get update -qq
-    # Install NotCurses
-    #- apt-get install python3-pip -qq -y # install pip for certain rosdep packages
+   - apt-get update -y
+    # Install NotCurses deps
+
+   # install pip for certain rosdep packages
     #- rosdep update -q --rosdistro=$ROS_DISTRO
     #- rosdep install -y -q --from-paths $CI_PROJECT_DIR/src --ignore-src # only choose the required packages
     #- rm -rf /var/lib/apt/lists/*
@@ -43,7 +28,6 @@ build:
     - git submodule init
     - git submodule update
     - . $CI_PROJECT_DIR/tools/compile.sh
-    - colcon build
   variables:
     GIT_STRATEGY: clone
   artifacts:

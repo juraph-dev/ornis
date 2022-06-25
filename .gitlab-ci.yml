@@ -10,7 +10,7 @@ variables:
   PROJECT_BASE_DIR: $CI_PROJECT_DIR
 
 stages:
-  # - lint
+  - lint
   - build
 
 cpplint:
@@ -43,7 +43,6 @@ build:
     - git submodule init
     - git submodule update
     - . $CI_PROJECT_DIR/tools/compile.sh
-    - colcon build
   variables:
     GIT_STRATEGY: clone
   artifacts:

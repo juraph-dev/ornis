@@ -15,14 +15,8 @@ stages:
 build:
   stage: build
   before_script:
-    # Install ROS package dependencies
    - apt-get update -y
-    # Install NotCurses deps
 
-   # install pip for certain rosdep packages
-    #- rosdep update -q --rosdistro=$ROS_DISTRO
-    #- rosdep install -y -q --from-paths $CI_PROJECT_DIR/src --ignore-src # only choose the required packages
-    #- rm -rf /var/lib/apt/lists/*
   script:
     - . /opt/ros/galactic/setup.sh
     - git submodule init
@@ -33,4 +27,4 @@ build:
   artifacts:
     expire_in: 30 days
     reports:
-      junit: test-results.xml
+      junit:  $CI_PROJECT_DIR/test-results.xml

@@ -27,7 +27,7 @@ build:
     - . /opt/ros/galactic/setup.sh
     - git submodule init
     - git submodule update
-    - colcon build
+    - colcon build --event-handlers console_direct+
   variables:
     GIT_STRATEGY: clone
   artifacts:

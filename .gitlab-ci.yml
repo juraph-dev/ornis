@@ -1,4 +1,4 @@
-image: ros:galactic-ros-base-focal
+image: registry.gitlab.com/juraph/ornis:latest
 
 workflow:
   # Only run on master branch and merge requests
@@ -18,11 +18,6 @@ build:
     # Install ROS package dependencies
    - apt-get update -y
     # Install NotCurses deps
-   - apt-get install -y build-essential cmake doctest-dev \
-    libavformat-dev libavutil-dev libdeflate-dev libgpm-dev 
-    libncurses-dev libqrcodegen-dev libswscale-dev 
-    libunistring-dev pandoc pkg-config
-
 
    # install pip for certain rosdep packages
     #- rosdep update -q --rosdistro=$ROS_DISTRO

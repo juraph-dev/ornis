@@ -1,7 +1,6 @@
 # ORNIS (Open.Ros.Notcurses.Interface.System)
 
-
-![Linux](https://img.shields.io/badge/-Linux-grey?logo=linux)
+[![build status](https://gitlab.com/juraph/ornis/badges/master/pipeline.svg)](https://gitlab.com/juraph/ornis/-/commits/master)
 
 ## What is it?
 

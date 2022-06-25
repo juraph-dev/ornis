@@ -27,7 +27,7 @@ build:
     - . /opt/ros/galactic/setup.sh
     - git submodule init
     - git submodule update
-    - . $CI_PROJECT_DIR/tools/compile.sh
+    - colcon build
   variables:
     GIT_STRATEGY: clone
   artifacts:

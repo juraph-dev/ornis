@@ -78,6 +78,10 @@ void TopicPlotter::drawPlot()
         scaled_data_buffer_.buffer[i], scaled_data_buffer_.buffer[i + 1],
         width_ - 1 - scaled_data_buffer_.i_ + i);
     }
+    // Fill gap between the two ends of the vector
+    drawSlice(
+        scaled_data_buffer_.buffer.back(), scaled_data_buffer_.buffer[0],
+        width_ - 2 - scaled_data_buffer_.i_);
   }
 
   // Draw vertical axis steps last, to prevent graph from overlapping with numbers

@@ -17,25 +17,13 @@ build:
   before_script:
     # Install ROS package dependencies
    - apt-get update -y
-    # Install NotCurses
-   - apt-get install -y \
-            build-essential \
-            cmake \
-            doctest-dev \
-            ffmpeg \
-            libavcodec-dev \
-            libavformat-dev \
-            libavutil-dev \
-            libdeflate-dev \
-            libncurses-dev \
-            libqrcodegen-dev \
-            libswscale-dev \
-            libunistring-dev \
-            pandoc \
-            pkg-config \
-            python3-cffi \
-            python3-dev \
-            python3-setuptools 
+    # Install NotCurses deps
+   - apt-get install -y build-essential cmake doctest-dev \
+    libavformat-dev libavutil-dev libdeflate-dev libgpm-dev 
+    libncurses-dev libqrcodegen-dev libswscale-dev 
+    libunistring-dev pandoc pkg-config
+
+
    # install pip for certain rosdep packages
     #- rosdep update -q --rosdistro=$ROS_DISTRO
     #- rosdep install -y -q --from-paths $CI_PROJECT_DIR/src --ignore-src # only choose the required packages

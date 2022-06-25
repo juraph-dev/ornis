@@ -10,23 +10,7 @@ variables:
   PROJECT_BASE_DIR: $CI_PROJECT_DIR
 
 stages:
-  - lint
   - build
-
-cpplint:
-  stage: lint
-  image: python:3.8-alpine
-  dependencies: []
-  before_script:
-    - python3 -m pip install cpplint
-  script:
-    - cpplint --recursive --output=junit . > cpplint-results.xml 2>&1
-  variables:
-    GIT_SUBMODULE_STRATEGY: none
-  artifacts:
-    expire_in: 30 days
-    reports:
-      junit: cpplint-results.xml
 
 build:
   stage: build

@@ -7,10 +7,10 @@ workflow:
     - if: $CI_COMMIT_BRANCH == "master"
 
 variables:
-  PROJECT_BASE_DIR: $CI_PROJECT_DIR/src/
+  PROJECT_BASE_DIR: $CI_PROJECT_DIR
 
 stages:
-  - lint
+  # - lint
   - build
 
 cpplint:
@@ -32,16 +32,17 @@ build:
   stage: build
   before_script:
     # Install ROS package dependencies
-    - apt-get update -qq
+    # - apt-get update -qq
     # Install NotCurses
     #- apt-get install python3-pip -qq -y # install pip for certain rosdep packages
     #- rosdep update -q --rosdistro=$ROS_DISTRO
     #- rosdep install -y -q --from-paths $CI_PROJECT_DIR/src --ignore-src # only choose the required packages
     #- rm -rf /var/lib/apt/lists/*
   script:
-    - . /opt/ros/$ROS_DISTRO/setup.sh
+    - . /opt/ros/galactic/setup.sh
     - git submodule init
     - git submodule update
+    - . $CI_PROJECT_DIR/tools/compile.sh
     - colcon build
   variables:
     GIT_STRATEGY: clone

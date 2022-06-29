@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ornis/msg_tree.hpp"
 #include "ornis/helper_functions.hpp"
 #include "ornis/introspection_functions.hpp"
 
@@ -85,7 +86,7 @@ void ServiceMonitor::get_request_response_strings(
   service_info_.response_type_support = introspection::getMessageTypeSupport(
     response_char, rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
-  // TODO: FIgure out how to format this niceley
+  // TODO: Figure out how to format this niceley
   std::function<void(StringTreeNode * node, const rosidl_message_type_support_t *)>
     recursivelyCreateTree;
   recursivelyCreateTree =

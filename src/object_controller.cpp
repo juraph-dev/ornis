@@ -102,7 +102,7 @@ void ObjectController::checkUiRequests()
         // however only the service monitor uses this.
         std::string entry_details;
         if (interface_channel_->request_details_["monitor_name"] == "services") {
-          const auto service_name = interface_channel_->request_details_["monitor_entry"];
+          const std::string service_name = interface_channel_->request_details_["monitor_entry"];
           const auto it = std::find_if(
             previous_monitor_info_["services"].begin(), previous_monitor_info_["services"].end(),
             [&service_name](const std::pair<std::string, std::string> & service) {

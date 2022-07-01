@@ -13,9 +13,9 @@
 #include <utility>
 #include <vector>
 
-#include "ornis/msg_tree.hpp"
 #include "ornis/helper_functions.hpp"
 #include "ornis/introspection_functions.hpp"
+#include "ornis/msg_tree.hpp"
 
 ServiceMonitor::ServiceMonitor(std::shared_ptr<rcl_node_t> ros_interface_node)
 : ros_interface_node_(std::move(ros_interface_node))
@@ -43,14 +43,15 @@ void ServiceMonitor::getEntryInfo(
   std::map<std::string, std::vector<std::string>> & entry_info)
 {
   std::pair<std::string, std::string> req_resp_strings;
-  get_request_response_strings(entry_details, req_resp_strings);
+  get_request_response_strings(entry_name, entry_details, req_resp_strings);
   // Show the request, and response messages
   entry_info["Request"].push_back(req_resp_strings.first);
   entry_info["Response"].push_back(req_resp_strings.second);
 }
 
 void ServiceMonitor::get_request_response_strings(
-  const std::string service_type, std::pair<std::string, std::string> & req_resp_strings)
+  const std::string & entry_name, const std::string service_type,
+  std::pair<std::string, std::string> & req_resp_strings)
 {
   // Use namespace to shorten up some of the longer names
   using rosidl_typesupport_introspection_cpp::MessageMember;
@@ -86,58 +87,22 @@ void ServiceMonitor::get_request_response_strings(
   service_info_.response_type_support = introspection::getMessageTypeSupport(
     response_char, rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
-  // TODO: Figure out how to format this niceley
-  std::function<void(StringTreeNode * node, const rosidl_message_type_support_t *)>
-    recursivelyCreateTree;
-  recursivelyCreateTree =
-    [&](StringTreeNode * node, const rosidl_message_type_support_t * type_data) {
-      const auto * members = static_cast<const MessageMembers *>(type_data->data);
-      node->children().reserve(members->member_count_);
-      for (size_t i = 0; i < members->member_count_; i++) {
-        const MessageMember & member = members->members_[i];
-        std::string new_node_name = member.name_;
-        std::string new_node_type;
-        introspection::messageTypeToString(member, new_node_type);
-        if (new_node_type.size()) {
-          new_node_name += ":";
-          new_node_type = "(" + new_node_type + ") ";
-        }
-        StringTreeNode * new_node = node->addChild(new_node_type + new_node_name.c_str());
-        if (member.is_array_) {
-          new_node->children().reserve(1);
-          new_node = new_node->addChild("[]");
-        }
-        if (member.type_id_ == ROS_TYPE_MESSAGE) {
-          recursivelyCreateTree(new_node, member.members_);
-        }
-      }
-    };
+  const msg_tree::msg_contents msg_root = {.data_type_ = "Root", .entry_name_ = entry_name};
 
-  StringTree request_field_tree, response_field_tree;
+  msg_tree::MsgTree request_tree =
+    msg_tree::MsgTree(msg_root, service_info_.request_type_support);
+  msg_tree::MsgTree response_tree =
+    msg_tree::MsgTree(msg_root, service_info_.response_type_support);
 
-  request_field_tree.root()->setValue("");
-  response_field_tree.root()->setValue("");
-
-  auto request_starting_node = request_field_tree.root();
-  auto response_starting_node = response_field_tree.root();
-
-  // start building recursively
-  recursivelyCreateTree(request_starting_node, service_info_.request_type_support);
-  recursivelyCreateTree(response_starting_node, service_info_.response_type_support);
-
-  std::stringstream request_string;
-  std::stringstream response_string;
-  request_string << request_field_tree;
-  response_string << response_field_tree;
-  req_resp_strings.first = request_string.str();
-  req_resp_strings.second = response_string.str();
+  request_tree.getRoot()->toString(req_resp_strings.first, 0);
+  response_tree.getRoot()->toString(req_resp_strings.second, 0);
 }
 
 void ServiceMonitor::getInteractionString(
   const std::string & entry_name, const std::string & entry_details, std::string & entry_info)
 {
   std::pair<std::string, std::string> req_resp_strings;
-  get_request_response_strings(entry_details, req_resp_strings);
+  get_request_response_strings(entry_name, entry_details, req_resp_strings);
   entry_info = req_resp_strings.first;
 }
 

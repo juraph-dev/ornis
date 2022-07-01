@@ -29,7 +29,7 @@ public:
     std::map<std::string, std::vector<std::string>> & entry_info);
 
   void getInteractionString(
-  const std::string & entry_name, const std::string & entry_details, std::string & entry_info);
+    const std::string & entry_name, const std::string & entry_details, std::string & entry_info);
 
   void getInteractionResult(
     const std::string & entry_name, const std::string & entry_details,
@@ -42,7 +42,8 @@ private:
   void updateValue();
 
   void get_request_response_strings(
-    const std::string service_type, std::pair<std::string, std::string> & req_resp_strings);
+    const std::string & entry_name, const std::string service_type,
+    std::pair<std::string, std::string> & req_resp_strings);
 
   std::thread * thread_;
   std::shared_ptr<rcl_node_t> ros_interface_node_;

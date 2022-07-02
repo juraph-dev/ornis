@@ -30,14 +30,13 @@ struct msg_contents
   {
     return this->data_type_ == rhs.data_type_ && this->entry_name_ == rhs.entry_name_;
   }
+  // OStream operator for the msg_contents struct
+  friend std::ostream & operator<<(std::ostream & os, const msg_contents & msg)
+  {
+    os << "(" << msg.data_type_ << ") " << msg.entry_name_ << ": " << msg.entry_data_;
+    return os;
+  }
 };
-
-// OStream operator for the msg_contents struct
-std::ostream & operator<<(std::ostream & os, const msg_contents & msg)
-{
-  os << "(" << msg.data_type_ << ") " << msg.entry_name_ << ": " << msg.entry_data_;
-  return os;
-}
 
 class MsgTreeNode
 {

@@ -15,7 +15,6 @@
 
 #include "ornis/helper_functions.hpp"
 #include "ornis/introspection_functions.hpp"
-#include "ornis/msg_tree.hpp"
 
 ServiceMonitor::ServiceMonitor(std::shared_ptr<rcl_node_t> ros_interface_node)
 : ros_interface_node_(std::move(ros_interface_node))
@@ -110,16 +109,15 @@ void ServiceMonitor::getInteractionResult(
   const std::string & entry_name, const std::string & entry_details,
   const std::string & request_string, std::string & response_string)
 {
-  // Set up service message (Need to convert from string to actual service)
+  // Set up service message (Need to convert from string to rcl service msg)
   const char * service_name = entry_name.c_str();
   const rosidl_service_type_support_t * type_support = service_info_.type_support;
   auto * request_members =
     static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
       service_info_.request_type_support->data);
 
-  // Allocate space to store the binary representation of the message
+  // Allocate space to store the message
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
-
   uint8_t * request_data =
     static_cast<uint8_t *>(allocator.allocate(request_members->size_of_, allocator.state));
 

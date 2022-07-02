@@ -8,7 +8,6 @@
 #include <thread>  // IWYU pragma: keep
 
 #include "ornis/monitor.hpp"
-#include "ornis/stringtree.hpp"
 
 // TODO Rename/Clean up this strcut.
 struct serviceInfo

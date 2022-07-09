@@ -141,9 +141,9 @@ void ObjectController::checkUiRequests()
           entry_details = it->second;
         }
 
-        monitor_map_[interface_channel_->request_details_["monitor_name"]]->getInteractionString(
+        monitor_map_[interface_channel_->request_details_["monitor_name"]]->getInteractionForm(
           interface_channel_->request_details_["monitor_entry"], entry_details,
-          interface_channel_->response_string_);
+          interface_channel_->request_response_map_->first);
 
         std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
         interface_channel_->request_pending_ = false;
@@ -162,9 +162,9 @@ void ObjectController::checkUiRequests()
           entry_details = it->second;
         }
 
-        monitor_map_[interface_channel_->request_details_["monitor_name"]]->getInteractionResult(
+        monitor_map_[interface_channel_->request_details_["monitor_name"]]->interact(
           interface_channel_->request_details_["monitor_entry"], entry_details,
-          interface_channel_->request_details_["interaction_request"],
+          interface_channel_->request_response_map_->first,
           interface_channel_->response_string_);
 
         std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);

@@ -1,9 +1,11 @@
 #ifndef UI_HELPERS_H_
 #define UI_HELPERS_H_
 
+#include <functional>
 #include <vector>
 
 #include "ncpp/Plane.hh"
+#include "ornis/msg_tree.hpp"
 
 namespace ui_helpers
 {
@@ -51,10 +53,6 @@ inline void sizePlaneToMap(
   size_t col = 1;
   size_t longest_col = 0;
 
-  // iterate through string twice, once to find what size
-  // to resize the plane to, second to place the characters on the plane.
-  // It's ugly, but much more efficient than dynamically resizing the
-  // plane as we iterate through the string.
   for (const auto & entry : content_map) {
     row++;
     // Check length of map key (Which is used as the divider name)
@@ -92,6 +90,42 @@ inline void sizePlaneToMap(
   c.set_bg_rgb8(32, 51, 70);
   c.set_fg_rgb8(32, 51, 70);
   plane.polyfill(row, longest_col, c);
+}
+
+inline void sizeTree(const msg_tree::MsgTreeNode & node, size_t & rows, size_t & longest_col)
+{
+  rows++;
+  for (const auto & child : node.getChildren()) {
+    rows++;
+    const auto t = &child.getValue();
+    const size_t child_length =
+      t->data_type_.length() + t->entry_data_.length() + t->entry_name_.size();
+    longest_col = child_length > longest_col ? child_length : longest_col;
+    // child_child is a silly variable name, but this line makes me laugh, so it stays.
+    for (const auto & child_child : child.getChildren()) {
+      sizeTree(child_child, rows, longest_col);
+    }
+  }
+}
+
+inline void sizePlaneToTree(
+  ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree)
+{
+  size_t rows = 1;
+  size_t longest_col = 0;
+
+  sizeTree(*tree.getRoot(), rows, longest_col);
+
+  longest_col = title.size() > longest_col ? title.size() : longest_col;
+
+  // Add one to longest col to account for border
+  plane.resize(rows + 1, longest_col + 2);
+
+  // Fill plane, ensures we don't have a transparent background
+  ncpp::Cell c(' ');
+  c.set_bg_rgb8(32, 51, 70);
+  c.set_fg_rgb8(32, 51, 70);
+  plane.polyfill(rows, longest_col, c);
 }
 
 // Overload to allow for functions to specify how much white space they want around the string
@@ -176,7 +210,6 @@ inline void writeStringToPlane(
   int row = 1;
   int col = 1;
 
-  ncpp::Cell c(' ');
   nccell cell = NCCELL_TRIVIAL_INITIALIZER;
   for (const char & c : content) {
     if (c == '\n') {
@@ -291,10 +324,18 @@ inline void writeStringToTitledPlane(
 
 inline void writeMapToTitledPlane(
   ncpp::Plane & plane, const std::string & title,
-  const std::map<std::string, std::vector<std::string>> & content)
+  std::map<std::string, std::vector<std::string>> & content)
 {
   plane.erase();
   plane.move_top();
+
+  // Remove first line in string, which when created from the msg_tree, simply contains the name
+  // of the root node
+  for (auto & entry : content) {
+    for (std::string & content : entry.second) {
+      content.erase(0, content.find("\n") + 1);
+    }
+  }
 
   ui_helpers::sizePlaneToMap(plane, title, content);
 
@@ -305,8 +346,7 @@ inline void writeMapToTitledPlane(
   int col = 1;
 
   // TODO These cell writing loops should be moved to their own functions
-  for (const auto & entry : content) {
-    // Use map key as divider title
+  for (auto & entry : content) {
     for (int i = 0; i < bar_length; i++) {
       plane.putstr(row, i, fill_char);
     }
@@ -317,7 +357,7 @@ inline void writeMapToTitledPlane(
     }
     col = 1;
     row++;
-    for (const auto & content : entry.second) {
+    for (std::string & content : entry.second) {
       for (const char & c : content) {
         if (c == '\n') {
           row++;
@@ -331,6 +371,59 @@ inline void writeMapToTitledPlane(
       col = 1;
     }
   }
+
+  uint64_t channel = plane.get_channels();
+  plane.perimeter_rounded(0, channel, 0);
+
+  // Write planes title
+  col = (plane.get_dim_x() - title.size()) / 2;
+  for (const char & c : title) {
+    plane.putc(0, col, c);
+    col++;
+  }
+}
+
+inline void writeDetailedTreeToTitledPlane(
+  ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree)
+{
+  plane.erase();
+  plane.move_top();
+
+  ui_helpers::sizePlaneToTree(plane, title, tree);
+
+  const int bar_length = plane.get_dim_x();
+  const auto fill_char = "─";
+
+  size_t row = 1;
+  int col = 1;
+
+  std::function<void(
+    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root)>
+    drawTreeToPlane;
+  drawTreeToPlane = [&](
+                      const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
+                      const bool & is_root) {
+    nccell cell = NCCELL_TRIVIAL_INITIALIZER;
+
+    // Skip root
+    if (!is_root) {
+      size_t col = 1;
+      const msg_tree::msg_contents t = node.getValue();
+      const std::string node_line = t.data_type_ + " | " + t.entry_name_;
+      for (const char & c : node_line) {
+        plane.putc(row, col, c);
+        col++;
+      }
+      row++;
+    }
+    for (const auto & child : node.getChildren()) {
+      drawTreeToPlane(child, plane, row, false);
+    }
+
+    return;
+  };
+
+  drawTreeToPlane(*tree.getRoot(), plane, row, true);
 
   uint64_t channel = plane.get_channels();
   plane.perimeter_rounded(0, channel, 0);

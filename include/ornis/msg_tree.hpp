@@ -30,7 +30,8 @@ struct msg_contents
   {
     return this->data_type_ == rhs.data_type_ && this->entry_name_ == rhs.entry_name_;
   }
-  // OStream operator for the msg_contents struct
+
+  // OStream operator
   friend std::ostream & operator<<(std::ostream & os, const msg_contents & msg)
   {
     os << "(" << msg.data_type_ << ") " << msg.entry_name_ << ": " << msg.entry_data_;
@@ -74,10 +75,13 @@ public:
 
   bool isLeaf() const { return children_.empty(); }
 
-  void toString(std::string & output, int indent) const
+  void toString(std::string & output, int indent = 0) const
   {
     const std::string indent_str(indent, ' ');
-    output.append("\n" + indent_str + this->msg_contents_.entry_name_);
+    if (indent != 0) {
+      output.append("\n");
+    }
+    output.append(indent_str + this->msg_contents_.entry_name_);
 
     for (const auto & child : children_) {
       child.toString(output, indent + 2);
@@ -114,6 +118,10 @@ public:
     recursivelyCreateTree(base_.get(), type_data);
   }
 
+  // If constructed with no typesupport, no tree is created. Used for if tree is constructed
+  // after node is created.
+  MsgTree(const msg_contents & msg_contents_) : base_(new MsgTreeNode(msg_contents_, nullptr)) {}
+
   ~MsgTree() {}
 
   const MsgTreeNode * getRoot() const { return base_.get(); }
@@ -127,19 +135,26 @@ public:
     using rosidl_typesupport_introspection_cpp::MessageMembers;
     using rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE;
     using rosidl_typesupport_introspection_cpp::ServiceMembers;
-
     const auto * members = static_cast<const MessageMembers *>(type_data->data);
+
+    // To prevent potential duplication, Remove Node's children if any exist
+    if (!target_node->getChildren().empty()) {
+      target_node->getChildren().clear();
+    }
     target_node->getChildren().reserve(members->member_count_);
+
     for (size_t i = 0; i < members->member_count_; i++) {
       const MessageMember & member = members->members_[i];
       std::string new_node_type;
       introspection::messageTypeToString(member, new_node_type);
-      const msg_contents msg_data = {.data_type_ = new_node_type, .entry_name_ = member.name_};
+      const msg_contents msg_data = {
+        .data_type_ = new_node_type, .entry_name_ = member.name_, .entry_data_ = ""};
 
       MsgTreeNode * new_node = target_node->addChild(msg_data);
 
       if (member.is_array_) {
-        const msg_contents msg_array_data = {.data_type_ = "Array", .entry_name_ = "[]"};
+        const msg_contents msg_array_data = {
+          .data_type_ = "Array", .entry_name_ = "[]", .entry_data_ = ""};
         new_node->getChildren().reserve(1);
         new_node = new_node->addChild(msg_array_data);
       }

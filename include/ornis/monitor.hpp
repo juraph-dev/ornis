@@ -10,13 +10,13 @@
 #include <atomic>
 #include <iostream>
 #include <iterator>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
 #include <string>
 #include <thread>  // IWYU pragma: keep
 #include <vector>
-#include <map>
 
 #include "ornis/msg_tree.hpp"
 
@@ -30,13 +30,12 @@ public:
     const std::string & entry_name, const std::string & entry_details,
     std::map<std::string, std::vector<std::string>> & entry_info) = 0;
 
-  virtual void getInteractionString(
-    const std::string & entry_name, const std::string & entry_details,
-    std::string & entry_info) = 0;
+  virtual void getInteractionForm(
+    const std::string & entry_name, const std::string & entry_details, msg_tree::MsgTree &form) = 0;
 
-  virtual void getInteractionResult(
+  virtual void interact(
     const std::string & entry_name, const std::string & entry_details,
-    const std::string & request_string, std::string & response_string) = 0;
+    const msg_tree::MsgTree & request, std::string & response) = 0;
 
   bool getValue(std::vector<std::pair<std::string, std::string>> & value)
   {

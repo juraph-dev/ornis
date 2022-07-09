@@ -19,6 +19,7 @@
 #include "ornis/channel_interface.hpp"
 #include "ornis/helper_functions.hpp"
 #include "ornis/monitor_interface.hpp"
+#include "ornis/msg_tree.hpp"
 #include "ornis/stream_interface.hpp"
 #include "ornis/ui_helpers.hpp"
 
@@ -77,6 +78,7 @@ bool Ui::initialise(
 
   notcurses_stdplane_->get_dim(term_height_, term_width_);
 
+  // TODO: Change to use std::make_unique()
   interface_map_["nodes"] =
     std::unique_ptr<MonitorInterface>(new MonitorInterface("nodes", "[n]odes"));
   interface_map_["topics"] =
@@ -143,6 +145,7 @@ void Ui::renderMonitorInfo(MonitorInterface * interface)
   interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInformation;
   interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
   interface_channel_->request_details_["monitor_entry"] = item;
+
   interface_channel_->request_pending_.store(true);
 
   interface_channel_->condition_variable_.wait_for(
@@ -164,12 +167,21 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
   // Lock the channel mutex
   std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
 
+  // TODO: Rename "entry interaction result" to something more suitable
   interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInteractionResult;
   interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
   interface_channel_->request_details_["monitor_entry"] = item;
   interface_channel_->request_details_["interaction_request"] = active_interaction_string_;
-  interface_channel_->request_pending_.store(true);
 
+  // We create a blank tree for the request response trees, which then get filled out by the monitor we send the request to.
+  msg_tree::msg_contents request_contents = {
+    .data_type_ = "", .entry_name_ = item, .entry_data_ = ""};
+  // Create the msg trees to be used for storing the request information
+  auto req_tree_pair_ = std::make_unique<std::pair<msg_tree::MsgTree, msg_tree::MsgTree>>(
+    request_contents, request_contents);
+  interface_channel_->request_response_map_ = req_tree_pair_.get();
+
+  interface_channel_->request_pending_.store(true);
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
   active_interaction_string_.clear();
@@ -185,6 +197,7 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
     (term_width_ / 2) - (monitor_info_plane_->get_dim_x() / 2));
 }
 
+// TODO: rename the whole interaction/interaction result convention
 void Ui::renderMonitorInteraction(MonitorInterface * interface)
 {
   ui_displaying_ = UiDisplayingEnum::monitorInteraction;
@@ -197,14 +210,23 @@ void Ui::renderMonitorInteraction(MonitorInterface * interface)
   interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInteraction;
   interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
   interface_channel_->request_details_["monitor_entry"] = item;
-  interface_channel_->request_pending_.store(true);
 
+  msg_tree::msg_contents request_contents = {
+    .data_type_ = "", .entry_name_ = item, .entry_data_ = ""};
+
+  // Create the msg trees to be used for storing the request information
+  auto req_tree_pair_ = std::make_unique<std::pair<msg_tree::MsgTree, msg_tree::MsgTree>>(
+    request_contents, request_contents);
+
+  interface_channel_->request_response_map_ = req_tree_pair_.get();
+
+  interface_channel_->request_pending_.store(true);
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
   // Once we get the information, open the window for editing the text, and we can edit from there
-  active_interaction_string_ = interface_channel_->response_string_;
 
-  ui_helpers::writeStringToTitledPlane(*monitor_info_plane_, item, active_interaction_string_);
+  ui_helpers::writeDetailedTreeToTitledPlane(
+    *monitor_info_plane_, item, req_tree_pair_.get()->first);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -270,7 +292,6 @@ void Ui::refreshUi()
     // If we have an input
     notcurses_core_->get(false, &nc_input);
     if (nc_input.id != (uint32_t)-1 && nc_input.id != 0) {
-      // std::cout << "Have input" << nc_input.id << '\n';
       switch (ui_displaying_) {
         case UiDisplayingEnum::monitors: {
           handleInputMonitors(nc_input);
@@ -382,9 +403,10 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
     endline_index -= 1;
   }
   // Update the cursor as well as string on plane
-  ui_helpers::writeStringToTitledPlane(
-    *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
-    active_interaction_string_, endline_index);
+  // FIXME: COmmented out, as was overwriting tree drawn on plane
+  // ui_helpers::writeStringToTitledPlane(
+  //   *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
+  //   active_interaction_string_, endline_index);
 }
 
 void Ui::handleInputMonitorInteractionResult(const ncinput & input)

@@ -35,17 +35,18 @@ void NodeMonitor::spin()
   }
 }
 
-void NodeMonitor::getInteractionString(
-  const std::string & entry_name, const std::string & entry_details, std::string & entry_info)
+void NodeMonitor::getInteractionForm(
+  const std::string & entry_name, const std::string & entry_details, msg_tree::MsgTree & form)
 {
-  entry_info = "Not yet implemented :(\n";
+  form.getRoot()->setValue("Not yet implemented");
+  return;
 }
 
-void NodeMonitor::getInteractionResult(
-  const std::string & entry_name, const std::string & entry_details,
-  const std::string & request_string, std::string & response_string)
+void NodeMonitor::interact(
+    const std::string & entry_name, const std::string & entry_details,
+    const msg_tree::MsgTree & request, std::string & response)
 {
-  response_string = "Not yet implemented :(";
+  response = "Not yet implemented :(";
 }
 
 void NodeMonitor::getEntryInfo(

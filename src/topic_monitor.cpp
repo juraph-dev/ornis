@@ -64,17 +64,18 @@ void TopicMonitor::getEntryInfo(
   }
 }
 
-void TopicMonitor::getInteractionString(
-  const std::string & entry_name, const std::string & entry_details, std::string & entry_info)
+void TopicMonitor::getInteractionForm(
+  const std::string & entry_name, const std::string & entry_details, msg_tree::MsgTree & form)
 {
-  entry_info = "Not yet implemented :(\n";
+  form.getRoot()->setValue("Not yet implemented!");
+  return;
 }
 
-void TopicMonitor::getInteractionResult(
+void TopicMonitor::interact(
   const std::string & entry_name, const std::string & entry_details,
-  const std::string & request_string, std::string & response_string)
+  const msg_tree::MsgTree & request, std::string & response)
 {
-  response_string = "Not yet implemented :(";
+  response = "Not yet implemented :(";
 }
 
 void TopicMonitor::updateValue()

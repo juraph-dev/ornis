@@ -409,7 +409,7 @@ inline void writeDetailedTreeToTitledPlane(
     if (!is_root) {
       size_t col = 1;
       const msg_tree::msg_contents t = node.getValue();
-      const std::string node_line = t.data_type_ + " | " + t.entry_name_;
+      const std::string node_line = "(" + t.data_type_ + ")  " + t.entry_name_;
       for (const char & c : node_line) {
         plane.putc(row, col, c);
         col++;

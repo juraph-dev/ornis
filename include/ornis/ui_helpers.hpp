@@ -94,17 +94,14 @@ inline void sizePlaneToMap(
 
 inline void sizeTree(const msg_tree::MsgTreeNode & node, size_t & rows, size_t & longest_col)
 {
-  rows++;
+  const auto t = &node.getValue();
+  const std::string node_line =
+    "(" + t->data_type_ + ")  " + t->entry_name_ + ": " + t->entry_data_ + "  ";
+  const size_t child_length = node_line.length();
+  longest_col = child_length > longest_col ? child_length : longest_col;
   for (const auto & child : node.getChildren()) {
     rows++;
-    const auto t = &child.getValue();
-    const size_t child_length =
-      t->data_type_.length() + t->entry_data_.length() + t->entry_name_.size();
-    longest_col = child_length > longest_col ? child_length : longest_col;
-    // child_child is a silly variable name, but this line makes me laugh, so it stays.
-    for (const auto & child_child : child.getChildren()) {
-      sizeTree(child_child, rows, longest_col);
-    }
+    sizeTree(child, rows, longest_col);
   }
 }
 
@@ -383,16 +380,14 @@ inline void writeMapToTitledPlane(
   }
 }
 
-inline void writeDetailedTreeToTitledPlane(
+// Almost identical to writeDetailedTree, but draws a cursor, as well as a different background color for editable fields
+inline void writeEditingTreeToTitledPlane(
   ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree)
 {
   plane.erase();
   plane.move_top();
 
   ui_helpers::sizePlaneToTree(plane, title, tree);
-
-  const int bar_length = plane.get_dim_x();
-  const auto fill_char = "─";
 
   size_t row = 1;
   int col = 1;
@@ -403,8 +398,58 @@ inline void writeDetailedTreeToTitledPlane(
   drawTreeToPlane = [&](
                       const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
                       const bool & is_root) {
-    nccell cell = NCCELL_TRIVIAL_INITIALIZER;
+    // Skip root
+    if (!is_root) {
+      size_t col = 1;
+      const msg_tree::msg_contents t = node.getValue();
+      const std::string node_line = "(" + t.data_type_ + ")  " + t.entry_name_ +=
+        ": " + t.entry_data_;
+      // std::cout << "Node line: " << node_line << '\n';
+      for (const char & c : node_line) {
+        plane.putc(row, col, c);
+        col++;
+      }
+      if (node.getEditingStatus()) {
+        plane.putc(row, col, "┃");
+      }
+      row++;
+    }
+    for (const auto & child : node.getChildren()) {
+      drawTreeToPlane(child, plane, row, false);
+    }
+    return;
+  };
 
+  drawTreeToPlane(*tree.getRoot(), plane, row, true);
+
+  uint64_t channel = plane.get_channels();
+  plane.perimeter_rounded(0, channel, 0);
+
+  // Write planes title
+  col = (plane.get_dim_x() - title.size()) / 2;
+  for (const char & c : title) {
+    plane.putc(0, col, c);
+    col++;
+  }
+}
+
+inline void writeDetailedTreeToTitledPlane(
+  ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree)
+{
+  plane.erase();
+  plane.move_top();
+
+  ui_helpers::sizePlaneToTree(plane, title, tree);
+
+  size_t row = 1;
+  int col = 1;
+
+  std::function<void(
+    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root)>
+    drawTreeToPlane;
+  drawTreeToPlane = [&](
+                      const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
+                      const bool & is_root) {
     // Skip root
     if (!is_root) {
       size_t col = 1;

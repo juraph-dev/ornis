@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "notcurses/notcurses.h"
+#include "ornis/msg_tree.hpp"
 
 class Channel;
 class MonitorInterface;
@@ -50,13 +51,15 @@ private:
 
   struct UserHelpStrings
   {
-     static constexpr auto home_layout_prompt_ = "Press s/t/m to select a type";
-     static constexpr auto selected_monitor_prompt = "Press Enter for entry information, or Esc/q to go back";
-     static constexpr auto streamable_entry_prompt = "Press Enter to stream topic, Esc/q to go back";
-     static constexpr auto interactable_entry_prompt = "Press Enter to interact, Esc/q to go back";
-     static constexpr auto standard_entry_prompt = "Esc/q to go back";
-     static constexpr auto stream_prompt = "Esc/q to to go back";
-     static constexpr auto interaction_request_prompt = "Type to enter data, Enter to send, Tab to change fields, Esc to give up";
+    static constexpr auto home_layout_prompt_ = "Press s/t/m to select a type";
+    static constexpr auto selected_monitor_prompt =
+      "Press Enter for entry information, or Esc/q to go back";
+    static constexpr auto streamable_entry_prompt = "Press Enter to stream topic, Esc/q to go back";
+    static constexpr auto interactable_entry_prompt = "Press Enter to interact, Esc/q to go back";
+    static constexpr auto standard_entry_prompt = "Esc/q to go back";
+    static constexpr auto stream_prompt = "Esc/q to to go back";
+    static constexpr auto interaction_request_prompt =
+      "Type to enter data, Enter to send, Tab to change fields, Esc to give up";
   };
 
   UserHelpStrings userHelpStrings_;
@@ -132,6 +135,9 @@ private:
   // TODO: Remove after implementing the msg tree stuff
   std::string active_interaction_string_;
   uint currently_editing_index_;
+  msg_tree::MsgTreeNode * msg_node_being_edited_;
+
+  std::shared_ptr<std::pair<msg_tree::MsgTree, msg_tree::MsgTree>> currently_active_trees_;
 
   // Number of frames to use for anmations
   // TODO: re-write as a parameter for the user to configure

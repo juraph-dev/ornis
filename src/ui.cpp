@@ -19,7 +19,6 @@
 #include "ornis/channel_interface.hpp"
 #include "ornis/helper_functions.hpp"
 #include "ornis/monitor_interface.hpp"
-#include "ornis/msg_tree.hpp"
 #include "ornis/stream_interface.hpp"
 #include "ornis/ui_helpers.hpp"
 
@@ -184,12 +183,15 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
   interface_channel_->request_pending_.store(true);
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
+
+  // --- TODO Will need to be modified to use the stringtree
   active_interaction_string_.clear();
 
   // Request complete, now render the result to the popup plane
   const std::string reply = interface_channel_->response_string_;
 
   ui_helpers::writeStringToTitledPlane(*monitor_info_plane_, item, reply);
+  // --- TODO
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -197,7 +199,7 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
     (term_width_ / 2) - (monitor_info_plane_->get_dim_x() / 2));
 }
 
-// TODO: rename the whole interaction/interaction result convention
+// TODO: rename the whole interaction request/result naming convention. It's goofy and confusing
 void Ui::renderMonitorInteraction(MonitorInterface * interface)
 {
   ui_displaying_ = UiDisplayingEnum::monitorInteraction;
@@ -215,18 +217,18 @@ void Ui::renderMonitorInteraction(MonitorInterface * interface)
     .data_type_ = "", .entry_name_ = item, .entry_data_ = ""};
 
   // Create the msg trees to be used for storing the request information
-  auto req_tree_pair_ = std::make_unique<std::pair<msg_tree::MsgTree, msg_tree::MsgTree>>(
+  currently_active_trees_ = std::make_shared<std::pair<msg_tree::MsgTree, msg_tree::MsgTree>>(
     request_contents, request_contents);
 
-  interface_channel_->request_response_map_ = req_tree_pair_.get();
+  interface_channel_->request_response_map_ = currently_active_trees_.get();
 
   interface_channel_->request_pending_.store(true);
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
-  // Once we get the information, open the window for editing the text, and we can edit from there
 
-  ui_helpers::writeDetailedTreeToTitledPlane(
-    *monitor_info_plane_, item, req_tree_pair_.get()->first);
+  // Once we get the information, open the window for editing the text, and we can edit from there
+  ui_helpers::writeEditingTreeToTitledPlane(
+    *monitor_info_plane_, item, currently_active_trees_->first);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -373,40 +375,41 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
     add_input = true;
   }
   // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
-  else if (input.id == NCKEY_TAB && input.shift && currently_editing_index_ > 2) {
-    currently_editing_index_ -= 1;
-  } else if (input.id == NCKEY_TAB && !input.shift) {
-    currently_editing_index_ += 1;
-  }
-  // We don't want to be appending a tab character to the string
-  size_t endline_index;
-  if (!helper_functions::getNthIndex(
-        active_interaction_string_, '\n', currently_editing_index_, endline_index)) {
-    // If we have moved past the last instance of the newline character, don't un-iterate the index,
-    // and get the new last line index
-    currently_editing_index_ -= 1;
-    helper_functions::getNthIndex(
-      active_interaction_string_, '\n', currently_editing_index_, endline_index);
-  }
-  if (input.id == NCKEY_BACKSPACE) {
-    // Remove last character in string.
-    active_interaction_string_.erase(active_interaction_string_.begin() + endline_index - 1);
-    add_input = true;
-    endline_index -= 2;
+  // also want to prevent currently editing index from going negative
+  else if (input.id == NCKEY_TAB) {
+    if (input.shift && currently_editing_index_ > 1) {
+      currently_editing_index_ -= 1;
+    } else if (currently_editing_index_ != currently_active_trees_->first.editable_node_count_) {
+      currently_editing_index_ += 1;
+    }
+    auto editable_node =
+      currently_active_trees_->first.getRoot()->getNthEditableNode(currently_editing_index_);
+    if (editable_node == nullptr) {
+    } else {
+      if (msg_node_being_edited_ != nullptr) {
+        msg_node_being_edited_->setEditingStatus(false);
+      }
+      editable_node->setEditingStatus(true);
+      msg_node_being_edited_ = editable_node;
+    }
   }
 
+  std::string & msg_str = msg_node_being_edited_->getValue().entry_data_;
+  if (input.id == NCKEY_BACKSPACE) {
+    // Remove last character in string.
+    if (msg_str.length()) {
+      msg_str.pop_back();
+    }
+  }
   // Update a block character to the string also
   if (add_input) {
-    active_interaction_string_.insert(endline_index, input.utf8);
-  } else {
-    // If we don't increment, subtract one
-    endline_index -= 1;
+    msg_str += input.utf8;
   }
-  // Update the cursor as well as string on plane
-  // FIXME: COmmented out, as was overwriting tree drawn on plane
-  // ui_helpers::writeStringToTitledPlane(
-  //   *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
-  //   active_interaction_string_, endline_index);
+
+  // Update the cursor as well as plane
+  ui_helpers::writeEditingTreeToTitledPlane(
+    *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
+    currently_active_trees_->first);
 }
 
 void Ui::handleInputMonitorInteractionResult(const ncinput & input)
@@ -652,9 +655,8 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
     case UiDisplayingEnum::monitorInteraction: {
       // Disable mouse events
       notcurses_core_->mouse_disable();
-      // Reset active interaction index (We start at the second (2 index) occurance of newline, as we do not
-      // want to edit the message header.)
-      currently_editing_index_ = 2;
+      // Reset active interaction index
+      currently_editing_index_ = 1;
       // Perform a check for it we are returning from streaming a topic:
       ui_helpers::drawHelperBar(
         notcurses_stdplane_.get(), userHelpStrings_.interaction_request_prompt);

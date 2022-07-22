@@ -59,6 +59,10 @@ public:
 
   void setValue(const std::string & entry_data) { this->msg_contents_.entry_data_ = entry_data; }
 
+  void setEditingStatus(const bool & edit_status) { being_edited_ = edit_status; }
+
+  bool getEditingStatus() const { return being_edited_; }
+
   msg_contents & getValue() { return this->msg_contents_; }
 
   const msg_contents & getValue() const { return this->msg_contents_; }
@@ -66,6 +70,8 @@ public:
   std::vector<MsgTreeNode> & getChildren() { return this->children_; }
 
   const std::vector<MsgTreeNode> & getChildren() const { return this->children_; }
+
+  bool isEditable() const { return this->children_.size() == 0; }
 
   const MsgTreeNode & getChild(size_t index) const { return this->children_[index]; }
 
@@ -88,7 +94,6 @@ public:
     }
   }
 
-  // the type has to have an overloaded std::ostream << operator for print to work
   void print(const int depth = 0) const
   {
     for (int i = 0; i < depth; ++i) {
@@ -103,10 +108,39 @@ public:
     }
   }
 
+  MsgTreeNode * getNthEditableNode(const uint & n)
+  {
+    uint search_index = 1;
+    return findNthEditableNode(n, search_index);
+  }
+
+  MsgTreeNode * findNthEditableNode(const uint & n, uint & search_index)
+  {
+    MsgTreeNode * editable_leaf = nullptr;
+    if (isEditable()) {
+      if (search_index == n) {
+        return this;
+      } else {
+        search_index++;
+      }
+    } else {
+      for (auto & child : children_) {
+        editable_leaf = child.findNthEditableNode(n, search_index);
+        if (editable_leaf != nullptr) {
+          return editable_leaf;
+        }
+      }
+    }
+    return editable_leaf;
+  }
+
 private:
   msg_contents msg_contents_;
   std::vector<MsgTreeNode> children_;
   const MsgTreeNode * parent_;
+
+  // If the user is editing this node
+  bool being_edited_ = false;
 };
 
 class MsgTree
@@ -119,14 +153,15 @@ public:
   }
 
   // If constructed with no typesupport, no tree is created. Used for if tree is constructed
-  // after node is created.
+  // after root node is created.
   MsgTree(const msg_contents & msg_contents_) : base_(new MsgTreeNode(msg_contents_, nullptr)) {}
 
   ~MsgTree() {}
 
   const MsgTreeNode * getRoot() const { return base_.get(); }
-
   MsgTreeNode * getRoot() { return base_.get(); }
+
+  const MsgTreeNode * getFirstEditableNode() const { return base_->getNthEditableNode(1); }
 
   void recursivelyCreateTree(
     MsgTreeNode * target_node, const rosidl_message_type_support_t * type_data)
@@ -134,7 +169,6 @@ public:
     using rosidl_typesupport_introspection_cpp::MessageMember;
     using rosidl_typesupport_introspection_cpp::MessageMembers;
     using rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE;
-    using rosidl_typesupport_introspection_cpp::ServiceMembers;
     const auto * members = static_cast<const MessageMembers *>(type_data->data);
 
     // To prevent potential duplication, Remove Node's children if any exist
@@ -160,9 +194,14 @@ public:
       }
       if (member.type_id_ == ROS_TYPE_MESSAGE) {
         recursivelyCreateTree(new_node, member.members_);
+      } else {
+        // Node has no chldren, probably editable
+        editable_node_count_++;
       }
     }
   }
+
+  uint editable_node_count_ = 0;
 
 private:
   std::unique_ptr<MsgTreeNode> base_;

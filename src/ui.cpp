@@ -24,7 +24,7 @@
 
 using namespace std::chrono_literals;
 
-Ui::Ui() : redraw_flag_(true), screen_loop_(true) {}
+Ui::Ui() : redraw_flag_(true), screen_loop_(true), msg_node_being_edited_(nullptr) {}
 
 Ui::~Ui()
 {
@@ -373,8 +373,7 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
     }
     auto editable_node =
       currently_active_trees_->first.getRoot()->getNthEditableNode(currently_editing_index_);
-    if (editable_node == nullptr) {
-    } else {
+    if (editable_node != nullptr) {
       if (msg_node_being_edited_ != nullptr) {
         msg_node_being_edited_->setEditingStatus(false);
       }

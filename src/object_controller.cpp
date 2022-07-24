@@ -140,7 +140,6 @@ void ObjectController::checkUiRequests()
             });
           entry_details = it->second;
         }
-
         monitor_map_[interface_channel_->request_details_["monitor_name"]]->getInteractionForm(
           interface_channel_->request_details_["monitor_entry"], entry_details,
           interface_channel_->request_response_trees_->first);
@@ -161,7 +160,6 @@ void ObjectController::checkUiRequests()
             });
           entry_details = it->second;
         }
-
         monitor_map_[interface_channel_->request_details_["monitor_name"]]->interact(
           interface_channel_->request_details_["monitor_entry"], entry_details,
           interface_channel_->request_response_trees_->first,

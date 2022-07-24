@@ -8,7 +8,6 @@
 #include <thread>  // IWYU pragma: keep
 
 #include "ornis/monitor.hpp"
-#include "ornis/stringtree.hpp"
 
 // TODO Rename/Clean up this strcut.
 struct serviceInfo
@@ -28,12 +27,11 @@ public:
     const std::string & entry_name, const std::string & entry_details,
     std::map<std::string, std::vector<std::string>> & entry_info);
 
-  void getInteractionString(
-  const std::string & entry_name, const std::string & entry_details, std::string & entry_info);
+  void getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form);
 
-  void getInteractionResult(
+  void interact(
     const std::string & entry_name, const std::string & entry_details,
-    const std::string & request_string, std::string & response_string);
+    const msg_tree::MsgTree & request, std::string & response);
 
 private:
   static constexpr auto ros2_info_string_ = "ros2 service info ";
@@ -41,8 +39,8 @@ private:
   void spin();
   void updateValue();
 
-  void get_request_response_strings(
-    const std::string service_type, std::pair<std::string, std::string> & req_resp_strings);
+  void getInteractionTrees(
+    const std::string service_type, msg_tree::MsgTree & request, msg_tree::MsgTree & response);
 
   std::thread * thread_;
   std::shared_ptr<rcl_node_t> ros_interface_node_;

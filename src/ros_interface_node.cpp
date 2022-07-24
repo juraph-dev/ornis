@@ -11,13 +11,14 @@ RosInterfaceNode::RosInterfaceNode(
   const std::string & node_name, const rclcpp::NodeOptions & options)
 : Node(node_name)
 {
+  (void)options;
 }
 
 void RosInterfaceNode::spin()
 {
-  rclcpp::Rate r(1);
+  rclcpp::Rate rate(1);
   while (rclcpp::ok()) {
-    r.sleep();
+    rate.sleep();
   }
 }
 

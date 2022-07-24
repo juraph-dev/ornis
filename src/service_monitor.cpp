@@ -41,15 +41,28 @@ void ServiceMonitor::getEntryInfo(
   const std::string & entry_name, const std::string & entry_details,
   std::map<std::string, std::vector<std::string>> & entry_info)
 {
-  std::pair<std::string, std::string> req_resp_strings;
-  get_request_response_strings(entry_details, req_resp_strings);
+  (void)entry_name;
+
+  msg_tree::msg_contents req_contents = {
+    .data_type_ = "", .entry_name_ = "Request", .entry_data_ = ""};
+
+  msg_tree::msg_contents res_contents = {
+    .data_type_ = "", .entry_name_ = "Response", .entry_data_ = ""};
+  msg_tree::MsgTree req_tree(req_contents), res_tree(res_contents);
+  getInteractionTrees(entry_details, req_tree, res_tree);
+
+  std::string response_string, request_string;
+
   // Show the request, and response messages
-  entry_info["Request"].push_back(req_resp_strings.first);
-  entry_info["Response"].push_back(req_resp_strings.second);
+  res_tree.getRoot()->toString(response_string);
+  req_tree.getRoot()->toString(request_string);
+
+  entry_info["Response"].push_back(response_string);
+  entry_info["Request"].push_back(request_string);
 }
 
-void ServiceMonitor::get_request_response_strings(
-  const std::string service_type, std::pair<std::string, std::string> & req_resp_strings)
+void ServiceMonitor::getInteractionTrees(
+  const std::string service_type, msg_tree::MsgTree & request, msg_tree::MsgTree & response)
 {
   // Use namespace to shorten up some of the longer names
   using rosidl_typesupport_introspection_cpp::MessageMember;
@@ -85,82 +98,39 @@ void ServiceMonitor::get_request_response_strings(
   service_info_.response_type_support = introspection::getMessageTypeSupport(
     response_char, rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
-  // TODO: FIgure out how to format this niceley
-  std::function<void(StringTreeNode * node, const rosidl_message_type_support_t *)>
-    recursivelyCreateTree;
-  recursivelyCreateTree =
-    [&](StringTreeNode * node, const rosidl_message_type_support_t * type_data) {
-      const auto * members = static_cast<const MessageMembers *>(type_data->data);
-      node->children().reserve(members->member_count_);
-      for (size_t i = 0; i < members->member_count_; i++) {
-        const MessageMember & member = members->members_[i];
-        std::string new_node_name = member.name_;
-        std::string new_node_type;
-        introspection::messageTypeToString(member, new_node_type);
-        if (new_node_type.size()) {
-          new_node_name += ":";
-          new_node_type = "(" + new_node_type + ") ";
-        }
-        StringTreeNode * new_node = node->addChild(new_node_type + new_node_name.c_str());
-        if (member.is_array_) {
-          new_node->children().reserve(1);
-          new_node = new_node->addChild("[]");
-        }
-        if (member.type_id_ == ROS_TYPE_MESSAGE) {
-          recursivelyCreateTree(new_node, member.members_);
-        }
-      }
-    };
-
-  StringTree request_field_tree, response_field_tree;
-
-  request_field_tree.root()->setValue("");
-  response_field_tree.root()->setValue("");
-
-  auto request_starting_node = request_field_tree.root();
-  auto response_starting_node = response_field_tree.root();
-
-  // start building recursively
-  recursivelyCreateTree(request_starting_node, service_info_.request_type_support);
-  recursivelyCreateTree(response_starting_node, service_info_.response_type_support);
-
-  std::stringstream request_string;
-  std::stringstream response_string;
-  request_string << request_field_tree;
-  response_string << response_field_tree;
-  req_resp_strings.first = request_string.str();
-  req_resp_strings.second = response_string.str();
+  request.recursivelyCreateTree(request.getRoot(), service_info_.request_type_support);
+  response.recursivelyCreateTree(response.getRoot(), service_info_.response_type_support);
 }
 
-void ServiceMonitor::getInteractionString(
-  const std::string & entry_name, const std::string & entry_details, std::string & entry_info)
+void ServiceMonitor::getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form)
 {
-  std::pair<std::string, std::string> req_resp_strings;
-  get_request_response_strings(entry_details, req_resp_strings);
-  entry_info = req_resp_strings.first;
+  msg_tree::msg_contents blank_contents = {.data_type_ = "", .entry_name_ = "", .entry_data_ = ""};
+  msg_tree::MsgTree blank_tree(blank_contents);
+  getInteractionTrees(entry_details, form, blank_tree);
 }
 
-void ServiceMonitor::getInteractionResult(
+void ServiceMonitor::interact(
   const std::string & entry_name, const std::string & entry_details,
-  const std::string & request_string, std::string & response_string)
+  const msg_tree::MsgTree & request, std::string & response)
 {
-  // Set up service message (Need to convert from string to actual service)
+  (void)entry_details;
+
+  // Set up service message (Need to convert from string to rcl service msg)
   const char * service_name = entry_name.c_str();
   const rosidl_service_type_support_t * type_support = service_info_.type_support;
   auto * request_members =
     static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
       service_info_.request_type_support->data);
 
-  // Allocate space to store the binary representation of the message
+  // Allocate space to store the message
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
-
   uint8_t * request_data =
     static_cast<uint8_t *>(allocator.allocate(request_members->size_of_, allocator.state));
 
   // Initialise the members
   request_members->init_function(request_data, rosidl_runtime_cpp::MessageInitialization::ALL);
 
-  introspection::populateMessage(request_data, request_members, request_string);
+  request.writeTreeToMessage(request_data, request_members);
 
   // Set up client
   rcl_client_t client = rcl_get_zero_initialized_client();
@@ -188,8 +158,13 @@ void ServiceMonitor::getInteractionResult(
     &wait_set, 0, 0, 0, 1, 0, 0, ros_interface_node_->context, rcl_get_default_allocator());
 
   // Send request
-  // TODO: Check request result here
-  const auto request = rcl_send_request(&client, request_data, &sequence_number);
+  ret = rcl_send_request(&client, request_data, &sequence_number);
+  if (ret != RMW_RET_OK) {
+    response = "Failed to recieve response from service! error: ";
+    response += ret;
+    response += '\n';
+    return;
+  }
 
   size_t index;
   while (true) {
@@ -200,12 +175,17 @@ void ServiceMonitor::getInteractionResult(
       break;
     }
     if (wait_set.clients[0]) {
-      // TODO: Throw error when when response indicates fail
-      const auto response = rcl_take_response_with_info(&client, &req_header, response_data);
+      ret = rcl_take_response_with_info(&client, &req_header, response_data);
+      if (ret != RMW_RET_OK) {
+        response = "Failed to recieve response from service! error: ";
+        response += ret;
+        response += '\n';
+        return;
+      }
     }
   }
 
-  response_string = introspection::readMessageAsString(response_data, response_members);
+  response = introspection::readMessageAsString(response_data, response_members);
   // Clean up
 }
 
@@ -214,8 +194,12 @@ void ServiceMonitor::updateValue()
   rcl_allocator_t allocator = rcl_get_default_allocator();
   rcl_names_and_types_t service_names_and_types{};
 
-  auto ret = rcl_get_service_names_and_types(
+  int ret = rcl_get_service_names_and_types(
     ros_interface_node_.get(), &allocator, &service_names_and_types);
+
+  if (ret != RCL_RET_OK) {
+    std::cerr << "Failed to update service monitor!\n";
+  }
 
   std::vector<std::pair<std::string, std::string>> service_info;
 
@@ -227,6 +211,9 @@ void ServiceMonitor::updateValue()
     }
   }
   ret = rcl_names_and_types_fini(&service_names_and_types);
+  if (ret != RCL_RET_OK) {
+    std::cerr << "Failed to destroy service rcl_names_and_types object!\n";
+  }
 
   if (latest_value_ == service_info) {
     return;

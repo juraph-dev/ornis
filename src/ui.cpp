@@ -24,7 +24,7 @@
 
 using namespace std::chrono_literals;
 
-Ui::Ui() : redraw_flag_(true), screen_loop_(true) {}
+Ui::Ui() : redraw_flag_(true), screen_loop_(true), msg_node_being_edited_(nullptr) {}
 
 Ui::~Ui()
 {
@@ -77,6 +77,7 @@ bool Ui::initialise(
 
   notcurses_stdplane_->get_dim(term_height_, term_width_);
 
+  // TODO: Change to use std::make_unique()
   interface_map_["nodes"] =
     std::unique_ptr<MonitorInterface>(new MonitorInterface("nodes", "[n]odes"));
   interface_map_["topics"] =
@@ -84,8 +85,8 @@ bool Ui::initialise(
   interface_map_["services"] =
     std::unique_ptr<MonitorInterface>(new MonitorInterface("services", "[s]ervices"));
 
-  // TODO: Think about if I REALLY want the initial locations to be random, or
-  // if I want them to be placed somewhere reasonable
+  // TODO: Think about if I REALLY want the initial locations to be random for the fun factor, or
+  // if they should be placed somewhere reasonable.
   std::random_device dev;
   std::mt19937 rng(dev());
   std::uniform_int_distribution<int> width_dist(1, term_width_);
@@ -143,6 +144,7 @@ void Ui::renderMonitorInfo(MonitorInterface * interface)
   interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInformation;
   interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
   interface_channel_->request_details_["monitor_entry"] = item;
+
   interface_channel_->request_pending_.store(true);
 
   interface_channel_->condition_variable_.wait_for(
@@ -164,15 +166,16 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
   // Lock the channel mutex
   std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
 
+  // TODO: Rename "entry interaction result" to something more suitable
   interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInteractionResult;
   interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
   interface_channel_->request_details_["monitor_entry"] = item;
-  interface_channel_->request_details_["interaction_request"] = active_interaction_string_;
-  interface_channel_->request_pending_.store(true);
 
+  interface_channel_->request_response_trees_ = currently_active_trees_.get();
+
+  interface_channel_->request_pending_.store(true);
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
-  active_interaction_string_.clear();
 
   // Request complete, now render the result to the popup plane
   const std::string reply = interface_channel_->response_string_;
@@ -185,6 +188,7 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
     (term_width_ / 2) - (monitor_info_plane_->get_dim_x() / 2));
 }
 
+// TODO: rename the whole interaction request/result naming convention. It's goofy and confusing
 void Ui::renderMonitorInteraction(MonitorInterface * interface)
 {
   ui_displaying_ = UiDisplayingEnum::monitorInteraction;
@@ -197,14 +201,23 @@ void Ui::renderMonitorInteraction(MonitorInterface * interface)
   interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInteraction;
   interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
   interface_channel_->request_details_["monitor_entry"] = item;
-  interface_channel_->request_pending_.store(true);
 
+  msg_tree::msg_contents request_contents = {
+    .data_type_ = "", .entry_name_ = item, .entry_data_ = ""};
+
+  // Create the msg trees to be used for storing the request information
+  currently_active_trees_ = std::make_shared<std::pair<msg_tree::MsgTree, msg_tree::MsgTree>>(
+    request_contents, request_contents);
+
+  interface_channel_->request_response_trees_ = currently_active_trees_.get();
+
+  interface_channel_->request_pending_.store(true);
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
-  // Once we get the information, open the window for editing the text, and we can edit from there
-  active_interaction_string_ = interface_channel_->response_string_;
 
-  ui_helpers::writeStringToTitledPlane(*monitor_info_plane_, item, active_interaction_string_);
+  // Once we get the information, open the window for editing the text, and we can edit from there
+  ui_helpers::writeEditingTreeToTitledPlane(
+    *monitor_info_plane_, item, currently_active_trees_->first);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -270,7 +283,6 @@ void Ui::refreshUi()
     // If we have an input
     notcurses_core_->get(false, &nc_input);
     if (nc_input.id != (uint32_t)-1 && nc_input.id != 0) {
-      // std::cout << "Have input" << nc_input.id << '\n';
       switch (ui_displaying_) {
         case UiDisplayingEnum::monitors: {
           handleInputMonitors(nc_input);
@@ -352,39 +364,40 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
     add_input = true;
   }
   // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
-  else if (input.id == NCKEY_TAB && input.shift && currently_editing_index_ > 2) {
-    currently_editing_index_ -= 1;
-  } else if (input.id == NCKEY_TAB && !input.shift) {
-    currently_editing_index_ += 1;
-  }
-  // We don't want to be appending a tab character to the string
-  size_t endline_index;
-  if (!helper_functions::getNthIndex(
-        active_interaction_string_, '\n', currently_editing_index_, endline_index)) {
-    // If we have moved past the last instance of the newline character, don't un-iterate the index,
-    // and get the new last line index
-    currently_editing_index_ -= 1;
-    helper_functions::getNthIndex(
-      active_interaction_string_, '\n', currently_editing_index_, endline_index);
-  }
-  if (input.id == NCKEY_BACKSPACE) {
-    // Remove last character in string.
-    active_interaction_string_.erase(active_interaction_string_.begin() + endline_index - 1);
-    add_input = true;
-    endline_index -= 2;
+  // also want to prevent currently editing index from going negative
+  else if (input.id == NCKEY_TAB) {
+    if (input.shift && currently_editing_index_ > 1) {
+      currently_editing_index_ -= 1;
+    } else if (currently_editing_index_ != currently_active_trees_->first.editable_node_count_) {
+      currently_editing_index_ += 1;
+    }
+    auto editable_node =
+      currently_active_trees_->first.getRoot()->getNthEditableNode(currently_editing_index_);
+    if (editable_node != nullptr) {
+      if (msg_node_being_edited_ != nullptr) {
+        msg_node_being_edited_->setEditingStatus(false);
+      }
+      editable_node->setEditingStatus(true);
+      msg_node_being_edited_ = editable_node;
+    }
   }
 
+  std::string & msg_str = msg_node_being_edited_->getValue().entry_data_;
+  if (input.id == NCKEY_BACKSPACE) {
+    // Remove last character in string.
+    if (msg_str.length()) {
+      msg_str.pop_back();
+    }
+  }
   // Update a block character to the string also
   if (add_input) {
-    active_interaction_string_.insert(endline_index, input.utf8);
-  } else {
-    // If we don't increment, subtract one
-    endline_index -= 1;
+    msg_str += input.utf8;
   }
-  // Update the cursor as well as string on plane
-  ui_helpers::writeStringToTitledPlane(
+
+  // Update the cursor as well as plane
+  ui_helpers::writeEditingTreeToTitledPlane(
     *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
-    active_interaction_string_, endline_index);
+    currently_active_trees_->first);
 }
 
 void Ui::handleInputMonitorInteractionResult(const ncinput & input)
@@ -531,21 +544,12 @@ void Ui::renderSelectedMonitor()
     selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2,
     term_height_ / 2 - selected_plane->get_dim_y() / 2));
 
-  // Place minimised monitors outside of screen
-  interface_order.front()->minimised_plane_->move(0, -3);
-  interface_order.back()->minimised_plane_->move(0, term_width_ + 1);
-
   // animated Move monitor planes to their locations
   movePlanesAnimated(planes_locations);
 
-  // Move tabs from outside
-  planes_locations.clear();
-  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
-    interface_order.front()->minimised_plane_.get(), 0, 0));
-  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
-    interface_order.back()->minimised_plane_.get(), term_width_ - 3, 0));
-
-  movePlanesAnimated(planes_locations);
+  // Place minimised monitors on edge
+  interface_order.front()->minimised_plane_->move(0,0 );
+  interface_order.back()->minimised_plane_->move(0, term_width_ -1);
 }
 
 std::shared_ptr<ncpp::Plane> Ui::createStreamPlane()
@@ -630,9 +634,8 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
     case UiDisplayingEnum::monitorInteraction: {
       // Disable mouse events
       notcurses_core_->mouse_disable();
-      // Reset active interaction index (We start at the second (2 index) occurance of newline, as we do not
-      // want to edit the message header.)
-      currently_editing_index_ = 2;
+      // Reset active interaction index
+      currently_editing_index_ = 1;
       // Perform a check for it we are returning from streaming a topic:
       ui_helpers::drawHelperBar(
         notcurses_stdplane_.get(), userHelpStrings_.interaction_request_prompt);
@@ -711,7 +714,6 @@ bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
   if (interface->selector_->offer_input(&input)) {
     return true;
   }
-
   return false;
 }
 
@@ -738,7 +740,6 @@ Ui::UiLayoutEnum Ui::calcMonitorLayout()
     return Ui::UiLayoutEnum::Vertical;
   else
     return Ui::UiLayoutEnum::HorizontalClipped;
-
   // TODO: Return a fail case where window is not large enough to display,
   // and requires resizing
 }

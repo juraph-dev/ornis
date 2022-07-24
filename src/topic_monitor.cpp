@@ -39,17 +39,28 @@ void TopicMonitor::getEntryInfo(
   const std::string & entry_name, const std::string & entry_details,
   std::map<std::string, std::vector<std::string>> & entry_info)
 {
+  (void)entry_details;
   rcl_allocator_t allocator = rcl_get_default_allocator();
   rcl_topic_endpoint_info_array_t topic_publishers =
     rcl_get_zero_initialized_topic_endpoint_info_array();
   rcl_topic_endpoint_info_array_t topic_subscribers =
     rcl_get_zero_initialized_topic_endpoint_info_array();
 
-  auto ret = rcl_get_publishers_info_by_topic(
+  int ret = rcl_get_publishers_info_by_topic(
     ros_interface_node_.get(), &allocator, entry_name.c_str(), false, &topic_publishers);
+
+  if (ret != RCL_RET_OK)
+  {
+    std::cerr << "Topic monitor failed to get publisher info! \n";
+  }
 
   ret = rcl_get_subscriptions_info_by_topic(
     ros_interface_node_.get(), &allocator, entry_name.c_str(), false, &topic_subscribers);
+
+  if (ret != RCL_RET_OK)
+  {
+    std::cerr << "Topic monitor failed to get subscriber info! \n";
+  }
 
   for (size_t i = 0; i < topic_publishers.size; i++) {
     entry_info["Publishers"].push_back(topic_publishers.info_array[i].node_name);
@@ -64,17 +75,22 @@ void TopicMonitor::getEntryInfo(
   }
 }
 
-void TopicMonitor::getInteractionString(
-  const std::string & entry_name, const std::string & entry_details, std::string & entry_info)
+void TopicMonitor::getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form)
 {
-  entry_info = "Not yet implemented :(\n";
+  (void)entry_details;
+  form.getRoot()->setValue("Not yet implemented!");
+  return;
 }
 
-void TopicMonitor::getInteractionResult(
+void TopicMonitor::interact(
   const std::string & entry_name, const std::string & entry_details,
-  const std::string & request_string, std::string & response_string)
+  const msg_tree::MsgTree & request, std::string & response)
 {
-  response_string = "Not yet implemented :(";
+  (void)entry_name;
+  (void)entry_details;
+  (void)entry_name;
+  (void)request;
+  response = "Not yet implemented :(";
 }
 
 void TopicMonitor::updateValue()
@@ -82,8 +98,13 @@ void TopicMonitor::updateValue()
   rcl_allocator_t allocator = rcl_get_default_allocator();
   rcl_names_and_types_t topic_names_and_types{};
 
-  auto ret = rcl_get_topic_names_and_types(
+  int ret = rcl_get_topic_names_and_types(
     ros_interface_node_.get(), &allocator, false, &topic_names_and_types);
+
+  if (ret != RCL_RET_OK)
+  {
+    std::cerr << "Topic monitor failed to get topic names and types!\n";
+  }
 
   std::vector<std::pair<std::string, std::string>> topic_info;
   topic_info.reserve(topic_names_and_types.names.size);
@@ -96,6 +117,10 @@ void TopicMonitor::updateValue()
     }
   }
   ret = rcl_names_and_types_fini(&topic_names_and_types);
+  if (ret != RCL_RET_OK)
+  {
+    std::cerr << "Topic monitor failed to get topic names and types!\n";
+  }
 
   if (latest_value_ == topic_info) {
     return;

@@ -43,6 +43,9 @@ ObjectController::~ObjectController()
   // TODO: Think about whether the object controller needs to handle destroying
   // any open streams
   auto ret = rcl_node_fini(ros_interface_node_.get());
+  if (ret != RCL_RET_OK) {
+    std::cerr << "Error occurred deleting object monitor rcl_node! Error: " << ret << " \n";
+  }
 }
 
 bool ObjectController::initialiseUserInterface()
@@ -102,7 +105,7 @@ void ObjectController::checkUiRequests()
         // however only the service monitor uses this.
         std::string entry_details;
         if (interface_channel_->request_details_["monitor_name"] == "services") {
-          const auto service_name = interface_channel_->request_details_["monitor_entry"];
+          const std::string service_name = interface_channel_->request_details_["monitor_entry"];
           const auto it = std::find_if(
             previous_monitor_info_["services"].begin(), previous_monitor_info_["services"].end(),
             [&service_name](const std::pair<std::string, std::string> & service) {
@@ -140,10 +143,8 @@ void ObjectController::checkUiRequests()
             });
           entry_details = it->second;
         }
-
-        monitor_map_[interface_channel_->request_details_["monitor_name"]]->getInteractionString(
-          interface_channel_->request_details_["monitor_entry"], entry_details,
-          interface_channel_->response_string_);
+        monitor_map_[interface_channel_->request_details_["monitor_name"]]->getInteractionForm(
+          entry_details, interface_channel_->request_response_trees_->first);
 
         std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
         interface_channel_->request_pending_ = false;
@@ -161,11 +162,9 @@ void ObjectController::checkUiRequests()
             });
           entry_details = it->second;
         }
-
-        monitor_map_[interface_channel_->request_details_["monitor_name"]]->getInteractionResult(
+        monitor_map_[interface_channel_->request_details_["monitor_name"]]->interact(
           interface_channel_->request_details_["monitor_entry"], entry_details,
-          interface_channel_->request_details_["interaction_request"],
-          interface_channel_->response_string_);
+          interface_channel_->request_response_trees_->first, interface_channel_->response_string_);
 
         std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
         interface_channel_->request_pending_ = false;

@@ -9,7 +9,6 @@ set(Project-Name_VERSION "${Project-Name_VERSION_MAJOR}.${Project-Name_VERSION_M
 set(PROJECT_NAME "ornis")
 set(PROJECT_DESCRIPTION "\"Open Ros2 Notcurses Interface System\"")
 
-
 # Options
 # option(BUILD_TESTS "Build test executable" OFF)
 # option(GEN_DOCS "Generate documentation" OFF)

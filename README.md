@@ -4,7 +4,7 @@
 
 ## What is it?
 
-A waste of time (A Terminal User Interface for ROS2). 
+A waste of time (A Terminal User Interface for ROS2 (a ROS2 TUI)).
 
 ## Current features
 * View currently active topics/nodes/services

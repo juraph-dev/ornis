@@ -22,12 +22,11 @@ public:
     const std::string & entry_name, const std::string & entry_details,
     std::map<std::string, std::vector<std::string>> & entry_info);
 
-  void getInteractionString(
-    const std::string & entry_name, const std::string & entry_details, std::string & entry_info);
+  void getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form);
 
-  void getInteractionResult(
+  void interact(
     const std::string & entry_name, const std::string & entry_details,
-    const std::string & request_string, std::string & response_string);
+    const msg_tree::MsgTree & request, std::string & response);
 
 private:
   static constexpr auto ros2_list_string_ = "ros2 node list";

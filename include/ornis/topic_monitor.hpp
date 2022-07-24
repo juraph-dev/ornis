@@ -22,8 +22,7 @@ public:
     const std::string & entry_name, const std::string & entry_details,
     std::map<std::string, std::vector<std::string>> & entry_info);
 
-  void getInteractionForm(
-    const std::string & entry_name, const std::string & entry_details, msg_tree::MsgTree &form);
+  void getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form);
 
   void interact(
     const std::string & entry_name, const std::string & entry_details,

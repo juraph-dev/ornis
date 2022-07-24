@@ -27,8 +27,7 @@ public:
     const std::string & entry_name, const std::string & entry_details,
     std::map<std::string, std::vector<std::string>> & entry_info);
 
-  void getInteractionForm(
-    const std::string & entry_name, const std::string & entry_details, msg_tree::MsgTree & form);
+  void getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form);
 
   void interact(
     const std::string & entry_name, const std::string & entry_details,
@@ -41,8 +40,7 @@ private:
   void updateValue();
 
   void getInteractionTrees(
-    const std::string & entry_name, const std::string service_type, msg_tree::MsgTree & request,
-    msg_tree::MsgTree & response);
+    const std::string service_type, msg_tree::MsgTree & request, msg_tree::MsgTree & response);
 
   std::thread * thread_;
   std::shared_ptr<rcl_node_t> ros_interface_node_;

@@ -35,17 +35,21 @@ void NodeMonitor::spin()
   }
 }
 
-void NodeMonitor::getInteractionForm(
-  const std::string & entry_name, const std::string & entry_details, msg_tree::MsgTree & form)
+void NodeMonitor::getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form)
 {
+  (void)entry_details;
   form.getRoot()->setValue("Not yet implemented");
   return;
 }
 
 void NodeMonitor::interact(
-    const std::string & entry_name, const std::string & entry_details,
-    const msg_tree::MsgTree & request, std::string & response)
+  const std::string & entry_name, const std::string & entry_details,
+  const msg_tree::MsgTree & request, std::string & response)
 {
+  (void)entry_name;
+  (void)entry_details;
+  (void)entry_name;
+  (void)request;
   response = "Not yet implemented :(";
 }
 
@@ -53,6 +57,7 @@ void NodeMonitor::getEntryInfo(
   const std::string & entry_name, const std::string & entry_details,
   std::map<std::string, std::vector<std::string>> & entry_info)
 {
+  (void)entry_details;
   rcl_allocator_t allocator = rcl_get_default_allocator();
   rcl_names_and_types_t published_topics = rcl_get_zero_initialized_names_and_types();
   rcl_names_and_types_t subscribed_topics = rcl_get_zero_initialized_names_and_types();
@@ -155,8 +160,13 @@ void NodeMonitor::updateValue()
   rcutils_string_array_t node_names{};
   rcutils_string_array_t node_namespaces{};
 
-  auto ret =
+  int ret =
     rcl_get_node_names(ros_interface_node_.get(), allocator, &node_names, &node_namespaces);
+
+  if (ret != RCL_RET_OK)
+  {
+    std::cerr << "Failed to get rcl_node_names!\n";
+  }
 
   // TODO: Figure out if there is anything useful you can use to populate the information with
   // For now, initialise nodes with empty info
@@ -173,5 +183,13 @@ void NodeMonitor::updateValue()
   }
 
   ret = rcutils_string_array_fini(&node_names);
+  if (ret != RCL_RET_OK)
+  {
+    std::cerr << "Failed to finish node names string array!\n";
+  }
   ret = rcutils_string_array_fini(&node_namespaces);
+  if (ret != RCL_RET_OK)
+  {
+    std::cerr << "Failed to finish node names string array!\n";
+  }
 }

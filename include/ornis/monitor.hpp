@@ -30,8 +30,7 @@ public:
     const std::string & entry_name, const std::string & entry_details,
     std::map<std::string, std::vector<std::string>> & entry_info) = 0;
 
-  virtual void getInteractionForm(
-    const std::string & entry_name, const std::string & entry_details, msg_tree::MsgTree &form) = 0;
+  virtual void getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form) = 0;
 
   virtual void interact(
     const std::string & entry_name, const std::string & entry_details,

@@ -43,6 +43,9 @@ ObjectController::~ObjectController()
   // TODO: Think about whether the object controller needs to handle destroying
   // any open streams
   auto ret = rcl_node_fini(ros_interface_node_.get());
+  if (ret != RCL_RET_OK) {
+    std::cerr << "Error occurred deleting object monitor rcl_node! Error: " << ret << " \n";
+  }
 }
 
 bool ObjectController::initialiseUserInterface()
@@ -141,8 +144,7 @@ void ObjectController::checkUiRequests()
           entry_details = it->second;
         }
         monitor_map_[interface_channel_->request_details_["monitor_name"]]->getInteractionForm(
-          interface_channel_->request_details_["monitor_entry"], entry_details,
-          interface_channel_->request_response_trees_->first);
+          entry_details, interface_channel_->request_response_trees_->first);
 
         std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
         interface_channel_->request_pending_ = false;
@@ -162,8 +164,7 @@ void ObjectController::checkUiRequests()
         }
         monitor_map_[interface_channel_->request_details_["monitor_name"]]->interact(
           interface_channel_->request_details_["monitor_entry"], entry_details,
-          interface_channel_->request_response_trees_->first,
-          interface_channel_->response_string_);
+          interface_channel_->request_response_trees_->first, interface_channel_->response_string_);
 
         std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
         interface_channel_->request_pending_ = false;

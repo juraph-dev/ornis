@@ -134,6 +134,24 @@ public:
     return editable_leaf;
   }
 
+  void writeNodeToMessage(
+    uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members)
+  {
+    for (size_t i = 0; i < members->member_count_; i++) {
+      const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[i];
+      uint8_t * member_data = &message_data[member.offset_];
+      // Perform a check for if we're dealing with a ros message type, and recurse if we are
+      if (member.type_id_ == rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
+        const auto sub_members =
+          static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+            member.members_->data);
+        children_[i].writeNodeToMessage(member_data, sub_members);
+      } else {
+        introspection::stringToMessageData(message_data, member, children_[i].msg_contents_.entry_data_);
+      }
+    }
+  }
+
 private:
   msg_contents msg_contents_;
   std::vector<MsgTreeNode> children_;
@@ -199,6 +217,13 @@ public:
         editable_node_count_++;
       }
     }
+  }
+
+  void writeTreeToMessage(
+    uint8_t * message_data,
+    const rosidl_typesupport_introspection_cpp::MessageMembers * members) const
+  {
+    base_->writeNodeToMessage(message_data, members);
   }
 
   uint editable_node_count_ = 0;

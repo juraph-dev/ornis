@@ -36,7 +36,7 @@ public:
   std::map<std::string, std::string> request_details_;
 
   std::map<std::string, std::vector<std::string>> response_map_;
-  std::pair<msg_tree::MsgTree, msg_tree::MsgTree> * request_response_map_;
+  std::pair<msg_tree::MsgTree, msg_tree::MsgTree> * request_response_trees_;
 
   // Structures to facilitate Object controller storing updated information
   // for UI to grab when ready

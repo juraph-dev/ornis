@@ -131,54 +131,52 @@ void ServiceMonitor::interact(
   // Initialise the members
   request_members->init_function(request_data, rosidl_runtime_cpp::MessageInitialization::ALL);
 
-  // request.recursivelyCreateTree(request.getRoot(), request_data);
+  request.writeTreeToMessage(request_data, request_members);
 
-  // // introspection::populateMessage(request_data, request_members, request_string);
+  // Set up client
+  rcl_client_t client = rcl_get_zero_initialized_client();
+  rcl_client_options_t client_ops = rcl_client_get_default_options();
+  auto ret =
+    rcl_client_init(&client, ros_interface_node_.get(), type_support, service_name, &client_ops);
 
-  // // Set up client
-  // rcl_client_t client = rcl_get_zero_initialized_client();
-  // rcl_client_options_t client_ops = rcl_client_get_default_options();
-  // auto ret =
-  //   rcl_client_init(&client, ros_interface_node_.get(), type_support, service_name, &client_ops);
+  if (ret != RCL_RET_OK) {
+    std::cerr << "failed, error code: " << ret << " \n";
+  }
 
-  // if (ret != RCL_RET_OK) {
-  //   std::cerr << "failed, error code: " << ret << " \n";
-  // }
+  // Sequence number of the request (Populated in rcl_send_request)
+  int64_t sequence_number;
 
-  // // Sequence number of the request (Populated in rcl_send_request)
-  // int64_t sequence_number;
+  auto * response_members =
+    static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+      service_info_.response_type_support->data);
 
-  // auto * response_members =
-  //   static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
-  //     service_info_.response_type_support->data);
+  uint8_t * response_data =
+    static_cast<uint8_t *>(allocator.allocate(response_members->size_of_, allocator.state));
 
-  // uint8_t * response_data =
-  //   static_cast<uint8_t *>(allocator.allocate(response_members->size_of_, allocator.state));
+  rmw_service_info_t req_header;
+  rcl_wait_set_t wait_set = rcl_get_zero_initialized_wait_set();
+  ret = rcl_wait_set_init(
+    &wait_set, 0, 0, 0, 1, 0, 0, ros_interface_node_->context, rcl_get_default_allocator());
 
-  // rmw_service_info_t req_header;
-  // rcl_wait_set_t wait_set = rcl_get_zero_initialized_wait_set();
-  // ret = rcl_wait_set_init(
-  //   &wait_set, 0, 0, 0, 1, 0, 0, ros_interface_node_->context, rcl_get_default_allocator());
+  // Send request
+  // TODO: Check request result here
+  const auto req = rcl_send_request(&client, request_data, &sequence_number);
 
-  // // Send request
-  // // TODO: Check request result here
-  // const auto request = rcl_send_request(&client, request_data, &sequence_number);
+  size_t index;
+  while (true) {
+    ret = rcl_wait_set_clear(&wait_set);
+    ret = rcl_wait_set_add_client(&wait_set, &client, &index);
+    ret = rcl_wait(&wait_set, RCL_MS_TO_NS(100));
+    if (ret == RCL_RET_TIMEOUT) {
+      break;
+    }
+    if (wait_set.clients[0]) {
+      // TODO: Throw error when when response indicates fail
+      const auto res = rcl_take_response_with_info(&client, &req_header, response_data);
+    }
+  }
 
-  // size_t index;
-  // while (true) {
-  //   ret = rcl_wait_set_clear(&wait_set);
-  //   ret = rcl_wait_set_add_client(&wait_set, &client, &index);
-  //   ret = rcl_wait(&wait_set, RCL_MS_TO_NS(100));
-  //   if (ret == RCL_RET_TIMEOUT) {
-  //     break;
-  //   }
-  //   if (wait_set.clients[0]) {
-  //     // TODO: Throw error when when response indicates fail
-  //     const auto response = rcl_take_response_with_info(&client, &req_header, response_data);
-  //   }
-  // }
-
-  // response_string = introspection::readMessageAsString(response_data, response_members);
+  response = introspection::readMessageAsString(response_data, response_members);
   // Clean up
 }
 

@@ -132,8 +132,6 @@ private:
   std::shared_ptr<ncpp::Plane> notcurses_stdplane_;
 
   // Storage string for user interactions with the back-end
-  // TODO: Remove after implementing the msg tree stuff
-  std::string active_interaction_string_;
   uint currently_editing_index_;
   msg_tree::MsgTreeNode * msg_node_being_edited_;
 

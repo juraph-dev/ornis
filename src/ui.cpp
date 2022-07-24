@@ -170,28 +170,17 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
   interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInteractionResult;
   interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
   interface_channel_->request_details_["monitor_entry"] = item;
-  interface_channel_->request_details_["interaction_request"] = active_interaction_string_;
 
-  // We create a blank tree for the request response trees, which then get filled out by the monitor we send the request to.
-  msg_tree::msg_contents request_contents = {
-    .data_type_ = "", .entry_name_ = item, .entry_data_ = ""};
-  // Create the msg trees to be used for storing the request information
-  auto req_tree_pair_ = std::make_unique<std::pair<msg_tree::MsgTree, msg_tree::MsgTree>>(
-    request_contents, request_contents);
-  interface_channel_->request_response_map_ = req_tree_pair_.get();
+  interface_channel_->request_response_trees_ = currently_active_trees_.get();
 
   interface_channel_->request_pending_.store(true);
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
 
-  // --- TODO Will need to be modified to use the stringtree
-  active_interaction_string_.clear();
-
   // Request complete, now render the result to the popup plane
   const std::string reply = interface_channel_->response_string_;
 
   ui_helpers::writeStringToTitledPlane(*monitor_info_plane_, item, reply);
-  // --- TODO
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(
@@ -220,7 +209,7 @@ void Ui::renderMonitorInteraction(MonitorInterface * interface)
   currently_active_trees_ = std::make_shared<std::pair<msg_tree::MsgTree, msg_tree::MsgTree>>(
     request_contents, request_contents);
 
-  interface_channel_->request_response_map_ = currently_active_trees_.get();
+  interface_channel_->request_response_trees_ = currently_active_trees_.get();
 
   interface_channel_->request_pending_.store(true);
   interface_channel_->condition_variable_.wait_for(

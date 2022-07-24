@@ -163,8 +163,8 @@ void ServiceMonitor::interact(
     response = "Failed to recieve response from service! error: ";
     response += ret;
     response += '\n';
+    return;
   }
-  return;
 
   size_t index;
   while (true) {
@@ -175,10 +175,10 @@ void ServiceMonitor::interact(
       break;
     }
     if (wait_set.clients[0]) {
-      const int res = rcl_take_response_with_info(&client, &req_header, response_data);
-      if (res != RMW_RET_OK) {
+      ret = rcl_take_response_with_info(&client, &req_header, response_data);
+      if (ret != RMW_RET_OK) {
         response = "Failed to recieve response from service! error: ";
-        response += res;
+        response += ret;
         response += '\n';
         return;
       }
@@ -197,8 +197,7 @@ void ServiceMonitor::updateValue()
   int ret = rcl_get_service_names_and_types(
     ros_interface_node_.get(), &allocator, &service_names_and_types);
 
-  if (ret != RCL_RET_OK)
-  {
+  if (ret != RCL_RET_OK) {
     std::cerr << "Failed to update service monitor!\n";
   }
 
@@ -212,8 +211,7 @@ void ServiceMonitor::updateValue()
     }
   }
   ret = rcl_names_and_types_fini(&service_names_and_types);
-  if (ret != RCL_RET_OK)
-  {
+  if (ret != RCL_RET_OK) {
     std::cerr << "Failed to destroy service rcl_names_and_types object!\n";
   }
 

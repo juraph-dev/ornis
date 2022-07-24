@@ -85,8 +85,8 @@ bool Ui::initialise(
   interface_map_["services"] =
     std::unique_ptr<MonitorInterface>(new MonitorInterface("services", "[s]ervices"));
 
-  // TODO: Think about if I REALLY want the initial locations to be random, or
-  // if I want them to be placed somewhere reasonable
+  // TODO: Think about if I REALLY want the initial locations to be random for the fun factor, or
+  // if they should be placed somewhere reasonable.
   std::random_device dev;
   std::mt19937 rng(dev());
   std::uniform_int_distribution<int> width_dist(1, term_width_);
@@ -544,21 +544,12 @@ void Ui::renderSelectedMonitor()
     selected_plane, term_width_ / 2 - selected_plane->get_dim_x() / 2,
     term_height_ / 2 - selected_plane->get_dim_y() / 2));
 
-  // Place minimised monitors outside of screen
-  interface_order.front()->minimised_plane_->move(0, -3);
-  interface_order.back()->minimised_plane_->move(0, term_width_ + 1);
-
   // animated Move monitor planes to their locations
   movePlanesAnimated(planes_locations);
 
-  // Move tabs from outside
-  planes_locations.clear();
-  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
-    interface_order.front()->minimised_plane_.get(), 0, 0));
-  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
-    interface_order.back()->minimised_plane_.get(), term_width_ - 3, 0));
-
-  movePlanesAnimated(planes_locations);
+  // Place minimised monitors on edge
+  interface_order.front()->minimised_plane_->move(0,0 );
+  interface_order.back()->minimised_plane_->move(0, term_width_ -1);
 }
 
 std::shared_ptr<ncpp::Plane> Ui::createStreamPlane()
@@ -723,7 +714,6 @@ bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
   if (interface->selector_->offer_input(&input)) {
     return true;
   }
-
   return false;
 }
 
@@ -750,7 +740,6 @@ Ui::UiLayoutEnum Ui::calcMonitorLayout()
     return Ui::UiLayoutEnum::Vertical;
   else
     return Ui::UiLayoutEnum::HorizontalClipped;
-
   // TODO: Return a fail case where window is not large enough to display,
   // and requires resizing
 }

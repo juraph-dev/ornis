@@ -100,7 +100,7 @@ public:
       if (i != depth - 1)
         std::cout << "    ";
       else
-        std::cout << "|-- ";
+        std::cout << "╰── ";
     }
     std::cout << this->msg_contents_ << std::endl;
     for (uint i = 0; i < this->children_.size(); ++i) {

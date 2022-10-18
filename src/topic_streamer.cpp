@@ -86,8 +86,8 @@ void TopicStreamer::initialise()
 
   // FIXME Should take ownership of the stream plane, instead of leaving it in the channel. Once
   // Ornis moves to support multiple streams, this will cause issues.
-  // Make the stream plane pretty
 
+  // Make the stream plane pretty
   ui_helpers::writeStringToTitledPlane(
     *interface_channel_->stream_plane_, topic_name_, "Waiting for message");
 
@@ -95,15 +95,19 @@ void TopicStreamer::initialise()
   const auto type_support = introspection::getMessageTypeSupport(
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
+
   // Determine how to visualise the message
+  // If we are dealing with a single member, that is string, or numeric, visualise,
+  // else, attempt to use a general plotter
   // TODO: Handle non-std_msgs data types
-  if (topic_type_ == "std_msgs/msg/String") {
+  // if (topic_type_ == "std_msgs/msg/String") {
     topic_visualiser_ =
       std::make_unique<TopicStringViewer>(TopicStringViewer(interface_channel_->stream_plane_.get(), 20, 80));
-  } else {
-    topic_visualiser_ =
-      std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80));
-  }
+  // } else if (topic_type_ == "std_msgs/msg/Double"){
+  //   topic_visualiser_ =
+  //     std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80));
+  // }
+  // FIXME: Else, Create new topicVisualiser which can handle general messages
 
   // TODO: Investigate swapping profiles at runtime
   rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;

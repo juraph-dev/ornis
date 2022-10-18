@@ -482,20 +482,17 @@ void stringToMessageData(
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:
       *reinterpret_cast<std::string *>(message_data + member_info.offset_) = data;
       break;
-      // TODO Implement Nested. Ignored for now
-    case rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE:
-      // For nested types, don't copy the data out of the buffer directly. Recursively read the
-      // nested type into the YAML.
-      // RosMessage_Cpp nested_member;
-      // nested_member.type_info = reinterpret_cast<const TypeInfo_Cpp *>(member_info.members_->data);
-      // nested_member.data = const_cast<uint8_t *>(member_data);
-      // message_data = message_to_yaml(nested_member);
-      break;
     default:
       // Recieved unkwn message type, fail silently and attempt to parse.
-      // std::cerr << "Recieved unknown message type!!!: " << std::to_string(member_info.type_id_)
-      //           << "\n";
+      std::cerr << "Recieved unknown message type!!!: " << std::to_string(member_info.type_id_)
+                << "\n";
       break;
   }
 }
+
+ bool parsableAsString(const rosidl_message_type_support_t &msg_info)
+{
+
+}
+
 }  // namespace introspection

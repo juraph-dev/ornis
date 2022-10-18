@@ -67,6 +67,10 @@ bool populateMessage(
 void stringToMessageData(
   uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMember & member,
   const std::string & data);
+
+bool parsableAsString(const rosidl_message_type_support_t & msg_type);
+
+bool parsableAsNumeric(const rosidl_message_type_support_t & msg_type);
 }  // namespace introspection
 
 #endif  // INTROSPECTION_FUNCTIONS_H_

@@ -106,6 +106,7 @@ void TopicStreamer::initialise()
   }
 
   // TODO: Investigate swapping profiles at runtime
+  // There are some get_qos functions available. Investigate.
   rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
 
   rcl_wait_set_t wait_set = rcl_get_zero_initialized_wait_set();

@@ -2,7 +2,6 @@
 
 #include <rcutils/allocator.h>
 
-#include <boost/lexical_cast.hpp>
 #include <iomanip>
 #include <sstream>
 
@@ -46,7 +45,7 @@ void TopicPlotter::drawPlot()
 
   for (int i = 9; i >= 0; i--) {
     const double axis_val = (double)timestep_ - ((10 - i) * (int)width_ / 10);
-    const std::string axis_str = boost::lexical_cast<std::string>(axis_val < 0 ? 0 : axis_val);
+    const std::string axis_str = std::to_string(axis_val < 0 ? 0 : axis_val);
     plane_->putstr(height_ - 2, i * width_ / 10, axis_str.c_str());
   }
 

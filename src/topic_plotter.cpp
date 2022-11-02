@@ -44,9 +44,10 @@ void TopicPlotter::drawPlot()
   }
 
   for (int i = 9; i >= 0; i--) {
+    char axis_str [32];
     const double axis_val = (double)timestep_ - ((10 - i) * (int)width_ / 10);
-    const std::string axis_str = std::to_string(axis_val < 0 ? 0 : axis_val);
-    plane_->putstr(height_ - 2, i * width_ / 10, axis_str.c_str());
+    sprintf(axis_str, "%.6g", axis_val < 0 ? 0 : axis_val);
+    plane_->putstr(height_ - 2, i * width_ / 10, axis_str);
   }
 
   // vertical plane

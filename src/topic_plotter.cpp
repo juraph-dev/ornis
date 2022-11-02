@@ -88,11 +88,9 @@ void TopicPlotter::drawPlot()
   const double step = (highest_value_ - lowest_value_) / 4;
   for (int i = 4; i >= 0; i--) {
     const double axis_val = lowest_value_ + ((4 - i) * step);
-    std::ostringstream ss;
-    ss << std::fixed << std::setprecision(2);
-    ss << axis_val;
-    std::string axis_str = ss.str();
-    plane_->putstr(i * height_ / 5 + 1, 1, axis_str.c_str());
+    char axis_str[32];
+    sprintf(axis_str, "%.6g", axis_val);
+    plane_->putstr(i * height_ / 5 + 1, 1, axis_str);
   }
 }
 

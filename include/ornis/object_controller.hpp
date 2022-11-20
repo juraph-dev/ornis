@@ -31,7 +31,7 @@ public:
   ~ObjectController();
 
   // Initialises object controller. Creates loop
-  void spin();
+  int spin();
   // Communication channel between the object controller and the user interface
   std::shared_ptr<Channel> interface_channel_;
 

@@ -58,6 +58,7 @@ find_package(notcurses 3.0.0 CONFIG )
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rcl REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(rcl_action REQUIRED)
 find_package(rcl_interfaces REQUIRED)
 find_package(rosidl_runtime_cpp REQUIRED)
@@ -106,6 +107,7 @@ add_executable(${PROJECT_NAME} src/main.cpp) # The main executables
 target_link_libraries(ornis-lib PUBLIC
   notcurses++
   Threads::Threads
+  ${ament_index_cpp_LIBRARIES}
   ${rclcpp_LIBRARIES}
   ${rcl_LIBRARIES}
   ${rcl_action_LIBRARIES}

@@ -141,18 +141,17 @@ void ObjectController::checkUiRequests() {
       // infrastructure to recieve entry details, however only the service
       // monitor uses this.
       std::string entry_details;
-      if (interface_channel_->request_details_["monitor_name"] == "services") {
-        const auto service_name =
-            interface_channel_->request_details_["monitor_entry"];
-        const auto it = std::find_if(
-            previous_monitor_info_["services"].begin(),
-            previous_monitor_info_["services"].end(),
-            [&service_name](
-                const std::pair<std::string, std::string> &service) {
-              return service.first == service_name;
-            });
-        entry_details = it->second;
-      }
+      const auto type_name =
+          interface_channel_->request_details_["monitor_entry"];
+      const auto it = std::find_if(
+          previous_monitor_info_[interface_channel_->request_details_["monitor_name"]].begin(),
+          previous_monitor_info_[interface_channel_->request_details_["monitor_name"]].end(),
+          [&type_name](
+              const std::pair<std::string, std::string> &type) {
+            return type.first == type_name;
+          });
+      entry_details = it->second;
+
       monitor_map_[interface_channel_->request_details_["monitor_name"]]
           ->getInteractionForm(
               entry_details,

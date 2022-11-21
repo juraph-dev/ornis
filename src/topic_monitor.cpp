@@ -73,19 +73,32 @@ void TopicMonitor::getEntryInfo(
       entry_info["Subscribers"].push_back(topic_subscribers.info_array[i].node_name);
     }
   }
+
 }
 
 void TopicMonitor::getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form)
 {
-  (void)entry_details;
-  form.getRoot()->setValue("Not yet implemented!");
-  return;
+  msg_tree::msg_contents blank_contents = {.data_type_ = "", .entry_name_ = "", .entry_data_ = ""};
+  msg_tree::MsgTree message_tree(blank_contents);
+  getInteractionTree(entry_details, form);
+
 }
+
+void TopicMonitor::getInteractionTree(const std::string message_type, msg_tree::MsgTree & message_tree)
+{
+
+  const rosidl_message_type_support_t * message_type_support = introspection::getMessageTypeSupport(
+    message_type, rosidl_typesupport_introspection_cpp::typesupport_identifier);
+
+  message_tree.recursivelyCreateTree(message_tree.getRoot(), message_type_support);
+}
+
 
 void TopicMonitor::interact(
   const std::string & entry_name, const std::string & entry_details,
   const msg_tree::MsgTree & request, std::string & response)
 {
+  // TODO: Thhis is where the topic streamer will be called/initialised.
   (void)entry_name;
   (void)entry_details;
   (void)entry_name;

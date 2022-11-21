@@ -47,6 +47,7 @@ const std::tuple<std::string, std::string, std::string> extractTypeIdentifier(
   const auto sep_position_back = full_type.find_last_of(type_separator);
   const auto sep_position_front = full_type.find_first_of(type_separator);
 
+  // FIXME: Could really just return false or someting instead of crashing the whole goddamn program here
   if (
     sep_position_back == std::string::npos || sep_position_back == 0 ||
     sep_position_back == full_type.length() - 1) {

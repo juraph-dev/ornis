@@ -331,11 +331,14 @@ void Ui::handleInputMonitorEntry(const ncinput & input)
 {
   if (input.id == 'q' || input.id == NCKEY_ESC) {
     transitionUiState(UiDisplayingEnum::selectedMonitor);
-  } else if (selected_monitor_ == "topics" && input.id == NCKEY_ENTER) {
-    transitionUiState(UiDisplayingEnum::streamingTopic);
+  }
+    // TODO Clear up once you're done implementing the new topic streaming methods
+  // else if (selected_monitor_ == "topics" && input.id == NCKEY_ENTER) {
+    // transitionUiState(UiDisplayingEnum::streamingTopic);
     // For now, don't worry about streaming multiple items at once,
     // Just have the UI sit idle until user presses q/esc
-  } else if (selected_monitor_ == "services" && input.id == NCKEY_ENTER) {
+  //}
+  else if (selected_monitor_ == "services" || selected_monitor_ == "topics"  && input.id == NCKEY_ENTER) {
     transitionUiState(UiDisplayingEnum::monitorInteraction);
     // FIXME: Shouldn't have to send a fake input
     // Pass a fake input through, to initialise the cursor

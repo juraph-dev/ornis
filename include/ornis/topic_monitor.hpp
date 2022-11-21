@@ -10,6 +10,7 @@
 #include "ornis/monitor.hpp"
 #include "ornis/ros_interface_node.hpp"
 
+
 class RosInterfaceNode;
 
 class TopicMonitor : public Monitor
@@ -23,6 +24,8 @@ public:
     std::map<std::string, std::vector<std::string>> & entry_info);
 
   void getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form);
+
+  void getInteractionTree(const std::string message_type, msg_tree::MsgTree & message_tree);
 
   void interact(
     const std::string & entry_name, const std::string & entry_details,
@@ -38,6 +41,7 @@ private:
   std::thread * thread_;
 
   std::shared_ptr<rcl_node_t> ros_interface_node_;
+
 };
 
 #endif  // TOPIC_MONITOR_H_

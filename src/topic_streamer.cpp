@@ -96,7 +96,33 @@ void TopicStreamer::initialise()
   const auto type_support = introspection::getMessageTypeSupport(
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
+  auto * members =
+    static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+      type_support->data);
+
+
+  std::function<void(const std::string &member_name, const uint &member_type_id, const rosidl_typesupport_introspection_cpp::MessageMembers * message_members)> getMemberOffset;
+
+  getMemberOffset = [&](const std::string &member_name, const uint &member_type_id, const rosidl_typesupport_introspection_cpp::MessageMembers * message_members)
+  {
   // Now we have the typesupport, go through and find the affress of the desired entry.
+  for (size_t i = 0; i < members->member_count_; i++) {
+    const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[i];
+    std::cout << "member name: " << member.name_ << '\n';
+    // If the member has the
+    // Perform a check for if we're dealing with a ros message type, and recurse if we are
+    // if (member.type_id_ == rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
+    //   const auto sub_members =
+    //     static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+    //       member.members_->data);
+    //   member_string += readMessageAsString(member_data, sub_members);
+    // } else {
+    //   introspection::messageDataToString(member, member_data, member_string);
+    // }
+    // members_string += member_string;
+  }
+};
+getMemberOffset(topic_entry_, members);
 
   // Determine how to visualise the message
   // If we are dealing with a single member, that is string, or numeric, visualise,

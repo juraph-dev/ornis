@@ -25,7 +25,7 @@ class TopicStreamer
 {
 public:
   TopicStreamer(
-    const std::string & topic_name, const std::string & topic_type,
+    const std::string & topic_name, const std::string& topic_entry, const std::string & topic_type, const std::string &entry_type,
     std::shared_ptr<StreamChannel> & interface_channel,
     std::shared_ptr<rcl_node_t> ros_interface_node, rcl_context_t context);
   ~TopicStreamer();
@@ -43,7 +43,9 @@ private:
   std::thread * thread_;
 
   const std::string topic_name_;
+  const std::string topic_entry_;
   const std::string topic_type_;
+  const std::string entry_type_;
 
   std::shared_ptr<StreamChannel> interface_channel_;
 

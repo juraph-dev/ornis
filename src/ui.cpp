@@ -450,10 +450,11 @@ void Ui::handleInputMonitorSelection(const ncinput & input)
 
   if (input.id == NCKEY_ENTER) {
     // Get currently selected tree
-    msg_node_being_edited_ = currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
+    // msg_node_being_edited_ = currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
+    transitionUiState(UiDisplayingEnum::streamingTopic);
     // Send the interaction string to the interface.
     // TODO CHange this to be a topic streamer
-    renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
+    // renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
     return;
   }
   // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
@@ -650,13 +651,14 @@ std::shared_ptr<ncpp::Plane> Ui::createStreamPlane()
   return stream_plane;
 }
 
-void Ui::openStream(const std::string & topic_name)
+void Ui::openStream(const std::string &topic_name, const msg_tree::msg_contents &message_contents)
 {
   auto stream_plane = createStreamPlane();
-
   std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
   interface_channel_->request_type_ = Channel::RequestEnum::topicStreamer;
   interface_channel_->request_details_["topic_name"] = topic_name;
+  interface_channel_->request_details_["topic_entry"] = message_contents.entry_name_;
+  interface_channel_->request_details_["entry_type"] = message_contents.data_type_;
   interface_channel_->request_pending_ = true;
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
@@ -741,7 +743,8 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
     case UiDisplayingEnum::streamingTopic: {
       const std::string selected_entry =
         interface_map_[selected_monitor_]->selector_->get_selected();
-      openStream(selected_entry);
+      const auto * selected_node = currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
+      openStream(selected_entry, selected_node->getValue());
       ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.stream_prompt);
       ui_displaying_ = UiDisplayingEnum::monitorEntry;
       break;

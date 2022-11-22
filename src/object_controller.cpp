@@ -164,18 +164,17 @@ void ObjectController::checkUiRequests() {
     }
     case (Channel::RequestEnum::monitorEntryInteractionResult): {
       std::string entry_details;
-      if (interface_channel_->request_details_["monitor_name"] == "services") {
-        const auto service_name =
-            interface_channel_->request_details_["monitor_entry"];
-        const auto it = std::find_if(
-            previous_monitor_info_["services"].begin(),
-            previous_monitor_info_["services"].end(),
-            [&service_name](
-                const std::pair<std::string, std::string> &service) {
-              return service.first == service_name;
-            });
-        entry_details = it->second;
-      }
+      const auto type_name =
+          interface_channel_->request_details_["monitor_entry"];
+      const auto it = std::find_if(
+          previous_monitor_info_[interface_channel_->request_details_["monitor_name"]].begin(),
+          previous_monitor_info_[interface_channel_->request_details_["monitor_name"]].end(),
+          [&type_name](
+              const std::pair<std::string, std::string> &type) {
+            return type.first == type_name;
+          });
+      entry_details = it->second;
+
       monitor_map_[interface_channel_->request_details_["monitor_name"]]
           ->interact(interface_channel_->request_details_["monitor_entry"],
                      entry_details,
@@ -191,18 +190,23 @@ void ObjectController::checkUiRequests() {
       std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
       const auto &topic_name =
           interface_channel_->request_details_["topic_name"];
+      const auto &entry_type =
+          interface_channel_->request_details_["entry_type"];
+      const auto &topic_entry =
+          interface_channel_->request_details_["topic_entry"];
+      // const auto type_name =
+      //     interface_channel_->request_details_["monitor_entry"];
 
-      // FIXME: The ui.cpp has access to the topic type via the selector that
-      // the topic is chosen from. However, there is currently no api in either
-      // NC or NCPP to support easily grabbing the selectoed item's desc. It
-      // would be trivial to implement this, you should probably do that.
       const auto it = std::find_if(
-          previous_monitor_info_["topics"].begin(),
-          previous_monitor_info_["topics"].end(),
-          [&topic_name](const std::pair<std::string, std::string> &topic) {
-            return topic.first == topic_name;
+          previous_monitor_info_[interface_channel_->request_details_["monitor_name"]].begin(),
+          previous_monitor_info_[interface_channel_->request_details_["monitor_name"]].end(),
+          [&topic_name](
+              const std::pair<std::string, std::string> &type) {
+            return type.first == topic_name;
           });
-      const auto topic_type = it->second;
+      const std::string topic_type = it->second;
+
+
 
       // Currently, the interface map isn't used for anything, but will likely
       // be used in the future if the streamer needs to make ui scaling requests
@@ -211,7 +215,7 @@ void ObjectController::checkUiRequests() {
           std::make_shared<StreamChannel>(topic_name);
       // Create the stream thread
       stream_map_[topic_name] = std::make_shared<TopicStreamer>(
-          topic_name, topic_type, stream_interface_map_[topic_name],
+          topic_name, topic_entry, topic_type, entry_type, stream_interface_map_[topic_name],
           ros_interface_node_, context_);
       interface_channel_->request_pending_ = false;
       interface_channel_->condition_variable_.notify_all();

@@ -182,6 +182,7 @@ private:
   const MsgTreeNode * parent_;
 
   // If the user is editing this node
+  // TODO: Rename to "currently_selected" or something similar
   bool being_edited_ = false;
 };
 

@@ -494,7 +494,6 @@ inline void writeSelectionTreeToTitledPlane(
         plane.putc(row, col, c);
         col++;
       }
-
         plane.stain(
           row, col - node_line.size(), 1, node_line.size() + 1, highlight_channel, highlight_channel,
           highlight_channel, highlight_channel);

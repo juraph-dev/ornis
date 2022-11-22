@@ -19,11 +19,13 @@
 using namespace std::chrono_literals;
 
 TopicStreamer::TopicStreamer(
-  const std::string & topic_name, const std::string & topic_type,
-  std::shared_ptr<StreamChannel> & interface_channel,
-  std::shared_ptr<rcl_node_t> ros_interface_node, rcl_context_t context)
+    const std::string & topic_name, const std::string& topic_entry, const std::string & topic_type, const std::string &entry_type,
+    std::shared_ptr<StreamChannel> & interface_channel,
+    std::shared_ptr<rcl_node_t> ros_interface_node, rcl_context_t context)
 : topic_name_(topic_name),
+  topic_entry_(topic_entry),
   topic_type_(topic_type),
+  entry_type_(entry_type),
   ros_interface_node_(std::move(ros_interface_node)),
   context_(context)
 {
@@ -91,10 +93,10 @@ void TopicStreamer::initialise()
   ui_helpers::writeStringToTitledPlane(
     *interface_channel_->stream_plane_, topic_name_, "Waiting for message");
 
-  // TODO: This can be allocated to a variable in header, doesn't NEED to be passed at each callback
   const auto type_support = introspection::getMessageTypeSupport(
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
+  // Now we have the typesupport, go through and find the affress of the desired entry.
 
   // Determine how to visualise the message
   // If we are dealing with a single member, that is string, or numeric, visualise,

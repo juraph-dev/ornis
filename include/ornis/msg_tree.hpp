@@ -81,6 +81,8 @@ public:
 
   bool isLeaf() const { return children_.empty(); }
 
+  size_t leafCount() const {return children_.size();}
+
   void toString(std::string & output, int indent = 0) const
   {
     const std::string indent_str(indent, ' ');
@@ -238,6 +240,7 @@ public:
         // Node has no chldren, probably editable
         editable_node_count_++;
       }
+      node_count_++;
     }
   }
 

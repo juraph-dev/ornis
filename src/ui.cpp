@@ -459,10 +459,22 @@ void Ui::handleInputMonitorSelection(const ncinput & input)
   // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
   // also want to prevent currently editing index from going negative
   else if (input.id == NCKEY_TAB) {
+    // perform a check.for the child cound of the proposed selected node. If it has a single child, we
+    // should select the child directly, instead of the parent node.
     if (input.shift && currently_editing_index_ > 1) {
       currently_editing_index_--;
+      const auto * proposed_selected_node = currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
+      if (proposed_selected_node->leafCount() == 1)
+      {
+      currently_editing_index_--;
+      }
     } else if (currently_editing_index_ != currently_active_trees_->first.node_count_) {
       currently_editing_index_++;
+      const auto * proposed_selected_node = currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
+      if (proposed_selected_node != nullptr && proposed_selected_node->leafCount() == 1)
+      {
+      currently_editing_index_++;
+      }
     }
 
   // Update the cursor as well as plane
@@ -715,6 +727,9 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       break;
     }
     case UiDisplayingEnum::monitorSelection: {
+      currently_editing_index_ = 1;
+      // TODO: May want to re-enable this once the selection
+      // interface is working
       // Disable mouse events
       notcurses_core_->mouse_disable();
       // Perform a check for it we are returning from streaming a topic:

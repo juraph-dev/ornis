@@ -453,6 +453,7 @@ inline void writeSelectionTreeToTitledPlane(
 
   ui_helpers::sizePlaneToTree(plane, title, tree);
 
+
   size_t row = 1;
   int col = 1;
 
@@ -460,14 +461,15 @@ inline void writeSelectionTreeToTitledPlane(
   plane.perimeter_rounded(0, channel, 0);
 
   std::function<void(
-    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root)>
+    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root, bool highlight)>
     drawTreeToPlane;
   drawTreeToPlane = [&](
                       const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
-                      const bool & is_root) {
+                      const bool & is_root, bool highlight) {
+    if (row == selected_index)
+      highlight = true;
     // Skip root
     if (!is_root) {
-      uint node_number = 0; // If node_numbder == selected_index, highlight all children
       size_t col = 1;
       const msg_tree::msg_contents t = node.getValue();
       std::string node_line;
@@ -476,28 +478,36 @@ inline void writeSelectionTreeToTitledPlane(
       } else {
         node_line = t.entry_name_;
       }
+      // (Unforuanately) Need to ensure we re-set the highlight channel each draw
+      uint64_t highlight_channel;// = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+      if (highlight) {
+        ncchannels_set_bg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
+        ncchannels_set_fg_rgb8(&highlight_channel, 72, 91, 120);
+      }
+      else{
+        ncchannels_set_fg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
+        ncchannels_set_bg_rgb8(&highlight_channel, 72, 91, 120);
+      }
+        ncchannels_set_bg_alpha(&highlight_channel, ncpp::Cell::AlphaOpaque);
+
       for (const char & c : node_line) {
         plane.putc(row, col, c);
         col++;
       }
-      if (node.isEditable()) {
-        uint64_t highlight = 0;
-        ncchannels_set_fg_rgb8(&highlight, 0xff, 0xff, 0xff);
-        ncchannels_set_bg_rgb8(&highlight, 72, 91, 120);
-        ncchannels_set_bg_alpha(&highlight, ncpp::Cell::AlphaOpaque);
+
         plane.stain(
-          row, col - t.entry_data_.size(), 1, t.entry_data_.size() + 1, highlight, highlight,
-          highlight, highlight);
-      }
+          row, col - node_line.size(), 1, node_line.size() + 1, highlight_channel, highlight_channel,
+          highlight_channel, highlight_channel);
+
       row++;
     }
     for (const auto & child : node.getChildren()) {
-      drawTreeToPlane(child, plane, row, false);
+      drawTreeToPlane(child, plane, row, false, highlight);
     }
     return;
   };
 
-  drawTreeToPlane(*tree.getRoot(), plane, row, true);
+  drawTreeToPlane(*tree.getRoot(), plane, row, true, selected_index == 0);
 
   // Write planes title
   col = (plane.get_dim_x() - title.size()) / 2;

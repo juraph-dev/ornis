@@ -427,7 +427,68 @@ inline void writeEditingTreeToTitledPlane(
           row, col - t.entry_data_.size(), 1, t.entry_data_.size() + 1, highlight, highlight,
           highlight, highlight);
       }
+      row++;
+    }
+    for (const auto & child : node.getChildren()) {
+      drawTreeToPlane(child, plane, row, false);
+    }
+    return;
+  };
 
+  drawTreeToPlane(*tree.getRoot(), plane, row, true);
+
+  // Write planes title
+  col = (plane.get_dim_x() - title.size()) / 2;
+  for (const char & c : title) {
+    plane.putc(0, col, c);
+    col++;
+  }
+}
+
+inline void writeSelectionTreeToTitledPlane(
+  ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree, const uint & selected_index)
+{
+  plane.erase();
+  plane.move_top();
+
+  ui_helpers::sizePlaneToTree(plane, title, tree);
+
+  size_t row = 1;
+  int col = 1;
+
+  uint64_t channel = plane.get_channels();
+  plane.perimeter_rounded(0, channel, 0);
+
+  std::function<void(
+    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root)>
+    drawTreeToPlane;
+  drawTreeToPlane = [&](
+                      const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
+                      const bool & is_root) {
+    // Skip root
+    if (!is_root) {
+      uint node_number = 0; // If node_numbder == selected_index, highlight all children
+      size_t col = 1;
+      const msg_tree::msg_contents t = node.getValue();
+      std::string node_line;
+      if (node.isLeaf()) {
+        node_line = "|---[" + t.data_type_ + "] " + t.entry_name_;
+      } else {
+        node_line = t.entry_name_;
+      }
+      for (const char & c : node_line) {
+        plane.putc(row, col, c);
+        col++;
+      }
+      if (node.isEditable()) {
+        uint64_t highlight = 0;
+        ncchannels_set_fg_rgb8(&highlight, 0xff, 0xff, 0xff);
+        ncchannels_set_bg_rgb8(&highlight, 72, 91, 120);
+        ncchannels_set_bg_alpha(&highlight, ncpp::Cell::AlphaOpaque);
+        plane.stain(
+          row, col - t.entry_data_.size(), 1, t.entry_data_.size() + 1, highlight, highlight,
+          highlight, highlight);
+      }
       row++;
     }
     for (const auto & child : node.getChildren()) {

@@ -134,6 +134,28 @@ public:
     return editable_leaf;
   }
 
+  MsgTreeNode * getNthNode(const uint & n)
+  {
+    uint search_index = 1;
+    return findNthNode(n, search_index);
+  }
+
+  MsgTreeNode * findNthNode(const uint & n, uint &search_index)
+  {
+    MsgTreeNode * leaf = nullptr;
+      if (search_index == n) {
+        return this;
+      }
+        search_index++;
+      for (auto & child : children_) {
+        leaf = child.findNthNode(n, search_index);
+        if (leaf != nullptr) {
+          return leaf;
+        }
+      }
+    return leaf;
+  }
+
   void writeNodeToMessage(
     uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members)
   {
@@ -165,14 +187,14 @@ class MsgTree
 {
 public:
   MsgTree(const msg_contents & msg_contents_, const rosidl_message_type_support_t * type_data)
-  : base_(new MsgTreeNode(msg_contents_, nullptr))
+  : node_count_(0), editable_node_count_(0),  base_(new MsgTreeNode(msg_contents_, nullptr))
   {
     recursivelyCreateTree(base_.get(), type_data);
   }
 
   // If constructed with no typesupport, no tree is created. Used for if tree is constructed
   // after root node is created.
-  MsgTree(const msg_contents & msg_contents_) : base_(new MsgTreeNode(msg_contents_, nullptr)) {}
+    MsgTree(const msg_contents & msg_contents_) :  node_count_(0), editable_node_count_(0), base_(new MsgTreeNode(msg_contents_, nullptr)) {}
 
   ~MsgTree() {}
 
@@ -226,7 +248,8 @@ public:
     base_->writeNodeToMessage(message_data, members);
   }
 
-  uint editable_node_count_ = 0;
+  uint node_count_;
+  uint editable_node_count_;
 
 private:
   std::unique_ptr<MsgTreeNode> base_;

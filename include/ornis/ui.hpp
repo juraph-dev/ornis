@@ -44,6 +44,7 @@ private:
     selectedMonitor,
     monitorEntry,
     monitorInteraction,
+    monitorSelection,
     monitorInteractionResult,
     streamingTopic
   };
@@ -76,6 +77,7 @@ private:
   void renderOptions();
   void renderHomeLayout();
   void renderSelectedMonitor();
+  void renderMonitorSelection(MonitorInterface * interface);
   void renderMonitorInteraction(MonitorInterface * interface);
   void renderMonitorInteractionResult(MonitorInterface * interface);
 
@@ -87,6 +89,7 @@ private:
   void handleInputSelected(const ncinput & input);
   void handleInputMonitorEntry(const ncinput & input);
   void handleInputStreaming(const ncinput & input);
+  void handleInputMonitorSelection(const ncinput & input);
   void handleInputMonitorInteraction(const ncinput & input);
   void handleInputMonitorInteractionResult(const ncinput & input);
 
@@ -132,7 +135,10 @@ private:
   std::shared_ptr<ncpp::Plane> notcurses_stdplane_;
 
   // Storage string for user interactions with the back-end
+  // TODO Rename this to be currently_selected_, as it's also used by the topic selection,
+  // (Also change to size_t)
   uint currently_editing_index_;
+  // TODO Ditto
   msg_tree::MsgTreeNode * msg_node_being_edited_;
 
   std::shared_ptr<std::pair<msg_tree::MsgTree, msg_tree::MsgTree>> currently_active_trees_;

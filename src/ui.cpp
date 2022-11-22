@@ -188,6 +188,42 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
     (term_width_ / 2) - (monitor_info_plane_->get_dim_x() / 2));
 }
 
+void Ui::renderMonitorSelection(MonitorInterface * interface)
+{
+  ui_displaying_ = UiDisplayingEnum::monitorSelection;
+
+  const auto & item = interface->selector_->get_selected();
+
+  // Lock the channel mutex
+  std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
+
+  interface_channel_->request_type_ = Channel::RequestEnum::monitorEntryInteraction;
+  interface_channel_->request_details_["monitor_name"] = interface->monitor_name_;
+  interface_channel_->request_details_["monitor_entry"] = item;
+
+  msg_tree::msg_contents request_contents = {
+    .data_type_ = "", .entry_name_ = item, .entry_data_ = ""};
+
+  // Create the msg trees to be used for storing the selection information
+  currently_active_trees_ = std::make_shared<std::pair<msg_tree::MsgTree, msg_tree::MsgTree>>(
+    request_contents, request_contents);
+
+  interface_channel_->request_response_trees_ = currently_active_trees_.get();
+
+  interface_channel_->request_pending_.store(true);
+  interface_channel_->condition_variable_.wait_for(
+    data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
+
+  // Once we get the information, open the window for selecting the topic to render
+  ui_helpers::writeSelectionTreeToTitledPlane(
+    *monitor_info_plane_, item, currently_active_trees_->first, 0);
+
+  // Place the monitor info plane in the center of the screen
+  monitor_info_plane_->move(
+    term_height_ / 2 - monitor_info_plane_->get_dim_y() / 2,
+    term_width_ / 2 - monitor_info_plane_->get_dim_x() / 2);
+}
+
 // TODO: rename the whole interaction request/result naming convention. It's goofy and confusing
 void Ui::renderMonitorInteraction(MonitorInterface * interface)
 {
@@ -296,6 +332,10 @@ void Ui::refreshUi()
           handleInputMonitorInteraction(nc_input);
           break;
         }
+        case UiDisplayingEnum::monitorSelection: {
+          handleInputMonitorSelection(nc_input);
+          break;
+        }
         case UiDisplayingEnum::monitorInteractionResult: {
           handleInputMonitorInteractionResult(nc_input);
           break;
@@ -333,12 +373,10 @@ void Ui::handleInputMonitorEntry(const ncinput & input)
     transitionUiState(UiDisplayingEnum::selectedMonitor);
   }
     // TODO Clear up once you're done implementing the new topic streaming methods
-  // else if (selected_monitor_ == "topics" && input.id == NCKEY_ENTER) {
-    // transitionUiState(UiDisplayingEnum::streamingTopic);
-    // For now, don't worry about streaming multiple items at once,
-    // Just have the UI sit idle until user presses q/esc
-  //}
-  else if (selected_monitor_ == "services" || selected_monitor_ == "topics"  && input.id == NCKEY_ENTER) {
+  else if (selected_monitor_ == "topics" && input.id == NCKEY_ENTER) {
+    transitionUiState(UiDisplayingEnum::monitorSelection);
+  }
+  else if (selected_monitor_ == "services" && input.id == NCKEY_ENTER) {
     transitionUiState(UiDisplayingEnum::monitorInteraction);
     // FIXME: Shouldn't have to send a fake input
     // Pass a fake input through, to initialise the cursor
@@ -401,6 +439,37 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
   ui_helpers::writeEditingTreeToTitledPlane(
     *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
     currently_active_trees_->first);
+}
+
+void Ui::handleInputMonitorSelection(const ncinput & input)
+{
+  if (input.id == NCKEY_ESC || input.id == 'q') {
+    transitionUiState(UiDisplayingEnum::selectedMonitor);
+    return;
+  }
+
+  if (input.id == NCKEY_ENTER) {
+    // Get currently selected tree
+    msg_node_being_edited_ = currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
+    // Send the interaction string to the interface.
+    // TODO CHange this to be a topic streamer
+    renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
+    return;
+  }
+  // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
+  // also want to prevent currently editing index from going negative
+  else if (input.id == NCKEY_TAB) {
+    if (input.shift && currently_editing_index_ > 1) {
+      currently_editing_index_--;
+    } else if (currently_editing_index_ != currently_active_trees_->first.node_count_) {
+      currently_editing_index_++;
+    }
+
+  // Update the cursor as well as plane
+  ui_helpers::writeSelectionTreeToTitledPlane(
+    *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
+    currently_active_trees_->first, currently_editing_index_);
+}
 }
 
 void Ui::handleInputMonitorInteractionResult(const ncinput & input)
@@ -623,7 +692,7 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       }
       if (selected_monitor_ == "topics") {
         ui_helpers::drawHelperBar(
-          notcurses_stdplane_.get(), userHelpStrings_.streamable_entry_prompt);
+          notcurses_stdplane_.get(), userHelpStrings_.interactable_entry_prompt);
       } else if (selected_monitor_ == "services") {
         ui_helpers::drawHelperBar(
           notcurses_stdplane_.get(), userHelpStrings_.interactable_entry_prompt);
@@ -643,6 +712,15 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       ui_helpers::drawHelperBar(
         notcurses_stdplane_.get(), userHelpStrings_.interaction_request_prompt);
       renderMonitorInteraction(interface_map_[selected_monitor_].get());
+      break;
+    }
+    case UiDisplayingEnum::monitorSelection: {
+      // Disable mouse events
+      notcurses_core_->mouse_disable();
+      // Perform a check for it we are returning from streaming a topic:
+      ui_helpers::drawHelperBar(
+        notcurses_stdplane_.get(), userHelpStrings_.interaction_request_prompt);
+      renderMonitorSelection(interface_map_[selected_monitor_].get());
       break;
     }
     case UiDisplayingEnum::streamingTopic: {

@@ -557,7 +557,7 @@ inline void writeSelectionTreeToTitledPlane(
       row++;
     }
     for (const auto & child : node.getChildren()) {
-      drawTreeToPlane(child, plane, row, false, highlight, depth + 2);
+      drawTreeToPlane(child, plane, row, false, highlight, depth + 1);
     }
     return;
   };

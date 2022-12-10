@@ -216,7 +216,7 @@ void Ui::renderMonitorSelection(MonitorInterface * interface)
 
   // Once we get the information, open the window for selecting the topic to render
   ui_helpers::writeSelectionTreeToTitledPlane(
-    *monitor_info_plane_, item, currently_active_trees_->first, 0);
+    *monitor_info_plane_, item, currently_active_trees_->first, currently_editing_index_);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(

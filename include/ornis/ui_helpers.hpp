@@ -525,10 +525,6 @@ inline void writeSelectionTreeToTitledPlane(
                       const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
                       const bool & is_root, bool highlight, uint depth) {
     if (row == selected_index) highlight = true;
-    // else
-    //   highlight = false;
-    // (Don't) Skip root
-    // if (!is_root) {
     {
       size_t col = 1;
       const msg_tree::msg_contents t = node.getValue();

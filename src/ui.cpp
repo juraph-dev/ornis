@@ -53,8 +53,8 @@ bool Ui::initialise(
     .margin_r = 0,
     .margin_b = 0,
     .margin_l = 0,
-    .flags = NCOPTION_SUPPRESS_BANNERS  // | NCOPTION_NO_ALTERNATE_SCREEN
-                                        // Use if need cout
+    .flags = NCOPTION_SUPPRESS_BANNERS | NCOPTION_NO_ALTERNATE_SCREEN
+    // Use if need cout
   };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);
@@ -372,11 +372,10 @@ void Ui::handleInputMonitorEntry(const ncinput & input)
   if (input.id == 'q' || input.id == NCKEY_ESC) {
     transitionUiState(UiDisplayingEnum::selectedMonitor);
   }
-    // TODO Clear up once you're done implementing the new topic streaming methods
+  // TODO Clear up once you're done implementing the new topic streaming methods
   else if (selected_monitor_ == "topics" && input.id == NCKEY_ENTER) {
     transitionUiState(UiDisplayingEnum::monitorSelection);
-  }
-  else if (selected_monitor_ == "services" && input.id == NCKEY_ENTER) {
+  } else if (selected_monitor_ == "services" && input.id == NCKEY_ENTER) {
     transitionUiState(UiDisplayingEnum::monitorInteraction);
     // FIXME: Shouldn't have to send a fake input
     // Pass a fake input through, to initialise the cursor
@@ -464,25 +463,25 @@ void Ui::handleInputMonitorSelection(const ncinput & input)
     // should select the child directly, instead of the parent node.
     if (input.shift && currently_editing_index_ > 1) {
       currently_editing_index_--;
-      const auto * proposed_selected_node = currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
-      if (proposed_selected_node->leafCount() == 1)
-      {
-      currently_editing_index_--;
+      const auto * proposed_selected_node =
+        currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
+      if (proposed_selected_node->leafCount() == 1) {
+        currently_editing_index_--;
       }
-    } else if (currently_editing_index_ != currently_active_trees_->first.node_count_) {
+    } else if (currently_editing_index_ <= currently_active_trees_->first.node_count_) {
       currently_editing_index_++;
-      const auto * proposed_selected_node = currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
-      if (proposed_selected_node != nullptr && proposed_selected_node->leafCount() == 1)
-      {
-      currently_editing_index_++;
+      const auto * proposed_selected_node =
+        currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
+      if (proposed_selected_node != nullptr && proposed_selected_node->leafCount() == 1) {
+        currently_editing_index_++;
       }
     }
 
-  // Update the cursor as well as plane
-  ui_helpers::writeSelectionTreeToTitledPlane(
-    *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
-    currently_active_trees_->first, currently_editing_index_);
-}
+    // Update the cursor as well as plane
+    ui_helpers::writeSelectionTreeToTitledPlane(
+      *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
+      currently_active_trees_->first, currently_editing_index_);
+  }
 }
 
 void Ui::handleInputMonitorInteractionResult(const ncinput & input)
@@ -501,7 +500,7 @@ void Ui::handleInputStreaming(const ncinput & input)
 {
   // At the moment, only input while streaming is to close the stream
   if (input.id == 'q') {
-    transitionUiState(UiDisplayingEnum::monitorEntry);
+    transitionUiState(UiDisplayingEnum::monitorSelection);
   }
 }
 
@@ -633,8 +632,8 @@ void Ui::renderSelectedMonitor()
   movePlanesAnimated(planes_locations);
 
   // Place minimised monitors on edge
-  interface_order.front()->minimised_plane_->move(0,0 );
-  interface_order.back()->minimised_plane_->move(0, term_width_ -1);
+  interface_order.front()->minimised_plane_->move(0, 0);
+  interface_order.back()->minimised_plane_->move(0, term_width_ - 1);
 }
 
 std::shared_ptr<ncpp::Plane> Ui::createStreamPlane()
@@ -651,7 +650,9 @@ std::shared_ptr<ncpp::Plane> Ui::createStreamPlane()
   return stream_plane;
 }
 
-void Ui::openStream(const std::string &topic_name, const msg_tree::msg_contents &message_contents)
+void Ui::openStream(
+  const std::string & topic_name, const std::string & entry_path,
+  const msg_tree::msg_contents & message_contents)
 {
   auto stream_plane = createStreamPlane();
   std::unique_lock<std::mutex> data_request_lock(interface_channel_->access_mutex_);
@@ -659,6 +660,7 @@ void Ui::openStream(const std::string &topic_name, const msg_tree::msg_contents 
   interface_channel_->request_details_["topic_name"] = topic_name;
   interface_channel_->request_details_["topic_entry"] = message_contents.entry_name_;
   interface_channel_->request_details_["entry_type"] = message_contents.data_type_;
+  interface_channel_->request_details_["entry_path"] = entry_path;
   interface_channel_->request_pending_ = true;
   interface_channel_->condition_variable_.wait_for(
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
@@ -687,7 +689,8 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
         notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
       } else if (
         ui_displaying_ == UiDisplayingEnum::monitorInteraction ||
-        ui_displaying_ == UiDisplayingEnum::monitorInteractionResult) {
+        ui_displaying_ == UiDisplayingEnum::monitorInteractionResult ||
+        ui_displaying_ == UiDisplayingEnum::monitorSelection) {
         monitor_info_plane_->erase();
         monitor_info_plane_->move_bottom();
         notcurses_core_->mouse_enable(NCMICE_ALL_EVENTS);
@@ -699,11 +702,6 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
     }
     case UiDisplayingEnum::monitorEntry: {
       // Perform a check for it we are returning from streaming a topic:
-      if (ui_displaying_ == UiDisplayingEnum::streamingTopic) {
-        const std::string selected_entry =
-          interface_map_[selected_monitor_]->selector_->get_selected();
-        closeStream(selected_entry);
-      }
       if (selected_monitor_ == "topics") {
         ui_helpers::drawHelperBar(
           notcurses_stdplane_.get(), userHelpStrings_.interactable_entry_prompt);
@@ -729,7 +727,14 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       break;
     }
     case UiDisplayingEnum::monitorSelection: {
-      currently_editing_index_ = 1;
+      if (ui_displaying_ == UiDisplayingEnum::streamingTopic) {
+        const std::string selected_entry =
+          interface_map_[selected_monitor_]->selector_->get_selected();
+        closeStream(selected_entry);
+      }
+      else {
+        currently_editing_index_ = 1;
+      }
       // TODO: May want to re-enable this once the selection
       // interface is working
       // Disable mouse events
@@ -743,8 +748,12 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
     case UiDisplayingEnum::streamingTopic: {
       const std::string selected_entry =
         interface_map_[selected_monitor_]->selector_->get_selected();
-      const auto * selected_node = currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
-      openStream(selected_entry, selected_node->getValue());
+      const auto * selected_node =
+        currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
+      const auto selected_path =
+        currently_active_trees_->first.getRoot()->getPathNthNode(currently_editing_index_);
+
+      openStream(selected_entry, selected_path, selected_node->getValue());
       ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.stream_prompt);
       ui_displaying_ = UiDisplayingEnum::monitorEntry;
       break;

@@ -194,8 +194,8 @@ void ObjectController::checkUiRequests() {
           interface_channel_->request_details_["entry_type"];
       const auto &topic_entry =
           interface_channel_->request_details_["topic_entry"];
-      // const auto type_name =
-      //     interface_channel_->request_details_["monitor_entry"];
+      const auto &entry_path =
+          interface_channel_->request_details_["entry_path"];
 
       const auto it = std::find_if(
           previous_monitor_info_[interface_channel_->request_details_["monitor_name"]].begin(),
@@ -215,7 +215,7 @@ void ObjectController::checkUiRequests() {
           std::make_shared<StreamChannel>(topic_name);
       // Create the stream thread
       stream_map_[topic_name] = std::make_shared<TopicStreamer>(
-          topic_name, topic_entry, topic_type, entry_type, stream_interface_map_[topic_name],
+          topic_name, topic_entry, topic_type, entry_type, entry_path, stream_interface_map_[topic_name],
           ros_interface_node_, context_);
       interface_channel_->request_pending_ = false;
       interface_channel_->condition_variable_.notify_all();

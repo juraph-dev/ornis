@@ -3,6 +3,8 @@
 #include <dlfcn.h>
 
 #include <cstring>
+#include <functional>
+#include <limits>
 
 #include "ornis/helper_functions.hpp"
 
@@ -288,8 +290,8 @@ void messageDataToString(
       break;
     default:
       // Recieved unkwn message type, fail silently and attempt to parse.
-      // std::cerr << "Recieved unknown message type!!!: " << std::to_string(member_info.type_id_)
-      //           << "\n";
+      std::cerr << "Recieved unknown message type!!!: " << std::to_string(member_info.type_id_)
+                << "\n";
       break;
   }
 }
@@ -346,9 +348,34 @@ void messageDataToDouble(
       break;
     default:
       // Recieved unkwn message type, fail silently and attempt to parse.
-      std::cerr << "Could not convert to double!!!: " << std::to_string(member_info.type_id_)
-                << "\n";
       break;
+  }
+}
+
+void readMessageAsTreeString(
+  std::vector<std::string> & output, uint8_t * message_data,
+  const rosidl_typesupport_introspection_cpp::MessageMembers * members, int indent)
+{
+  const std::string indent_str(indent, ' ');
+  for (size_t i = 0; i < members->member_count_; i++) {
+    const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[i];
+    uint8_t * member_data = &message_data[member.offset_];
+
+    // Perform a check for if we're dealing with a ros message type, and recurse if we are
+    if (member.type_id_ == rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
+      const auto sub_members =
+        static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+          member.members_->data);
+      readMessageAsTreeString(output, member_data, sub_members, indent + 2);
+    } else {
+      std::string t_string, msg_string;
+      introspection::messageDataToString(member, member_data, t_string);
+      if (indent != 0) {
+        msg_string.append("\n");
+      }
+      msg_string.append(indent_str + t_string + '\n');
+      output.push_back(msg_string);
+    }
   }
 }
 
@@ -491,9 +518,125 @@ void stringToMessageData(
   }
 }
 
- bool parsableAsString(const rosidl_message_type_support_t &msg_info)
+// Returns the path to an entry. First n-1 elements are the addresses of the members, nth is the offset in the member data
+std::vector<uint32_t> getEntryOffset(
+  std::vector<std::string> entry_path, const std::string & member_type_id,
+  const rosidl_typesupport_introspection_cpp::MessageMembers * message_members)
 {
+  std::vector<uint32_t> offset_vector;
+  // If the length of entry_path > 1, we require further recursion
+  if (entry_path.size() > 1) {
+    for (size_t i = 0; i < message_members->member_count_; i++) {
+      const rosidl_typesupport_introspection_cpp::MessageMember & member =
+        message_members->members_[i];
+      // If the member has the same name as the desired entry, add to offset vector and recurse
+      if (member.name_ == entry_path[0]) {
+        entry_path.erase(entry_path.begin());
+        offset_vector.push_back(i);
+        const auto sub_members =
+          static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+            member.members_->data);
 
+        auto tmp_offset_vector(getEntryOffset(entry_path, member_type_id, sub_members));
+        if (!tmp_offset_vector.empty()) {
+          offset_vector.insert(
+            offset_vector.end(), tmp_offset_vector.begin(), tmp_offset_vector.end());
+          return offset_vector;
+        }
+      }
+    }
+  }
+  // Else, we're searching for matching final member
+  else {
+    for (size_t i = 0; i < message_members->member_count_; i++) {
+      const rosidl_typesupport_introspection_cpp::MessageMember & member =
+        message_members->members_[i];
+      // If the member has the same name as the desired entry, add to offset vector and recurse
+      if (member.name_ == entry_path[0]) {
+        std::string member_type;
+        introspection::messageTypeToString(member, member_type);
+        // Check the type id
+        if (member_type == member_type_id) {
+          entry_path.erase(entry_path.begin());
+          offset_vector.push_back(member_type == "Msg" ? i : member.offset_);
+          return offset_vector;
+        }
+      }
+    }
+  }
+
+  // return a blank vector if it cannot be found;
+  std::vector<uint32_t> empty_vec;
+  return empty_vec;
 }
+
+void getMessageMember(
+  const std::vector<uint32_t> & offsets,
+  const rosidl_typesupport_introspection_cpp::MessageMembers * message_members,
+  rosidl_typesupport_introspection_cpp::MessageMember & found_member)
+{
+  if (offsets.size() == 1) {
+    found_member = message_members->members_[offsets[0]];
+    return;
+  }
+
+  auto get_member_at_offset =
+    [&](
+      auto && get_member_at_offset, uint32_t & idx, const std::vector<uint32_t> & offset_vec,
+      const rosidl_typesupport_introspection_cpp::MessageMember & message_member) {
+      if (idx == offset_vec.size()) {
+        return message_member;
+      }
+      auto sub_members = static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+        message_member.members_->data);
+      const rosidl_typesupport_introspection_cpp::MessageMember & next_iter =
+        sub_members->members_[offset_vec[idx]];
+      idx++;
+      return get_member_at_offset(get_member_at_offset, idx, offset_vec, next_iter);
+    };
+
+  uint32_t idx = 1;
+  found_member =
+    get_member_at_offset(get_member_at_offset, idx, offsets, message_members->members_[offsets[0]]);
+}
+
+void getMessageMember(
+  const std::vector<uint32_t> & offsets,
+  const rosidl_typesupport_introspection_cpp::MessageMembers * message_members,
+  uint8_t * data, rosidl_typesupport_introspection_cpp::MessageMember & found_member,
+  uint8_t ** found_data)
+{
+  if (offsets.size() == 1) {
+    found_member = message_members->members_[offsets[0]];
+    *found_data = &data[found_member.offset_];
+    return;
+  }
+
+  auto get_member_at_offset =
+    [&](
+      auto && get_member_at_offset, uint32_t & idx, const std::vector<uint32_t> & offset_vec,
+      const rosidl_typesupport_introspection_cpp::MessageMember & message_member,
+      uint8_t * msg_data) {
+      if (idx == offset_vec.size()) {
+        return std::make_pair(message_member, msg_data);
+      }
+      auto sub_members = static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
+        message_member.members_->data);
+      const rosidl_typesupport_introspection_cpp::MessageMember & next_iter =
+        sub_members->members_[offset_vec[idx]];
+      uint8_t * next_iter_data = &msg_data[next_iter.offset_];
+      idx++;
+      return get_member_at_offset(get_member_at_offset, idx, offset_vec, next_iter, next_iter_data);
+    };
+
+  uint32_t idx = 1;
+  auto member_data_pair = get_member_at_offset(
+    get_member_at_offset, idx, offsets, message_members->members_[offsets[0]],
+    &data[message_members->members_[offsets[0]].offset_]);
+  found_member = member_data_pair.first;
+  *found_data = member_data_pair.second;
+}
+
+bool parsableAsString(const rosidl_message_type_support_t & msg_info) {}
 
 }  // namespace introspection

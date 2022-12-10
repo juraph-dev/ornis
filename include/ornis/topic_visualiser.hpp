@@ -2,8 +2,8 @@
 #define TOPIC_VISUALISER_H_
 
 #include <memory>
-#include <vector>
 #include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
+#include <vector>
 
 #include "ncpp/Plane.hh"
 
@@ -33,11 +33,20 @@ public:
 class TopicVisualiser
 {
 public:
-  TopicVisualiser(){};
-  ~TopicVisualiser(){};
+  TopicVisualiser(ncpp::Plane * plane, uint height, uint width, std::vector<uint32_t> entry_path)
+  : height_(height), width_(width), entry_path_(entry_path), plane_(plane)
+  {
+  }
+  virtual ~TopicVisualiser() {}
 
   virtual void renderData(
     const rosidl_typesupport_introspection_cpp::MessageMembers * members, uint8_t * data) = 0;
+
+  uint height_, width_;
+
+  std::vector<uint32_t> entry_path_;
+
+  ncpp::Plane * plane_;
 };
 
 #endif  // TOPIC_VISUALISER_H_

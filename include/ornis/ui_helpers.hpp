@@ -106,7 +106,7 @@ inline void sizeTree(const msg_tree::MsgTreeNode & node, size_t & rows, size_t &
 }
 
 inline void sizePlaneToTree(
-  ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree)
+  ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree, const bool skip_root = true)
 {
   size_t rows = 1;
   size_t longest_col = 0;
@@ -116,7 +116,8 @@ inline void sizePlaneToTree(
   longest_col = title.size() > longest_col ? title.size() : longest_col;
 
   // Add one to longest col to account for border
-  plane.resize(rows + 1, longest_col + 2);
+  const uint extra_rows = skip_root ? 1 : 2;
+  plane.resize(rows + extra_rows, longest_col + 2);
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
@@ -256,6 +257,62 @@ inline void writeStringToTitledPlane(
       nccell_release(plane.to_ncplane(), &cell);
       col++;
     }
+  }
+
+  uint64_t channel = plane.get_channels();
+  // ncchannels_set_bg_alpha(&channel, NCALPHA_TRANSPARENT);
+  plane.perimeter_rounded(0, channel, 0);
+
+  col = (plane.get_dim_x() - title.size()) / 2;
+  for (const char & c : title) {
+    nccell_load(plane.to_ncplane(), &cell, &c);
+    plane.putc(0, col, c);
+    nccell_release(plane.to_ncplane(), &cell);
+    col++;
+  }
+}
+
+inline void writeStringVectorToTitledPlane(
+  ncpp::Plane & plane, const std::string & title, const std::vector<std::string> & content)
+{
+  plane.erase();
+  plane.move_top();
+
+  const size_t row_count = content.size();
+
+  const auto longest_entry = std::max_element(
+    content.begin(), content.end(),
+    [](const auto & a, const auto & b) { return a.size() < b.size(); });
+
+  title.size() > longest_entry->size() ? ui_helpers::sizePlaneToString(plane, title)
+                                       : ui_helpers::sizePlaneToString(plane, *longest_entry);
+
+  const uint col_count = title.size() > longest_entry->size() ? title.size() : longest_entry->size();
+  // Add one to longest col to account for border
+  plane.resize(
+    row_count + 2, col_count + 2);
+
+  // Fill plane, ensures we don't have a transparent background
+  ncpp::Cell c(' ');
+  c.set_bg_rgb8(32, 51, 70);
+  c.set_fg_rgb8(32, 51, 70);
+  plane.polyfill(row_count, col_count, c);
+
+  int row = 1;
+  int col = 1;
+
+  // TODO These cell writing loops should be moved to their own functions
+  nccell cell = NCCELL_TRIVIAL_INITIALIZER;
+  for (const std::string & line : content) {
+    for (const char & c : line) {
+        nccell_load(plane.to_ncplane(), &cell, &c);
+        plane.putc(row, col, c);
+        nccell_release(plane.to_ncplane(), &cell);
+        col++;
+
+    }
+    row++;
+    col = 1;
   }
 
   uint64_t channel = plane.get_channels();
@@ -446,13 +503,13 @@ inline void writeEditingTreeToTitledPlane(
 }
 
 inline void writeSelectionTreeToTitledPlane(
-  ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree, const uint & selected_index)
+  ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree,
+  const uint & selected_index)
 {
   plane.erase();
   plane.move_top();
 
-  ui_helpers::sizePlaneToTree(plane, title, tree);
-
+  ui_helpers::sizePlaneToTree(plane, title, tree, false);
 
   size_t row = 1;
   int col = 1;
@@ -461,52 +518,56 @@ inline void writeSelectionTreeToTitledPlane(
   plane.perimeter_rounded(0, channel, 0);
 
   std::function<void(
-    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root, bool highlight)>
+    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root,
+    bool highlight, uint depth)>
     drawTreeToPlane;
   drawTreeToPlane = [&](
                       const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
-                      const bool & is_root, bool highlight) {
-    if (row == selected_index)
-      highlight = true;
-    // Skip root
-    if (!is_root) {
+                      const bool & is_root, bool highlight, uint depth) {
+    if (row == selected_index) highlight = true;
+    // else
+    //   highlight = false;
+    // (Don't) Skip root
+    // if (!is_root) {
+    {
       size_t col = 1;
       const msg_tree::msg_contents t = node.getValue();
       std::string node_line;
+      node_line.insert(0, depth, ' ');
       if (node.isLeaf()) {
-        node_line = "|---[" + t.data_type_ + "] " + t.entry_name_;
+        node_line += "|--" + t.data_type_ + "] " + t.entry_name_;
       } else {
-        node_line = t.entry_name_;
+        node_line += t.entry_name_;
       }
       // (Unforuanately) Need to ensure we re-set the highlight channel each draw
-      uint64_t highlight_channel;// = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+      uint64_t highlight_channel;
       if (highlight) {
         ncchannels_set_bg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
         ncchannels_set_fg_rgb8(&highlight_channel, 72, 91, 120);
-      }
-      else{
+      } else {
         ncchannels_set_fg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
         ncchannels_set_bg_rgb8(&highlight_channel, 72, 91, 120);
       }
-        ncchannels_set_bg_alpha(&highlight_channel, ncpp::Cell::AlphaOpaque);
+      ncchannels_set_bg_alpha(&highlight_channel, ncpp::Cell::AlphaOpaque);
 
-      for (const char & c : node_line) {
+      for (const auto & c : node_line) {
         plane.putc(row, col, c);
         col++;
       }
-        plane.stain(
-          row, col - node_line.size(), 1, node_line.size() + 1, highlight_channel, highlight_channel,
-          highlight_channel, highlight_channel);
+      plane.stain(
+        row, col - node_line.size(), 1, node_line.size() + 1, highlight_channel, highlight_channel,
+        highlight_channel, highlight_channel);
 
       row++;
     }
     for (const auto & child : node.getChildren()) {
-      drawTreeToPlane(child, plane, row, false, highlight);
+      drawTreeToPlane(child, plane, row, false, highlight, depth + 2);
     }
     return;
   };
 
-  drawTreeToPlane(*tree.getRoot(), plane, row, true, selected_index == 0);
+  uint depth = 0;
+  drawTreeToPlane(*tree.getRoot(), plane, row, true, selected_index == 0, depth);
 
   // Write planes title
   col = (plane.get_dim_x() - title.size()) / 2;
@@ -537,7 +598,11 @@ inline void writeDetailedTreeToTitledPlane(
     if (!is_root) {
       size_t col = 1;
       const msg_tree::msg_contents t = node.getValue();
-      const std::string node_line = "(" + t.data_type_ + ")  " + t.entry_name_;
+      std::string node_line = "(" + t.data_type_ + ")  " + t.entry_name_;
+      if (!t.entry_data_.empty())
+      {
+        node_line.append(": " +  t.entry_data_);
+      }
       for (const char & c : node_line) {
         plane.putc(row, col, c);
         col++;

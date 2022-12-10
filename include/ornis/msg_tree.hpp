@@ -81,7 +81,7 @@ public:
 
   bool isLeaf() const { return children_.empty(); }
 
-  size_t leafCount() const {return children_.size();}
+  size_t leafCount() const { return children_.size(); }
 
   void toString(std::string & output, int indent = 0) const
   {
@@ -136,25 +136,51 @@ public:
     return editable_leaf;
   }
 
+  std::string getPathNthNode(const uint & n)
+  {
+    uint search_index = 1;
+    return findPathNthNode(n, search_index);
+  }
+
+  std::string findPathNthNode(const uint & n, uint & search_index)
+  {
+    std::string path = msg_contents_.entry_name_;
+    if (path[0] != '/') {
+      path.insert(path.begin(), '/');
+    }
+    if (search_index == n) {
+      return path;
+    }
+    search_index++;
+    for (auto & child : children_) {
+      const auto subpath = child.findPathNthNode(n, search_index);
+      if (!subpath.empty()) {
+        path.append(subpath);
+        return path;
+      }
+    }
+    return "";
+  }
+
   MsgTreeNode * getNthNode(const uint & n)
   {
     uint search_index = 1;
     return findNthNode(n, search_index);
   }
 
-  MsgTreeNode * findNthNode(const uint & n, uint &search_index)
+  MsgTreeNode * findNthNode(const uint & n, uint & search_index)
   {
     MsgTreeNode * leaf = nullptr;
-      if (search_index == n) {
-        return this;
+    if (search_index == n) {
+      return this;
+    }
+    search_index++;
+    for (auto & child : children_) {
+      leaf = child.findNthNode(n, search_index);
+      if (leaf != nullptr) {
+        return leaf;
       }
-        search_index++;
-      for (auto & child : children_) {
-        leaf = child.findNthNode(n, search_index);
-        if (leaf != nullptr) {
-          return leaf;
-        }
-      }
+    }
     return leaf;
   }
 
@@ -171,7 +197,8 @@ public:
             member.members_->data);
         children_[i].writeNodeToMessage(member_data, sub_members);
       } else {
-        introspection::stringToMessageData(message_data, member, children_[i].msg_contents_.entry_data_);
+        introspection::stringToMessageData(
+          message_data, member, children_[i].msg_contents_.entry_data_);
       }
     }
   }
@@ -190,14 +217,17 @@ class MsgTree
 {
 public:
   MsgTree(const msg_contents & msg_contents_, const rosidl_message_type_support_t * type_data)
-  : node_count_(0), editable_node_count_(0),  base_(new MsgTreeNode(msg_contents_, nullptr))
+  : node_count_(0), editable_node_count_(0), base_(new MsgTreeNode(msg_contents_, nullptr))
   {
     recursivelyCreateTree(base_.get(), type_data);
   }
 
   // If constructed with no typesupport, no tree is created. Used for if tree is constructed
   // after root node is created.
-    MsgTree(const msg_contents & msg_contents_) :  node_count_(0), editable_node_count_(0), base_(new MsgTreeNode(msg_contents_, nullptr)) {}
+  MsgTree(const msg_contents & msg_contents_)
+  : node_count_(0), editable_node_count_(0), base_(new MsgTreeNode(msg_contents_, nullptr))
+  {
+  }
 
   ~MsgTree() {}
 
@@ -240,6 +270,49 @@ public:
       } else {
         // Node has no chldren, probably editable
         editable_node_count_++;
+      }
+      node_count_++;
+    }
+  }
+
+  void recursivelyCreateTree(
+    MsgTreeNode * target_node, const rosidl_message_type_support_t * type_data,
+    uint8_t * message_data)
+  {
+    using rosidl_typesupport_introspection_cpp::MessageMember;
+    using rosidl_typesupport_introspection_cpp::MessageMembers;
+    using rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE;
+    const auto * members = static_cast<const MessageMembers *>(type_data->data);
+
+    // To prevent potential duplication, Remove Node's children if any exist
+    if (!target_node->getChildren().empty()) {
+      target_node->getChildren().clear();
+    }
+    target_node->getChildren().reserve(members->member_count_);
+
+    for (size_t i = 0; i < members->member_count_; i++) {
+      const MessageMember & member = members->members_[i];
+      std::string new_node_type;
+      introspection::messageTypeToString(member, new_node_type);
+      const msg_contents msg_data = {
+        .data_type_ = new_node_type, .entry_name_ = member.name_, .entry_data_ = ""};
+
+      MsgTreeNode * new_node = target_node->addChild(msg_data);
+
+      if (member.is_array_) {
+        const msg_contents msg_array_data = {
+          .data_type_ = "Array", .entry_name_ = "[]", .entry_data_ = ""};
+        new_node->getChildren().reserve(1);
+        new_node = new_node->addChild(msg_array_data);
+      }
+      if (member.type_id_ == ROS_TYPE_MESSAGE) {
+        uint8_t * sub_member_data = &message_data[member.offset_];
+        recursivelyCreateTree(new_node, member.members_, sub_member_data);
+      } else {
+        // Node has no chldren, probably editable
+        editable_node_count_++;
+        introspection::messageDataToString(
+          member, &message_data[member.offset_], new_node->getValue().entry_data_);
       }
       node_count_++;
     }

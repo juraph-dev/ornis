@@ -50,6 +50,10 @@ void messageTypeToString(
   const rosidl_typesupport_introspection_cpp::MessageMember & member_info,
   std::string & message_type);
 
+void readMessageAsTreeString(
+  std::vector<std::string> & output, uint8_t * message_data,
+  const rosidl_typesupport_introspection_cpp::MessageMembers * members, int indent = 0);
+
 std::string readMessageAsString(
   uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMembers * members);
 
@@ -70,7 +74,23 @@ void stringToMessageData(
 
 bool parsableAsString(const rosidl_message_type_support_t & msg_type);
 
-bool parsableAsNumeric(const rosidl_message_type_support_t & msg_type);
+std::vector<uint32_t> getEntryOffset(
+  std::vector<std::string> entry_path, const std::string & member_type_id,
+  const rosidl_typesupport_introspection_cpp::MessageMembers * message_members);
+
+void getMessageMember(
+  const std::vector<uint32_t> & offsets,
+  const rosidl_typesupport_introspection_cpp::MessageMembers * message_members,
+  rosidl_typesupport_introspection_cpp::MessageMember & found_member);
+
+void getMessageMember(
+  const std::vector<uint32_t> & offsets,
+  const rosidl_typesupport_introspection_cpp::MessageMembers * message_members,
+  uint8_t * data, rosidl_typesupport_introspection_cpp::MessageMember & found_member,
+  uint8_t ** found_data);
+
+  bool parsableAsNumeric(const rosidl_message_type_support_t & msg_type);
+
 }  // namespace introspection
 
 #endif  // INTROSPECTION_FUNCTIONS_H_

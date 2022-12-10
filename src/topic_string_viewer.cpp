@@ -1,8 +1,9 @@
-#include "ornis/introspection_functions.hpp"
 #include "ornis/topic_string_viewer.hpp"
 
-TopicStringViewer::TopicStringViewer(ncpp::Plane * plane, uint height, uint width)
-: height_(height), width_(width), data_buffer_(height - 2), longest_string_(0)
+#include "ornis/introspection_functions.hpp"
+
+TopicStringViewer::TopicStringViewer(  ncpp::Plane * plane, uint height, uint width, std::vector<uint32_t> entry_path)
+: TopicVisualiser(plane, height, width, entry_path), data_buffer_(height - 2), longest_string_(0)
 {
   plane_ = plane;
   uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);

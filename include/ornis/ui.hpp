@@ -82,7 +82,9 @@ private:
   void renderMonitorInteractionResult(MonitorInterface * interface);
 
   std::shared_ptr<ncpp::Plane> createStreamPlane();
-  void openStream(const std::string &topic_name, const msg_tree::msg_contents &message_contents);
+  void openStream(
+    const std::string & topic_name, const std::string & entry_path,
+    const msg_tree::msg_contents & message_contents);
   void refreshUi();
 
   void handleInputMonitors(const ncinput & input);

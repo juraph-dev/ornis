@@ -9,7 +9,7 @@
 
 #include "ornis/monitor.hpp"
 
-// TODO Rename/Clean up this strcut.
+// TODO Rename/Clean up this struct.
 struct serviceInfo
 {
   const rosidl_service_type_support_t * type_support;

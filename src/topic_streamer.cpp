@@ -13,19 +13,22 @@
 #include "ornis/introspection_functions.hpp"
 #include "ornis/stream_interface.hpp"
 #include "ornis/topic_plotter.hpp"
+#include "ornis/topic_printer.hpp"
 #include "ornis/topic_string_viewer.hpp"
 #include "ornis/ui_helpers.hpp"
 
 using namespace std::chrono_literals;
 
 TopicStreamer::TopicStreamer(
-    const std::string & topic_name, const std::string& topic_entry, const std::string & topic_type, const std::string &entry_type,
-    std::shared_ptr<StreamChannel> & interface_channel,
-    std::shared_ptr<rcl_node_t> ros_interface_node, rcl_context_t context)
+  const std::string & topic_name, const std::string & topic_entry, const std::string & topic_type,
+  const std::string & entry_type, const std::string & entry_path,
+  std::shared_ptr<StreamChannel> & interface_channel,
+  std::shared_ptr<rcl_node_t> ros_interface_node, rcl_context_t context)
 : topic_name_(topic_name),
   topic_entry_(topic_entry),
   topic_type_(topic_type),
   entry_type_(entry_type),
+  entry_path_(entry_path),
   ros_interface_node_(std::move(ros_interface_node)),
   context_(context)
 {
@@ -97,43 +100,49 @@ void TopicStreamer::initialise()
     topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
 
   auto * members =
-    static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
-      type_support->data);
+    static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(type_support->data);
 
-
-  std::function<void(const std::string &member_name, const uint &member_type_id, const rosidl_typesupport_introspection_cpp::MessageMembers * message_members)> getMemberOffset;
-
-  getMemberOffset = [&](const std::string &member_name, const uint &member_type_id, const rosidl_typesupport_introspection_cpp::MessageMembers * message_members)
-  {
-  // Now we have the typesupport, go through and find the affress of the desired entry.
-  for (size_t i = 0; i < members->member_count_; i++) {
-    const rosidl_typesupport_introspection_cpp::MessageMember & member = members->members_[i];
-    std::cout << "member name: " << member.name_ << '\n';
-    // If the member has the
-    // Perform a check for if we're dealing with a ros message type, and recurse if we are
-    // if (member.type_id_ == rosidl_typesupport_introspection_cpp::ROS_TYPE_MESSAGE) {
-    //   const auto sub_members =
-    //     static_cast<const rosidl_typesupport_introspection_cpp::MessageMembers *>(
-    //       member.members_->data);
-    //   member_string += readMessageAsString(member_data, sub_members);
-    // } else {
-    //   introspection::messageDataToString(member, member_data, member_string);
-    // }
-    // members_string += member_string;
+  std::vector<std::string> entry_path_vec;
+  // Split string into std::vector
+  size_t last = 0;
+  size_t next = 0;
+  while ((next = entry_path_.find('/', last)) != std::string::npos) {
+    const auto t_string = entry_path_.substr(last, next - last);
+    if (!t_string.empty()) {
+      entry_path_vec.push_back(t_string);
+    }
+    last = next + 1;
   }
-};
-getMemberOffset(topic_entry_, members);
+  entry_path_vec.push_back(entry_path_.substr(last));
+  // We also trim out the first entry, as it's simply the message name
+  entry_path_vec.erase(entry_path_vec.begin());
 
+  if (!entry_path_vec.empty())
+  {
+    offset_= introspection::getEntryOffset(entry_path_vec, entry_type_, members);
+  }
+  // If we are grabbing the whole message, we obviously have neither an entry path, nor an offset
+  // visualise message as a plain string
+  if (entry_type_ == "Msg" || entry_type_.empty())
+  {
+    topic_visualiser_ =
+      std::make_unique<TopicPrinter>(TopicPrinter(interface_channel_->stream_plane_.get(), 20, 80, offset_));
+  }
+  else {
+    // Requested a single subelement. Attempt to visualise accordingly.
+    topic_visualiser_ =
+      std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80, offset_));
+  }
+
+  // const auto desired_member = introspection::getMessageMember(offset_, members);
   // Determine how to visualise the message
   // If we are dealing with a single member, that is string, or numeric, visualise,
   // else, attempt to use a general plotter
   // TODO: Handle non-std_msgs data types
   // if (topic_type_ == "std_msgs/msg/String") {
-    topic_visualiser_ =
-      std::make_unique<TopicStringViewer>(TopicStringViewer(interface_channel_->stream_plane_.get(), 20, 80));
+  // topic_visualiser_ = std::make_unique<TopicStringViewer>(
+  //   TopicStringViewer(interface_channel_->stream_plane_.get(), 20, 80));
   // } else if (topic_type_ == "std_msgs/msg/Double"){
-  //   topic_visualiser_ =
-  //     std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80));
   // }
   // FIXME: Else, Create new topicVisualiser which can handle general messages
 

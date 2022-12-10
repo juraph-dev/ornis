@@ -8,14 +8,14 @@
 #include "ornis/introspection_functions.hpp"
 #include "ornis/ui_helpers.hpp"
 
-TopicPlotter::TopicPlotter(ncpp::Plane * plane, uint height, uint width)
-: height_(height),
-  width_(width),
+TopicPlotter::TopicPlotter(
+  ncpp::Plane * plane, uint height, uint width, std::vector<uint32_t> entry_path)
+: TopicVisualiser(plane, height, width, entry_path),
   data_buffer_(width - 3),
-  scaled_data_buffer_(width - 3)
+  scaled_data_buffer_(width - 3),
+  entry_offset_(0)
 {
   timestep_ = 0;
-  plane_ = plane;
   plane_->resize(height_, width_);
   uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_OPAQUE);
@@ -44,7 +44,7 @@ void TopicPlotter::drawPlot()
   }
 
   for (int i = 9; i >= 0; i--) {
-    char axis_str [32];
+    char axis_str[32];
     const double axis_val = (double)timestep_ - ((10 - i) * (int)width_ / 10);
     sprintf(axis_str, "%.6g", axis_val < 0 ? 0 : axis_val);
     plane_->putstr(height_ - 2, i * width_ / 10, axis_str);
@@ -80,8 +80,8 @@ void TopicPlotter::drawPlot()
     }
     // Fill gap between the two ends of the vector
     drawSlice(
-        scaled_data_buffer_.buffer.back(), scaled_data_buffer_.buffer[0],
-        width_ - 2 - scaled_data_buffer_.i_);
+      scaled_data_buffer_.buffer.back(), scaled_data_buffer_.buffer[0],
+      width_ - 2 - scaled_data_buffer_.i_);
   }
 
   // Draw vertical axis steps last, to prevent graph from overlapping with numbers
@@ -125,7 +125,17 @@ void TopicPlotter::drawSlice(
 void TopicPlotter::renderData(
   const rosidl_typesupport_introspection_cpp::MessageMembers * members, uint8_t * data)
 {
-  const double message_double = introspection::readMessageAsDouble(data, members);
+  rosidl_typesupport_introspection_cpp::MessageMember member;
+  introspection::getMessageMember(entry_path_, members, member);
+
+  entry_offset_ = member.offset_;
+
+  uint8_t * member_data = &data[member.offset_];
+  double message_double;
+
+  introspection::messageDataToDouble(member, member_data, message_double);
+
+  // const double message_double = introspection::readMessageAsDouble(data, members);
   data_buffer_.step(message_double);
 
   // If the newest datapoint is outside current bounds

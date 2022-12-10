@@ -637,6 +637,9 @@ void getMessageMember(
   *found_data = member_data_pair.second;
 }
 
-bool parsableAsString(const rosidl_message_type_support_t & msg_info) {}
+bool parsableAsNumeric(const rosidl_message_type_support_t & msg_info) {
+
+  return true;
+}
 
 }  // namespace introspection

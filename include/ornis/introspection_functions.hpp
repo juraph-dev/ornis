@@ -72,8 +72,6 @@ void stringToMessageData(
   uint8_t * message_data, const rosidl_typesupport_introspection_cpp::MessageMember & member,
   const std::string & data);
 
-bool parsableAsString(const rosidl_message_type_support_t & msg_type);
-
 std::vector<uint32_t> getEntryOffset(
   std::vector<std::string> entry_path, const std::string & member_type_id,
   const rosidl_typesupport_introspection_cpp::MessageMembers * message_members);

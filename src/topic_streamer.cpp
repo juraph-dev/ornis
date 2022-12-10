@@ -130,21 +130,11 @@ void TopicStreamer::initialise()
   }
   else {
     // Requested a single subelement. Attempt to visualise accordingly.
+    // Either handle numerically and plot a timeseries
     topic_visualiser_ =
       std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80, offset_));
+    // OR dra as a string
   }
-
-  // const auto desired_member = introspection::getMessageMember(offset_, members);
-  // Determine how to visualise the message
-  // If we are dealing with a single member, that is string, or numeric, visualise,
-  // else, attempt to use a general plotter
-  // TODO: Handle non-std_msgs data types
-  // if (topic_type_ == "std_msgs/msg/String") {
-  // topic_visualiser_ = std::make_unique<TopicStringViewer>(
-  //   TopicStringViewer(interface_channel_->stream_plane_.get(), 20, 80));
-  // } else if (topic_type_ == "std_msgs/msg/Double"){
-  // }
-  // FIXME: Else, Create new topicVisualiser which can handle general messages
 
   // TODO: Investigate swapping profiles at runtime
   // There are some get_qos functions available. Investigate.

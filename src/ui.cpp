@@ -633,7 +633,7 @@ void Ui::renderSelectedMonitor()
 
   // Place minimised monitors on edge
   interface_order.front()->minimised_plane_->move(0, 0);
-  interface_order.back()->minimised_plane_->move(0, term_width_ - 1);
+  interface_order.back()->minimised_plane_->move(0, term_width_ - 3);
 }
 
 std::shared_ptr<ncpp::Plane> Ui::createStreamPlane()

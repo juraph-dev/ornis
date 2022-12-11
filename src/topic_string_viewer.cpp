@@ -69,7 +69,18 @@ void TopicStringViewer::drawStrings()
 void TopicStringViewer::renderData(
   const rosidl_typesupport_introspection_cpp::MessageMembers * members, uint8_t * data)
 {
-  const std::string message_string = introspection::readMessageAsString(data, members);
+
+  rosidl_typesupport_introspection_cpp::MessageMember member;
+  uint8_t * member_data = nullptr;
+  if (!entry_path_.empty()) {
+    introspection::getMessageMember(entry_path_, members, data, member, &member_data);
+  } else {
+    member = members->members_[0];
+    member_data = &data[member.offset_];
+  }
+
+  std::string message_string;
+  introspection::messageDataToString(member, member_data, message_string);
   data_buffer_.step(message_string);
 
   // If the newest datapoint is outside current bounds

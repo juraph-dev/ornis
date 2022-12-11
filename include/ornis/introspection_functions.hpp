@@ -87,7 +87,7 @@ void getMessageMember(
   uint8_t * data, rosidl_typesupport_introspection_cpp::MessageMember & found_member,
   uint8_t ** found_data);
 
-  bool parsableAsNumeric(const rosidl_message_type_support_t & msg_type);
+  bool parsableAsNumeric(const rosidl_typesupport_introspection_cpp::MessageMember & msg_info);
 
 }  // namespace introspection
 

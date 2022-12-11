@@ -117,23 +117,25 @@ void TopicStreamer::initialise()
   // We also trim out the first entry, as it's simply the message name
   entry_path_vec.erase(entry_path_vec.begin());
 
-  if (!entry_path_vec.empty())
-  {
-    offset_= introspection::getEntryOffset(entry_path_vec, entry_type_, members);
+  if (!entry_path_vec.empty()) {
+    offset_ = introspection::getEntryOffset(entry_path_vec, entry_type_, members);
   }
   // If we are grabbing the whole message, we obviously have neither an entry path, nor an offset
   // visualise message as a plain string
-  if (entry_type_ == "Msg" || entry_type_.empty())
-  {
-    topic_visualiser_ =
-      std::make_unique<TopicPrinter>(TopicPrinter(interface_channel_->stream_plane_.get(), 20, 80, offset_));
-  }
-  else {
+  if (entry_type_ == "Msg" || entry_type_.empty()) {
+    topic_visualiser_ = std::make_unique<TopicPrinter>(
+      TopicPrinter(interface_channel_->stream_plane_.get(), 20, 80, offset_));
+  } else {
     // Requested a single subelement. Attempt to visualise accordingly.
-    // Either handle numerically and plot a timeseries
-    topic_visualiser_ =
-      std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80, offset_));
-    // OR dra as a string
+    rosidl_typesupport_introspection_cpp::MessageMember found_member;
+    introspection::getMessageMember(offset_, members, found_member);
+    if (introspection::parsableAsNumeric(found_member)) {
+      topic_visualiser_ = std::make_unique<TopicPlotter>(
+        TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80, offset_));
+    } else {
+      topic_visualiser_ = std::make_unique<TopicStringViewer>(
+        TopicStringViewer(interface_channel_->stream_plane_.get(), 20, 80, offset_));
+    }
   }
 
   // TODO: Investigate swapping profiles at runtime

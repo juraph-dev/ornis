@@ -558,7 +558,7 @@ std::vector<uint32_t> getEntryOffset(
         // Check the type id
         if (member_type == member_type_id) {
           entry_path.erase(entry_path.begin());
-          offset_vector.push_back(member_type == "Msg" ? i : member.offset_);
+          offset_vector.push_back(i);
           return offset_vector;
         }
       }
@@ -602,9 +602,8 @@ void getMessageMember(
 
 void getMessageMember(
   const std::vector<uint32_t> & offsets,
-  const rosidl_typesupport_introspection_cpp::MessageMembers * message_members,
-  uint8_t * data, rosidl_typesupport_introspection_cpp::MessageMember & found_member,
-  uint8_t ** found_data)
+  const rosidl_typesupport_introspection_cpp::MessageMembers * message_members, uint8_t * data,
+  rosidl_typesupport_introspection_cpp::MessageMember & found_member, uint8_t ** found_data)
 {
   if (offsets.size() == 1) {
     found_member = message_members->members_[offsets[0]];
@@ -637,9 +636,12 @@ void getMessageMember(
   *found_data = member_data_pair.second;
 }
 
-bool parsableAsNumeric(const rosidl_message_type_support_t & msg_info) {
-
-  return true;
+bool parsableAsNumeric(const rosidl_typesupport_introspection_cpp::MessageMember & msg_info)
+{
+  // Message range check. Relies on the introspection field types values
+  return (
+    (msg_info.type_id_ >= 1 && msg_info.type_id_ <= 3) ||
+    (msg_info.type_id_ >= 8 && msg_info.type_id_ <= 15));
 }
 
 }  // namespace introspection

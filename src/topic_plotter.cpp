@@ -125,14 +125,17 @@ void TopicPlotter::drawSlice(
 void TopicPlotter::renderData(
   const rosidl_typesupport_introspection_cpp::MessageMembers * members, uint8_t * data)
 {
+
   rosidl_typesupport_introspection_cpp::MessageMember member;
-  introspection::getMessageMember(entry_path_, members, member);
+  uint8_t * member_data = nullptr;
+  if (!entry_path_.empty()) {
+    introspection::getMessageMember(entry_path_, members, data, member, &member_data);
+  } else {
+    member = members->members_[0];
+    member_data = &data[member.offset_];
+  }
 
-  entry_offset_ = member.offset_;
-
-  uint8_t * member_data = &data[member.offset_];
   double message_double;
-
   introspection::messageDataToDouble(member, member_data, message_double);
 
   // const double message_double = introspection::readMessageAsDouble(data, members);

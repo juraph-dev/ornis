@@ -400,17 +400,20 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
     // Send the interaction string to the interface.
     renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
     return;
-  } else if (input.id != NCKEY_TAB) {
-    add_input = true;
-  }
-  // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
-  // also want to prevent currently editing index from going negative
-  else if (input.id == NCKEY_TAB) {
-    if (input.shift && currently_editing_index_ > 1) {
+  } else if (ui_helpers::upInput(input)) {
+    if (currently_editing_index_ > 1) {
       currently_editing_index_ -= 1;
-    } else if (currently_editing_index_ != currently_active_trees_->first.editable_node_count_) {
+    }
+  } else if (ui_helpers::downInput(input)) {
+    if (currently_editing_index_ != currently_active_trees_->first.editable_node_count_) {
       currently_editing_index_ += 1;
     }
+  } else {
+    // Have an input that isn't a navigation input. Attempt to add to edit
+    add_input = true;
+  }
+
+  if (!add_input) {
     auto editable_node =
       currently_active_trees_->first.getRoot()->getNthEditableNode(currently_editing_index_);
     if (editable_node != nullptr) {
@@ -731,8 +734,7 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
         const std::string selected_entry =
           interface_map_[selected_monitor_]->selector_->get_selected();
         closeStream(selected_entry);
-      }
-      else {
+      } else {
         currently_editing_index_ = 1;
       }
       // TODO: May want to re-enable this once the selection

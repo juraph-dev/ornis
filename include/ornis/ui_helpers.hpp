@@ -656,6 +656,16 @@ inline void drawVertLine(
   plane->putc(p2, horz_location, symbol);
 }
 
+inline bool downInput(const ncinput & input)
+{
+  return (input.id == NCKEY_TAB || input.id == NCKEY_DOWN);
+}
+
+inline bool upInput(const ncinput & input)
+{
+  return ((input.id == NCKEY_TAB && input.shift) || input.id == NCKEY_UP);
+}
+
 }  // namespace ui_helpers
 
 #endif  // UI_HELPERS_H_

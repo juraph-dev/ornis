@@ -450,28 +450,28 @@ void Ui::handleInputMonitorSelection(const ncinput & input)
     return;
   }
 
-  if (input.id == NCKEY_ENTER) {
-    // Get currently selected tree
-    // msg_node_being_edited_ = currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
+  else if (input.id == NCKEY_ENTER) {
     transitionUiState(UiDisplayingEnum::streamingTopic);
-    // Send the interaction string to the interface.
-    // TODO CHange this to be a topic streamer
-    // renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
     return;
   }
+  bool update_selection = false;
   // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
   // also want to prevent currently editing index from going negative
-  else if (input.id == NCKEY_TAB) {
-    // perform a check.for the child cound of the proposed selected node. If it has a single child, we
-    // should select the child directly, instead of the parent node.
-    if (input.shift && currently_editing_index_ > 1) {
+  if (ui_helpers::upInput(input)) {
+    if (currently_editing_index_ > 1) {
+      update_selection = true;
       currently_editing_index_--;
       const auto * proposed_selected_node =
         currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
       if (proposed_selected_node->leafCount() == 1) {
         currently_editing_index_--;
       }
-    } else if (currently_editing_index_ <= currently_active_trees_->first.node_count_) {
+    }
+  } else if (ui_helpers::downInput(input))
+    if (currently_editing_index_ <= currently_active_trees_->first.node_count_) {
+      update_selection = true;
+      // perform a check.for the child cound of the proposed selected node. If it has a single child, we
+      // should select the child directly, instead of the parent node.
       currently_editing_index_++;
       const auto * proposed_selected_node =
         currently_active_trees_->first.getRoot()->getNthNode(currently_editing_index_);
@@ -479,7 +479,7 @@ void Ui::handleInputMonitorSelection(const ncinput & input)
         currently_editing_index_++;
       }
     }
-
+  if (update_selection) {
     // Update the cursor as well as plane
     ui_helpers::writeSelectionTreeToTitledPlane(
       *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),

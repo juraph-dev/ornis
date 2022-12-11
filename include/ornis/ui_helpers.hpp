@@ -518,12 +518,12 @@ inline void writeSelectionTreeToTitledPlane(
   plane.perimeter_rounded(0, channel, 0);
 
   std::function<void(
-    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root,
+    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
     bool highlight, uint depth)>
     drawTreeToPlane;
   drawTreeToPlane = [&](
                       const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
-                      const bool & is_root, bool highlight, uint depth) {
+                      bool highlight, uint depth) {
     if (row == selected_index) highlight = true;
     {
       size_t col = 1;
@@ -557,13 +557,13 @@ inline void writeSelectionTreeToTitledPlane(
       row++;
     }
     for (const auto & child : node.getChildren()) {
-      drawTreeToPlane(child, plane, row, false, highlight, depth + 1);
+      drawTreeToPlane(child, plane, row, highlight, depth + 1);
     }
     return;
   };
 
   uint depth = 0;
-  drawTreeToPlane(*tree.getRoot(), plane, row, true, selected_index == 0, depth);
+  drawTreeToPlane(*tree.getRoot(), plane, row, selected_index == 0, depth);
 
   // Write planes title
   col = (plane.get_dim_x() - title.size()) / 2;

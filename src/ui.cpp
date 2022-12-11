@@ -22,6 +22,9 @@
 #include "ornis/stream_interface.hpp"
 #include "ornis/ui_helpers.hpp"
 
+using ui_helpers::downInput;
+using ui_helpers::upInput;
+
 using namespace std::chrono_literals;
 
 Ui::Ui() : redraw_flag_(true), screen_loop_(true), msg_node_being_edited_(nullptr) {}
@@ -400,11 +403,11 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
     // Send the interaction string to the interface.
     renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
     return;
-  } else if (ui_helpers::upInput(input)) {
+  } else if (upInput(input)) {
     if (currently_editing_index_ > 1) {
       currently_editing_index_ -= 1;
     }
-  } else if (ui_helpers::downInput(input)) {
+  } else if (downInput(input)) {
     if (currently_editing_index_ != currently_active_trees_->first.editable_node_count_) {
       currently_editing_index_ += 1;
     }
@@ -457,7 +460,7 @@ void Ui::handleInputMonitorSelection(const ncinput & input)
   bool update_selection = false;
   // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
   // also want to prevent currently editing index from going negative
-  if (ui_helpers::upInput(input)) {
+  if (upInput(input)) {
     if (currently_editing_index_ > 1) {
       update_selection = true;
       currently_editing_index_--;
@@ -467,7 +470,7 @@ void Ui::handleInputMonitorSelection(const ncinput & input)
         currently_editing_index_--;
       }
     }
-  } else if (ui_helpers::downInput(input))
+  } else if (downInput(input))
     if (currently_editing_index_ <= currently_active_trees_->first.node_count_) {
       update_selection = true;
       // perform a check.for the child cound of the proposed selected node. If it has a single child, we

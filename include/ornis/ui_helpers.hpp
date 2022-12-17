@@ -456,23 +456,36 @@ inline void writeEditingTreeToTitledPlane(
   plane.perimeter_rounded(0, channel, 0);
 
   std::function<void(
-    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root)>
+    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root,
+    uint depth, const std::wstring & prefix)>
     drawTreeToPlane;
   drawTreeToPlane = [&](
                       const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
-                      const bool & is_root) {
+                      const bool & is_root, uint depth, const std::wstring & prefix) {
     // Skip root
     if (!is_root) {
       size_t col = 1;
       const msg_tree::msg_contents t = node.getValue();
-      std::string node_line;
+
+      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+      std::wstring node_line;
       if (node.isEditable()) {
-        node_line = "(" + t.data_type_ + ") " + t.entry_name_ + ": " + t.entry_data_;
+        node_line += L'[' + converter.from_bytes(t.data_type_) + L"] " +
+                     converter.from_bytes(t.entry_name_) + L": " +
+                     converter.from_bytes(t.entry_data_);
       } else {
-        node_line = t.entry_name_;
+        node_line += converter.from_bytes(t.entry_name_);
       }
-      for (const char & c : node_line) {
-        plane.putc(row, col, c);
+      node_line.insert(0, prefix);
+      // Adjust prefix based on node status
+      if (prefix[prefix.length() - 1] == L'│') {
+        node_line[prefix.length() - 1] = L'├';
+      } else if (prefix[prefix.length() - 1] == L' ') {
+        node_line[prefix.length() - 1] = L'└';
+      }
+
+      for (const auto & c : node_line) {
+        plane.putwch(row, col, c);
         col++;
       }
       if (node.getEditingStatus()) {
@@ -489,13 +502,23 @@ inline void writeEditingTreeToTitledPlane(
       }
       row++;
     }
+
     for (const auto & child : node.getChildren()) {
-      drawTreeToPlane(child, plane, row, false);
+      if (&child == &node.getChildren().back() && child.isLeaf()) {
+        drawTreeToPlane(child, plane, row, false, depth + 2, prefix + L" └");
+      } else if (&child == &node.getChildren().back()) {
+        drawTreeToPlane(child, plane, row, false, depth + 2, prefix + L"  ");
+      } else if (child.isLeaf()) {
+        drawTreeToPlane(child, plane, row, false, depth + 2, prefix + L" ├");
+      } else {
+        drawTreeToPlane(child, plane, row, false, depth + 2, prefix + L" │");
+      }
     }
     return;
   };
 
-  drawTreeToPlane(*tree.getRoot(), plane, row, true);
+  uint depth = 0;
+  drawTreeToPlane(*tree.getRoot(), plane, row, true, depth, L"");
 
   // Write planes title
   col = (plane.get_dim_x() - title.size()) / 2;
@@ -528,46 +551,47 @@ inline void writeSelectionTreeToTitledPlane(
                       const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
                       bool highlight, uint depth, const std::wstring & prefix) {
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    if (row == selected_index) highlight = true;
-    {
-      size_t col = 1;
-      const msg_tree::msg_contents t = node.getValue();
-      std::wstring node_line;
-      if (node.isLeaf()) {
-        node_line +=
-          L'[' + converter.from_bytes(t.data_type_) + L"]: " + converter.from_bytes(t.entry_name_);
-      } else {
-        node_line += converter.from_bytes(t.entry_name_);
-      }
-      node_line.insert(0, prefix);
-
-      // Adjust prefix based on node status
-      if (prefix[prefix.length() - 1] == L'│') {
-        node_line[prefix.length() - 1] = L'├';
-      } else if (prefix[prefix.length() - 1] == L' ') {
-        node_line[prefix.length() - 1] = L'└';
-      }
-
-      // (Unforuanately) Need to ensure we re-set the highlight channel each draw
-      uint64_t highlight_channel;
-      if (highlight) {
-        ncchannels_set_fg_rgb8(&highlight_channel, 32, 51, 70);
-        ncchannels_set_bg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
-      } else {
-        ncchannels_set_fg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
-        ncchannels_set_bg_rgb8(&highlight_channel, 32, 51, 70);
-      }
-      ncchannels_set_bg_alpha(&highlight_channel, ncpp::Cell::AlphaOpaque);
-
-      for (const wchar_t & c : node_line) {
-        plane.putwch(row, col, c);
-        col++;
-      }
-      plane.stain(
-        row, col - node_line.size(), 1, node_line.size() + 1, highlight_channel, highlight_channel,
-        highlight_channel, highlight_channel);
-      row++;
+    if (row == selected_index) {
+      highlight = true;
     }
+
+    size_t col = 1;
+    const msg_tree::msg_contents t = node.getValue();
+    std::wstring node_line;
+    if (node.isLeaf()) {
+      node_line +=
+        L'[' + converter.from_bytes(t.data_type_) + L"]: " + converter.from_bytes(t.entry_name_);
+    } else {
+      node_line += converter.from_bytes(t.entry_name_);
+    }
+    node_line.insert(0, prefix);
+    // Adjust prefix based on node status
+    if (prefix[prefix.length() - 1] == L'│') {
+      node_line[prefix.length() - 1] = L'├';
+    } else if (prefix[prefix.length() - 1] == L' ') {
+      node_line[prefix.length() - 1] = L'└';
+    }
+
+    // (Unforuanately) Need to ensure we re-set the highlight channel each draw
+    uint64_t highlight_channel;
+    if (highlight) {
+      ncchannels_set_fg_rgb8(&highlight_channel, 32, 51, 70);
+      ncchannels_set_bg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
+    } else {
+      ncchannels_set_fg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
+      ncchannels_set_bg_rgb8(&highlight_channel, 32, 51, 70);
+    }
+    ncchannels_set_bg_alpha(&highlight_channel, ncpp::Cell::AlphaOpaque);
+
+    for (const wchar_t & c : node_line) {
+      plane.putwch(row, col, c);
+      col++;
+    }
+    plane.stain(
+      row, col - node_line.size(), 1, node_line.size() + 1, highlight_channel, highlight_channel,
+      highlight_channel, highlight_channel);
+    row++;
+
     for (const auto & child : node.getChildren()) {
       if (&child == &node.getChildren().back() && child.isLeaf()) {
         drawTreeToPlane(child, plane, row, highlight, depth + 2, prefix + L" └");

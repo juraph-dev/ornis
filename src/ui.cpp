@@ -56,8 +56,8 @@ bool Ui::initialise(
     .margin_r = 0,
     .margin_b = 0,
     .margin_l = 0,
-    .flags = NCOPTION_SUPPRESS_BANNERS // | NCOPTION_NO_ALTERNATE_SCREEN
-                                       // Use if need cout
+    .flags = NCOPTION_SUPPRESS_BANNERS  // | NCOPTION_NO_ALTERNATE_SCREEN
+                                        // Use if need cout
   };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);
@@ -181,9 +181,11 @@ void Ui::renderMonitorInteractionResult(MonitorInterface * interface)
     data_request_lock, 4s, [this] { return !interface_channel_->request_pending_.load(); });
 
   // Request complete, now render the result to the popup plane
-  const std::string reply = interface_channel_->response_string_;
+  // const std::string reply = interface_channel_->response_string_;
 
-  ui_helpers::writeStringToTitledPlane(*monitor_info_plane_, item, reply);
+  // ui_helpers::writeStringToTitledPlane(*monitor_info_plane_, item, reply);
+  ui_helpers::writeDetailedTreeToTitledPlane(
+    *monitor_info_plane_, item, interface_channel_->request_response_trees_->second);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(

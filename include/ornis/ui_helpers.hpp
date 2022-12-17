@@ -629,33 +629,56 @@ inline void writeDetailedTreeToTitledPlane(
   int col = 1;
 
   std::function<void(
-    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, const bool & is_root)>
+    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
+    const std::wstring & prefix, const bool & is_root)>
     drawTreeToPlane;
   drawTreeToPlane = [&](
                       const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
-                      const bool & is_root) {
-    // Skip root
+                      const std::wstring & prefix, const bool & is_root) {
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
     if (!is_root) {
       size_t col = 1;
       const msg_tree::msg_contents t = node.getValue();
-      std::string node_line = "(" + t.data_type_ + ")  " + t.entry_name_;
-      if (!t.entry_data_.empty()) {
-        node_line.append(": " + t.entry_data_);
+      std::wstring node_line;
+      if (node.isLeaf()) {
+        node_line +=
+          L'[' + converter.from_bytes(t.data_type_) + L"]: " + converter.from_bytes(t.entry_name_);
+      } else {
+        node_line += converter.from_bytes(t.entry_name_);
       }
-      for (const char & c : node_line) {
-        plane.putc(row, col, c);
+      if (!t.entry_data_.empty()) {
+        node_line.append(L": " + converter.from_bytes(t.entry_data_));
+      }
+      node_line.insert(0, prefix);
+      // Adjust prefix based on node status
+      if (prefix[prefix.length() - 1] == L'│') {
+        node_line[prefix.length() - 1] = L'├';
+      } else if (prefix[prefix.length() - 1] == L' ') {
+        node_line[prefix.length() - 1] = L'└';
+      }
+
+      for (const wchar_t & c : node_line) {
+        plane.putwch(row, col, c);
         col++;
       }
       row++;
     }
     for (const auto & child : node.getChildren()) {
-      drawTreeToPlane(child, plane, row, false);
+      if (&child == &node.getChildren().back() && child.isLeaf()) {
+        drawTreeToPlane(child, plane, row, prefix + L" └", false);
+      } else if (&child == &node.getChildren().back()) {
+        drawTreeToPlane(child, plane, row, prefix + L"  ", false);
+      } else if (child.isLeaf()) {
+        drawTreeToPlane(child, plane, row, prefix + L" ├", false);
+      } else {
+        drawTreeToPlane(child, plane, row, prefix + L" │", false);
+      }
     }
-
     return;
   };
 
-  drawTreeToPlane(*tree.getRoot(), plane, row, true);
+  drawTreeToPlane(*tree.getRoot(), plane, row, L"", true);
 
   uint64_t channel = plane.get_channels();
   plane.perimeter_rounded(0, channel, 0);

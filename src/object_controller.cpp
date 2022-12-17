@@ -179,7 +179,7 @@ void ObjectController::checkUiRequests() {
           ->interact(interface_channel_->request_details_["monitor_entry"],
                      entry_details,
                      interface_channel_->request_response_trees_->first,
-                     interface_channel_->response_string_);
+                     interface_channel_->request_response_trees_->second);
 
       std::unique_lock<std::mutex> lk(interface_channel_->access_mutex_);
       interface_channel_->request_pending_ = false;

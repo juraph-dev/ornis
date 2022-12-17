@@ -96,7 +96,7 @@ void TopicMonitor::getInteractionTree(const std::string message_type, msg_tree::
 
 void TopicMonitor::interact(
   const std::string & entry_name, const std::string & entry_details,
-  const msg_tree::MsgTree & request, std::string & response)
+  const msg_tree::MsgTree & request, msg_tree::MsgTree & response)
 {
   // TODO: Thhis is where the topic streamer will be called/initialised.
   (void)entry_name;
@@ -104,7 +104,7 @@ void TopicMonitor::interact(
   (void)entry_name;
   (void)request;
 
-  response = "Not yet implemented :(";
+  // response = "Not yet implemented :(";
 }
 
 void TopicMonitor::updateValue()

@@ -111,7 +111,7 @@ void ServiceMonitor::getInteractionForm(const std::string & entry_details, msg_t
 
 void ServiceMonitor::interact(
   const std::string & entry_name, const std::string & entry_details,
-  const msg_tree::MsgTree & request, std::string & response)
+  const msg_tree::MsgTree & request, msg_tree::MsgTree & response)
 {
   (void)entry_details;
 
@@ -160,9 +160,9 @@ void ServiceMonitor::interact(
   // Send request
   ret = rcl_send_request(&client, request_data, &sequence_number);
   if (ret != RMW_RET_OK) {
-    response = "Failed to recieve response from service! error: ";
-    response += ret;
-    response += '\n';
+    // response = "Failed to recieve response from service! error: ";
+    // response += ret;
+    // response += '\n';
     return;
   }
 
@@ -177,15 +177,18 @@ void ServiceMonitor::interact(
     if (wait_set.clients[0]) {
       ret = rcl_take_response_with_info(&client, &req_header, response_data);
       if (ret != RMW_RET_OK) {
-        response = "Failed to recieve response from service! error: ";
-        response += ret;
-        response += '\n';
+        // response = "Failed to recieve response from service! error: ";
+        // response += ret;
+        // response += '\n';
         return;
       }
     }
   }
 
-  response = introspection::readMessageAsString(response_data, response_members);
+  msg_tree::msg_contents response_contents = {
+    .data_type_ = "", .entry_name_ = "response", .entry_data_ = ""};
+
+  response.recursivelyCreateTree(response.getRoot(), service_info_.response_type_support, response_data); // = msg_tree::MsgTree(response_contents);
   // Clean up
 }
 

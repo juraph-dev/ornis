@@ -28,8 +28,8 @@ public:
   void getInteractionTree(const std::string message_type, msg_tree::MsgTree & message_tree);
 
   void interact(
-    const std::string & entry_name, const std::string & entry_details,
-    const msg_tree::MsgTree & request, std::string & response);
+  const std::string & entry_name, const std::string & entry_details,
+  const msg_tree::MsgTree & request, msg_tree::MsgTree & response);
 
 private:
   static constexpr auto ros2_list_string_ = "ros2 topic list";

@@ -30,8 +30,8 @@ public:
   void getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form);
 
   void interact(
-    const std::string & entry_name, const std::string & entry_details,
-    const msg_tree::MsgTree & request, std::string & response);
+  const std::string & entry_name, const std::string & entry_details,
+  const msg_tree::MsgTree & request, msg_tree::MsgTree & response);
 
 private:
   static constexpr auto ros2_info_string_ = "ros2 service info ";

@@ -1,7 +1,10 @@
 #ifndef UI_HELPERS_H_
 #define UI_HELPERS_H_
 
+#include <codecvt>
+#include <cstring>
 #include <functional>
+#include <locale>
 #include <vector>
 
 #include "ncpp/Plane.hh"
@@ -106,7 +109,8 @@ inline void sizeTree(const msg_tree::MsgTreeNode & node, size_t & rows, size_t &
 }
 
 inline void sizePlaneToTree(
-  ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree, const bool skip_root = true)
+  ncpp::Plane & plane, const std::string & title, const msg_tree::MsgTree & tree,
+  const bool skip_root = true)
 {
   size_t rows = 1;
   size_t longest_col = 0;
@@ -117,7 +121,7 @@ inline void sizePlaneToTree(
 
   // Add one to longest col to account for border
   const uint extra_rows = skip_root ? 1 : 2;
-  plane.resize(rows + extra_rows, longest_col + 2);
+  plane.resize(rows + extra_rows, longest_col + 4);
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
@@ -287,10 +291,10 @@ inline void writeStringVectorToTitledPlane(
   title.size() > longest_entry->size() ? ui_helpers::sizePlaneToString(plane, title)
                                        : ui_helpers::sizePlaneToString(plane, *longest_entry);
 
-  const uint col_count = title.size() > longest_entry->size() ? title.size() : longest_entry->size();
+  const uint col_count =
+    title.size() > longest_entry->size() ? title.size() : longest_entry->size();
   // Add one to longest col to account for border
-  plane.resize(
-    row_count + 2, col_count + 2);
+  plane.resize(row_count + 2, col_count + 2);
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
@@ -305,11 +309,10 @@ inline void writeStringVectorToTitledPlane(
   nccell cell = NCCELL_TRIVIAL_INITIALIZER;
   for (const std::string & line : content) {
     for (const char & c : line) {
-        nccell_load(plane.to_ncplane(), &cell, &c);
-        plane.putc(row, col, c);
-        nccell_release(plane.to_ncplane(), &cell);
-        col++;
-
+      nccell_load(plane.to_ncplane(), &cell, &c);
+      plane.putc(row, col, c);
+      nccell_release(plane.to_ncplane(), &cell);
+      col++;
     }
     row++;
     col = 1;
@@ -518,52 +521,69 @@ inline void writeSelectionTreeToTitledPlane(
   plane.perimeter_rounded(0, channel, 0);
 
   std::function<void(
-    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
-    bool highlight, uint depth)>
+    const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row, bool highlight,
+    uint depth, const std::wstring & prefix)>
     drawTreeToPlane;
   drawTreeToPlane = [&](
                       const msg_tree::MsgTreeNode & node, ncpp::Plane & plane, size_t & row,
-                      bool highlight, uint depth) {
+                      bool highlight, uint depth, const std::wstring & prefix) {
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
     if (row == selected_index) highlight = true;
     {
       size_t col = 1;
       const msg_tree::msg_contents t = node.getValue();
-      std::string node_line;
-      node_line.insert(0, depth, ' ');
+      std::wstring node_line;
       if (node.isLeaf()) {
-        node_line += "|--" + t.data_type_ + "] " + t.entry_name_;
+        node_line +=
+          L'[' + converter.from_bytes(t.data_type_) + L"]: " + converter.from_bytes(t.entry_name_);
       } else {
-        node_line += t.entry_name_;
+        node_line += converter.from_bytes(t.entry_name_);
       }
+      node_line.insert(0, prefix);
+
+      // Adjust prefix based on node status
+      if (prefix[prefix.length() - 1] == L'│') {
+        node_line[prefix.length() - 1] = L'├';
+      } else if (prefix[prefix.length() - 1] == L' ') {
+        node_line[prefix.length() - 1] = L'└';
+      }
+
       // (Unforuanately) Need to ensure we re-set the highlight channel each draw
       uint64_t highlight_channel;
       if (highlight) {
+        ncchannels_set_fg_rgb8(&highlight_channel, 32, 51, 70);
         ncchannels_set_bg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
-        ncchannels_set_fg_rgb8(&highlight_channel, 72, 91, 120);
       } else {
         ncchannels_set_fg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
-        ncchannels_set_bg_rgb8(&highlight_channel, 72, 91, 120);
+        ncchannels_set_bg_rgb8(&highlight_channel, 32, 51, 70);
       }
       ncchannels_set_bg_alpha(&highlight_channel, ncpp::Cell::AlphaOpaque);
 
-      for (const auto & c : node_line) {
-        plane.putc(row, col, c);
+      for (const wchar_t & c : node_line) {
+        plane.putwch(row, col, c);
         col++;
       }
       plane.stain(
         row, col - node_line.size(), 1, node_line.size() + 1, highlight_channel, highlight_channel,
         highlight_channel, highlight_channel);
-
       row++;
     }
     for (const auto & child : node.getChildren()) {
-      drawTreeToPlane(child, plane, row, highlight, depth + 1);
+      if (&child == &node.getChildren().back() && child.isLeaf()) {
+        drawTreeToPlane(child, plane, row, highlight, depth + 2, prefix + L" └");
+      } else if (&child == &node.getChildren().back()) {
+        drawTreeToPlane(child, plane, row, highlight, depth + 2, prefix + L"  ");
+      } else if (child.isLeaf()) {
+        drawTreeToPlane(child, plane, row, highlight, depth + 2, prefix + L" ├");
+      } else {
+        drawTreeToPlane(child, plane, row, highlight, depth + 2, prefix + L" │");
+      }
     }
     return;
   };
 
   uint depth = 0;
-  drawTreeToPlane(*tree.getRoot(), plane, row, selected_index == 0, depth);
+  drawTreeToPlane(*tree.getRoot(), plane, row, selected_index == 0, depth, L"");
 
   // Write planes title
   col = (plane.get_dim_x() - title.size()) / 2;
@@ -595,9 +615,8 @@ inline void writeDetailedTreeToTitledPlane(
       size_t col = 1;
       const msg_tree::msg_contents t = node.getValue();
       std::string node_line = "(" + t.data_type_ + ")  " + t.entry_name_;
-      if (!t.entry_data_.empty())
-      {
-        node_line.append(": " +  t.entry_data_);
+      if (!t.entry_data_.empty()) {
+        node_line.append(": " + t.entry_data_);
       }
       for (const char & c : node_line) {
         plane.putc(row, col, c);

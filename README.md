@@ -14,9 +14,11 @@ A waste of time (A Terminal User Interface for ROS2 (a ROS2 TUI)).
 * \*Kind of\* Supports mouse workflows
 
 ## Videos
-![Resizing](blob/vid/ornis_resizing.mp4)
-![Streaming Topics](blob/vid/ornis_subscription.mp4)
-![Calling Services](blob/vid/ornis_services.mp4)
+Small demo video of topic selection and service calls.
+
+
+https://user-images.githubusercontent.com/28330806/230512415-6c214e54-f59b-49c7-a2fa-0de811d996ee.mp4
+
 
 ### Prerequisites
 [Notcurses](https://github.com/dankamongmen/notcurses) \

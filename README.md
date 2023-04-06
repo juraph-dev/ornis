@@ -30,13 +30,12 @@ Windows and mac aren't currently supported. Mac might work, feel free to try it 
 You're going to need Notcurses. You can either initialise it as a submodule to this repo, and compile alongside ORNIS, or you can install it [using your favourite package manager](https://repology.org/project/notcurses/versions).
 Ensure you have ROS2 (Foxy or newer) installed and sourced. 
 ``` sh
-$git clone https://gitlab.com/juraph/ornis.git
-$cd ornis
-$git submodule init
-$git submodule update
-$cd tools && ./compile.sh
-$cd ../../build/ornis
-$./ornis
+git clone https://gitlab.com/juraph/ornis.git
+cd ornis
+git submodule update --init
+cd tools && ./compile.sh
+cd ../../build/ornis
+./ornis
 ```
 
 ## Usage

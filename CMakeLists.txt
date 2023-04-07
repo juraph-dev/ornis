@@ -119,6 +119,7 @@ target_link_libraries(ornis PUBLIC
   rclcpp::rclcpp
   rcl::rcl
   rcl_action::rcl_action
+  ament_index_cpp::ament_index_cpp
   ) # Link our sources to the executable
 
 # Install the built library and executable into the appropriate directory

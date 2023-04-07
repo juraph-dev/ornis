@@ -8,8 +8,10 @@
   <license>TODO: License declaration</license>
 
   <depend>rcl</depend>
+  <depend>rclcpp</depend>
   <depend>rcl_action</depend>
   <depend>rcl_interfaces</depend>
+  <depend>ament_index_cpp</depend>
 
   <depend>rosidl_runtime_cpp</depend>
   <depend>rosidl_generator_cpp</depend>

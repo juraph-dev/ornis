@@ -53,19 +53,18 @@ set(NCPP_DIR "external/notcurses")
 add_subdirectory(${NCPP_DIR})
 
 # find dependencies
+find_package(ament_index_cpp REQUIRED)
 find_package(Threads REQUIRED)
-find_package(notcurses 3.0.0 CONFIG )
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rcl REQUIRED)
-find_package(ament_index_cpp REQUIRED)
 find_package(rcl_action REQUIRED)
 find_package(rcl_interfaces REQUIRED)
 find_package(rosidl_runtime_cpp REQUIRED)
 find_package(rosidl_generator_cpp REQUIRED)
 find_package(rosidl_typesupport_cpp REQUIRED)
 find_package(rosidl_typesupport_introspection_cpp REQUIRED)
-
+find_package(notcurses 3.0.0 CONFIG)
 
 # Perform this after find_package to prevent iwyu from running on our external dir
 IF (FIX_INCLUDES)
@@ -107,20 +106,19 @@ add_executable(${PROJECT_NAME} src/main.cpp) # The main executables
 target_link_libraries(ornis-lib PUBLIC
   notcurses++
   Threads::Threads
-  ${ament_index_cpp_LIBRARIES}
-  ${rclcpp_LIBRARIES}
-  ${rcl_LIBRARIES}
-  ${rcl_action_LIBRARIES}
-
+  ament_index_cpp::ament_index_cpp
+  rclcpp::rclcpp
+  rcl::rcl
+  rcl_action::rcl_action
   ) # Link our sources to the executable
 
 target_link_libraries(ornis PUBLIC
   ornis-lib
   notcurses++
   Threads::Threads
-  ${rclcpp_LIBRARIES}
-  ${rcl_LIBRARIES}
-  ${rcl_action_LIBRARIES}
+  rclcpp::rclcpp
+  rcl::rcl
+  rcl_action::rcl_action
   ) # Link our sources to the executable
 
 # Install the built library and executable into the appropriate directory

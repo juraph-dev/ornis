@@ -28,9 +28,16 @@ Windows and mac aren't currently supported. Mac might work, feel free to try it 
 
 ## Installation
 You're going to need Notcurses. You can either initialise it as a submodule to this repo, and compile alongside ORNIS, or you can install it [using your favourite package manager](https://repology.org/project/notcurses/versions).
-Ensure you have ROS2 (Foxy or newer) installed and sourced. 
-``` sh
-git clone https://gitlab.com/juraph/ornis.git
+Ensure you have ROS2 (Foxy or newer) installed and sourced.
+ 
+Install notcurses deps
+```sh
+apt-get install build-essential cmake doctest-dev libavdevice-dev libdeflate-dev libgpm-dev libncurses-dev libqrcodegen-dev libswscale-dev libunistring-dev pandoc pkg-config
+```
+Build ornis
+``` sh  
+mkdir ornis_ws && cd ornis_ws
+git clone https://gitlab.com/juraph/ornis.git 
 cd ornis
 git submodule update --init
 cd tools && ./compile.sh

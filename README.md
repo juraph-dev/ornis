@@ -37,7 +37,7 @@ apt-get install build-essential cmake doctest-dev libavdevice-dev libdeflate-dev
 Build ornis
 ``` sh  
 mkdir ornis_ws && cd ornis_ws
-git clone https://gitlab.com/juraph/ornis.git --depth 1
+git clone git@github.com:juraph-dev/ornis.git --depth 1
 cd ornis
 git submodule update --init
 cd tools && ./compile.sh

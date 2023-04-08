@@ -43,6 +43,7 @@ jobs:
         with:
           target-ros2-distro: ${{ matrix.ros_distribution }}
           # package-name: YOUR_PACKAGE_HERE MORE_PACKAGES_HERE
+      - name: pull ORNIS
         run: echo "Running on ros distro: ${{ matrix.ros_distribution }}"
 
 # name: ORNIS build

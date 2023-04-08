@@ -41,8 +41,8 @@ jobs:
         if: ${{ matrix.ros_version == 2 }}
         uses: ros-tooling/action-ros-ci@v0.2
         with:
-          # package-name: YOUR_PACKAGE_HERE MORE_PACKAGES_HERE
           target-ros2-distro: ${{ matrix.ros_distribution }}
+          # package-name: YOUR_PACKAGE_HERE MORE_PACKAGES_HERE
         run: echo "Running on ros distro: ${{ matrix.ros_distribution }}"
 
 # name: ORNIS build

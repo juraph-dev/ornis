@@ -22,13 +22,16 @@ https://user-images.githubusercontent.com/28330806/230512415-6c214e54-f59b-49c7-
 
 ### Prerequisites
 [Notcurses](https://github.com/dankamongmen/notcurses) \
-[ROS2 Foxy or above (Or below, I'm still working on figuring that out)](https://docs.ros.org/en/foxy/index.html) 
+[ROS2 Humble or above](https://docs.ros.org/en/humble/index.html) \
+[Cyclone DDS](https://github.com/ros2/rmw_cyclonedds)
 
-Windows and mac aren't currently supported. Mac might work, feel free to try it and let me know how it goes. 
+FastRTPS isn't supported, as there doesn't appear to be introspection support for it [like there is for cyclonedds](https://github.com/ros2/rmw_cyclonedds/blob/2bbb80929e32d36a9e938c1ecb40f3fbf271b9f3/rmw_cyclonedds_cpp/src/TypeSupport.cpp), although it [appears to be in the works](https://github.com/ros2/rosidl_dynamic_typesupport_fastrtps), and I plan on adding support for it as soon as I get a chance. 
+
+Windows and mac also aren't currently supported. Mac might work, feel free to try it and let me know how it goes. 
 
 ## Installation
 You're going to need Notcurses. You can either initialise it as a submodule to this repo, and compile alongside ORNIS, or you can install it [using your favourite package manager](https://repology.org/project/notcurses/versions).
-Ensure you have ROS2 (Foxy or newer) installed and sourced.
+Ensure you have ROS2 (Humble or newer) installed and sourced.
  
 Install notcurses deps
 ```sh
@@ -41,13 +44,16 @@ git clone https://github.com/juraph-dev/ornis.git --depth 1
 cd ornis
 git submodule update --init
 cd tools && ./compile.sh
-cd ../../build/ornis
-./ornis
 ```
-
 ## Usage
-Just run ./ornis, then trust the bar at the top that tells you how to use it. You can probably click things too, if you're one of those kinds of people. 
-
+Ensure ornis has been sourced by sourcing its setup.bash from your .bashrc
+``` sh
+cd ornis_ws
+echo 'source '$(pwd)'/install/setup.bash' >> ~/.bashrc
+source ~/.bashrc
+ornis
+```
+From here on out, you can just run ```ornis```, then trust the bar at the top that tells you how to use it. You can probably click things too, if you're one of those kinds of people. 
 
 ## Future roadmap
 I still have a ton of things I'd like to implement. To name a few:

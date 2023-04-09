@@ -396,7 +396,7 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
   // TODO: Refactor, this whole function is ugly as hell
   bool add_input = false;
   // This will end up being a big ugly function, handling filling out the message to send
-  if (input.id == NCKEY_ESC) {
+  if (input.id == NCKEY_ESC || (ui_helpers::mouseClick(input) && !checkEventOnPlane(input, monitor_info_plane_.get()))) {
     transitionUiState(UiDisplayingEnum::selectedMonitor);
     return;
   }
@@ -507,7 +507,7 @@ void Ui::handleInputMonitorInteractionResult(const ncinput & input)
 void Ui::handleInputStreaming(const ncinput & input)
 {
   // At the moment, only input while streaming is to close the stream
-  if (input.id == 'q') {
+  if (input.id == 'q' || ui_helpers::mouseClick(input)) {
     transitionUiState(UiDisplayingEnum::monitorSelection);
   }
 }

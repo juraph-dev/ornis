@@ -374,13 +374,13 @@ void Ui::handleInputSelected(const ncinput & input)
 
 void Ui::handleInputMonitorEntry(const ncinput & input)
 {
-  if (input.id == 'q' || input.id == NCKEY_ESC) {
+  if (input.id == 'q' || input.id == NCKEY_ESC || (ui_helpers::mouseClick(input) && !checkEventOnPlane(input, interface_map_[selected_monitor_]->get_plane()) )) {
     transitionUiState(UiDisplayingEnum::selectedMonitor);
   }
   // TODO Clear up once you're done implementing the new topic streaming methods
-  else if (selected_monitor_ == "topics" && input.id == NCKEY_ENTER) {
+  else if (selected_monitor_ == "topics" && (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input))) {
     transitionUiState(UiDisplayingEnum::monitorSelection);
-  } else if (selected_monitor_ == "services" && input.id == NCKEY_ENTER) {
+  } else if (selected_monitor_ == "services" && (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input))) {
     transitionUiState(UiDisplayingEnum::monitorInteraction);
     // FIXME: Shouldn't have to send a fake input
     // Pass a fake input through, to initialise the cursor
@@ -401,15 +401,15 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
     return;
   }
 
-  if (input.id == NCKEY_ENTER) {
+  if (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input)) {
     // Send the interaction string to the interface.
     renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
     return;
-  } else if (upInput(input)) {
+  } else if (upInput(input) || input.id == NCKEY_SCROLL_UP) {
     if (currently_editing_index_ > 1) {
       currently_editing_index_ -= 1;
     }
-  } else if (downInput(input)) {
+  } else if (downInput(input) || input.id == NCKEY_SCROLL_DOWN) {
     if (currently_editing_index_ != currently_active_trees_->first.editable_node_count_) {
       currently_editing_index_ += 1;
     }
@@ -450,19 +450,19 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
 
 void Ui::handleInputMonitorSelection(const ncinput & input)
 {
-  if (input.id == NCKEY_ESC || input.id == 'q') {
+  if (input.id == NCKEY_ESC || input.id == 'q'|| (ui_helpers::mouseClick(input) && !checkEventOnPlane(input, monitor_info_plane_.get()))) {
     transitionUiState(UiDisplayingEnum::selectedMonitor);
     return;
   }
 
-  else if (input.id == NCKEY_ENTER) {
+  else if (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input)) {
     transitionUiState(UiDisplayingEnum::streamingTopic);
     return;
   }
   bool update_selection = false;
   // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
   // also want to prevent currently editing index from going negative
-  if (upInput(input)) {
+  if (upInput(input) || input.id == NCKEY_SCROLL_UP) {
     if (currently_editing_index_ > 1) {
       update_selection = true;
       currently_editing_index_--;
@@ -472,7 +472,7 @@ void Ui::handleInputMonitorSelection(const ncinput & input)
         currently_editing_index_--;
       }
     }
-  } else if (downInput(input))
+  } else if (downInput(input) || input.id == NCKEY_SCROLL_DOWN)
     if (currently_editing_index_ <= currently_active_trees_->first.node_count_) {
       update_selection = true;
       // perform a check.for the child cound of the proposed selected node. If it has a single child, we

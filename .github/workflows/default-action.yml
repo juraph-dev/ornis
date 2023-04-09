@@ -1,5 +1,5 @@
 
-name: ORNIS build
+name: ORNIS
 
 on:
   push:

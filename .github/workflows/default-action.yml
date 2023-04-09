@@ -1,18 +1,64 @@
-name: ORNIS build
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+
+name: ORNIS
+
+on:
+  push:
+      branches: [ master ]
+  pull_request:
+      branches: [ master ]
+
 jobs:
-  Explore-GitHub-Actions:
+  test_docker: # On Linux, iterates on all ROS 1 and ROS 2 distributions.
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ros_distribution:
+          - foxy
+          - humble
+          - rolling
+        include:
+          # Foxy Fitzroy (June 2020 - May 2023)
+          - docker_image: ubuntu:focal
+            ros_distribution: foxy
+            ros_version: 2
+          # Humble Hawksbill (May 2022 - May 2027)
+          - docker_image: ubuntu:jammy
+            ros_distribution: humble
+            ros_version: 2
+          # Rolling Ridley (No End-Of-Life)
+          - docker_image: ubuntu:jammy
+            ros_distribution: rolling
+            ros_version: 2
+
+    container:
+      image: ${{ matrix.docker_image }}
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
+      - name: Setup ROS environment
+        uses: ros-tooling/setup-ros@v0.6
+        with:
+          required-ros-distributions: ${{ matrix.ros_distribution }}
+      - name: Install Notcurses deps
         run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+          sudo apt update
+          sudo apt install -y \
+            build-essential \
+            cmake \
+            doctest-dev \
+            ffmpeg \
+            libavdevice-dev \
+            libdeflate-dev \
+            libncurses-dev \
+            libqrcodegen-dev \
+            libswscale-dev \
+            libunistring-dev \
+            pandoc \
+            pkg-config \
+            python3-cffi \
+            python3-dev \
+            python3-setuptools
+      - name: Build ORNIS
+        if: ${{ matrix.ros_version == 2 }}
+        uses: ros-tooling/action-ros-ci@v0.2
+        with:
+          target-ros2-distro: ${{ matrix.ros_distribution }}
+          skip-tests: true

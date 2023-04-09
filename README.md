@@ -1,6 +1,6 @@
 # ORNIS (Open.Ros.Notcurses.Interface.System)
 
-[![build status](https://gitlab.com/juraph/ornis/badges/master/pipeline.svg)](https://gitlab.com/juraph/ornis/-/commits/master)
+![ORNIS build](https://github.com/juraph-dev/ornis/actions/workflows/default-action.yml/badge.svg)
 
 ## What is it?
 

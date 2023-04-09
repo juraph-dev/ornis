@@ -50,6 +50,7 @@ void NodeMonitor::interact(
   (void)entry_details;
   (void)entry_name;
   (void)request;
+  (void)response;
   // response = "Not yet implemented :(";
 }
 

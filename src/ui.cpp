@@ -514,16 +514,18 @@ void Ui::handleInputStreaming(const ncinput & input)
 
 void Ui::handleInputMonitors(const ncinput & input)
 {
+  // std::cout << "had input: " << input.id << std::endl;
   // TODO: handle user clicking on monitor entry, without
   // first selecting a behaviour. No reason why we shouldn't
   // allow that
-  if (input.id == 't') {
+
+  if (input.id == 't' || (input.id == NCKEY_BUTTON1 && checkEventOnPlane(input, interface_map_["topics"]->get_plane()))) {
     selected_monitor_ = "topics";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
-  } else if (input.id == 'n') {
+  } else if (input.id == 'n' || (input.id == NCKEY_BUTTON1 && checkEventOnPlane(input, interface_map_["nodes"]->get_plane()))) {
     selected_monitor_ = "nodes";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
-  } else if (input.id == 's') {
+  } else if (input.id == 's'|| (input.id == NCKEY_BUTTON1 && checkEventOnPlane(input, interface_map_["services"]->get_plane())))  {
     selected_monitor_ = "services";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
   }
@@ -725,7 +727,8 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
     }
     case UiDisplayingEnum::monitorInteraction: {
       // Disable mouse events
-      notcurses_core_->mouse_disable();
+      // HACK
+      // notcurses_core_->mouse_disable();
       // Reset active interaction index
       currently_editing_index_ = 1;
       // Perform a check for it we are returning from streaming a topic:
@@ -745,7 +748,8 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       // TODO: May want to re-enable this once the selection
       // interface is working
       // Disable mouse events
-      notcurses_core_->mouse_disable();
+      // HACK
+      // notcurses_core_->mouse_disable();
       // Perform a check for it we are returning from streaming a topic:
       ui_helpers::drawHelperBar(
         notcurses_stdplane_.get(), userHelpStrings_.interaction_request_prompt);

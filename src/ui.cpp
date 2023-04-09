@@ -364,7 +364,7 @@ void Ui::refreshUi()
 
 void Ui::handleInputSelected(const ncinput & input)
 {
-  if (input.id == 'q' || input.id == NCKEY_ESC) {
+  if (input.id == 'q' || input.id == NCKEY_ESC || (ui_helpers::mouseClick(input) && !checkEventOnPlane(input, interface_map_[selected_monitor_]->get_plane() ))) {
     transitionUiState(UiDisplayingEnum::monitors);
     return;
   } else {
@@ -519,13 +519,13 @@ void Ui::handleInputMonitors(const ncinput & input)
   // first selecting a behaviour. No reason why we shouldn't
   // allow that
 
-  if (input.id == 't' || (input.id == NCKEY_BUTTON1 && checkEventOnPlane(input, interface_map_["topics"]->get_plane()))) {
+  if (input.id == 't' || (ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface_map_["topics"]->get_plane()))) {
     selected_monitor_ = "topics";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
-  } else if (input.id == 'n' || (input.id == NCKEY_BUTTON1 && checkEventOnPlane(input, interface_map_["nodes"]->get_plane()))) {
+  } else if (input.id == 'n' || (ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface_map_["nodes"]->get_plane()))) {
     selected_monitor_ = "nodes";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
-  } else if (input.id == 's'|| (input.id == NCKEY_BUTTON1 && checkEventOnPlane(input, interface_map_["services"]->get_plane())))  {
+  } else if (input.id == 's'|| (ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface_map_["services"]->get_plane())))  {
     selected_monitor_ = "services";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
   }
@@ -822,7 +822,7 @@ void Ui::resizeUi(const uint & rows, const uint & cols)
 
 bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
 {
-  if (input.evtype == ncintype_e::NCTYPE_PRESS || input.id == NCKEY_ENTER) {
+  if ((ui_helpers::mouseClick(input) && checkEventOnPlane(input,interface->get_plane())) || input.id == NCKEY_ENTER) {
     // If we recieve an enter, we neeed to grab the
     // currently selected topic, and view the topic information
     // in a popup window

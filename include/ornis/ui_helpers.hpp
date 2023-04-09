@@ -732,6 +732,11 @@ inline bool upInput(const ncinput & input)
   return ((input.id == NCKEY_TAB && input.shift) || input.id == NCKEY_UP);
 }
 
+inline bool mouseClick(const ncinput & input)
+{
+  return (input.id == NCKEY_BUTTON1 && input.evtype == NCTYPE_RELEASE);
+}
+
 }  // namespace ui_helpers
 
 #endif  // UI_HELPERS_H_

@@ -71,5 +71,5 @@ I still have a ton of things I'd like to implement. To name a few:
 [Arnav Borborah](https://github.com/arnavb/cpp14-project-template) Their cpp14 template is pretty great, allowed me to quickly get ORNIS up and running with barely any hassle. Having a template to look at how things like CI and test modules should be layed out was also extremely useful (Even though I don't use either, ha)
 
 ## Further reading
-I wrote a long winded posted about [ORNIS on my blog](juraph.com/ornis/introducing_ornis), for if you have absolutely nothing better to do with your time. 
+I wrote a long winded posted about [ORNIS on my blog](https://juraph.com/ornis/introducing_ornis), for if you have absolutely nothing better to do with your time. 
 

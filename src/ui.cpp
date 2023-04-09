@@ -364,7 +364,7 @@ void Ui::refreshUi()
 
 void Ui::handleInputSelected(const ncinput & input)
 {
-  if (input.id == 'q' || input.id == NCKEY_ESC) {
+  if (input.id == 'q' || input.id == NCKEY_ESC || (ui_helpers::mouseClick(input) && !checkEventOnPlane(input, interface_map_[selected_monitor_]->get_plane() ))) {
     transitionUiState(UiDisplayingEnum::monitors);
     return;
   } else {
@@ -374,13 +374,13 @@ void Ui::handleInputSelected(const ncinput & input)
 
 void Ui::handleInputMonitorEntry(const ncinput & input)
 {
-  if (input.id == 'q' || input.id == NCKEY_ESC) {
+  if (input.id == 'q' || input.id == NCKEY_ESC || (ui_helpers::mouseClick(input) && !checkEventOnPlane(input, interface_map_[selected_monitor_]->get_plane()) )) {
     transitionUiState(UiDisplayingEnum::selectedMonitor);
   }
   // TODO Clear up once you're done implementing the new topic streaming methods
-  else if (selected_monitor_ == "topics" && input.id == NCKEY_ENTER) {
+  else if (selected_monitor_ == "topics" && (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input))) {
     transitionUiState(UiDisplayingEnum::monitorSelection);
-  } else if (selected_monitor_ == "services" && input.id == NCKEY_ENTER) {
+  } else if (selected_monitor_ == "services" && (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input))) {
     transitionUiState(UiDisplayingEnum::monitorInteraction);
     // FIXME: Shouldn't have to send a fake input
     // Pass a fake input through, to initialise the cursor
@@ -396,20 +396,20 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
   // TODO: Refactor, this whole function is ugly as hell
   bool add_input = false;
   // This will end up being a big ugly function, handling filling out the message to send
-  if (input.id == NCKEY_ESC) {
+  if (input.id == NCKEY_ESC || (ui_helpers::mouseClick(input) && !checkEventOnPlane(input, monitor_info_plane_.get()))) {
     transitionUiState(UiDisplayingEnum::selectedMonitor);
     return;
   }
 
-  if (input.id == NCKEY_ENTER) {
+  if (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input)) {
     // Send the interaction string to the interface.
     renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
     return;
-  } else if (upInput(input)) {
+  } else if (upInput(input) || input.id == NCKEY_SCROLL_UP) {
     if (currently_editing_index_ > 1) {
       currently_editing_index_ -= 1;
     }
-  } else if (downInput(input)) {
+  } else if (downInput(input) || input.id == NCKEY_SCROLL_DOWN) {
     if (currently_editing_index_ != currently_active_trees_->first.editable_node_count_) {
       currently_editing_index_ += 1;
     }
@@ -450,19 +450,19 @@ void Ui::handleInputMonitorInteraction(const ncinput & input)
 
 void Ui::handleInputMonitorSelection(const ncinput & input)
 {
-  if (input.id == NCKEY_ESC || input.id == 'q') {
+  if (input.id == NCKEY_ESC || input.id == 'q'|| (ui_helpers::mouseClick(input) && !checkEventOnPlane(input, monitor_info_plane_.get()))) {
     transitionUiState(UiDisplayingEnum::selectedMonitor);
     return;
   }
 
-  else if (input.id == NCKEY_ENTER) {
+  else if (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input)) {
     transitionUiState(UiDisplayingEnum::streamingTopic);
     return;
   }
   bool update_selection = false;
   // IF input is TAB, or SHIFT TAB, go up/down to the end of next line
   // also want to prevent currently editing index from going negative
-  if (upInput(input)) {
+  if (upInput(input) || input.id == NCKEY_SCROLL_UP) {
     if (currently_editing_index_ > 1) {
       update_selection = true;
       currently_editing_index_--;
@@ -472,7 +472,7 @@ void Ui::handleInputMonitorSelection(const ncinput & input)
         currently_editing_index_--;
       }
     }
-  } else if (downInput(input))
+  } else if (downInput(input) || input.id == NCKEY_SCROLL_DOWN)
     if (currently_editing_index_ <= currently_active_trees_->first.node_count_) {
       update_selection = true;
       // perform a check.for the child cound of the proposed selected node. If it has a single child, we
@@ -507,23 +507,25 @@ void Ui::handleInputMonitorInteractionResult(const ncinput & input)
 void Ui::handleInputStreaming(const ncinput & input)
 {
   // At the moment, only input while streaming is to close the stream
-  if (input.id == 'q') {
+  if (input.id == 'q' || ui_helpers::mouseClick(input)) {
     transitionUiState(UiDisplayingEnum::monitorSelection);
   }
 }
 
 void Ui::handleInputMonitors(const ncinput & input)
 {
+  // std::cout << "had input: " << input.id << std::endl;
   // TODO: handle user clicking on monitor entry, without
   // first selecting a behaviour. No reason why we shouldn't
   // allow that
-  if (input.id == 't') {
+
+  if (input.id == 't' || (ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface_map_["topics"]->get_plane()))) {
     selected_monitor_ = "topics";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
-  } else if (input.id == 'n') {
+  } else if (input.id == 'n' || (ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface_map_["nodes"]->get_plane()))) {
     selected_monitor_ = "nodes";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
-  } else if (input.id == 's') {
+  } else if (input.id == 's'|| (ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface_map_["services"]->get_plane())))  {
     selected_monitor_ = "services";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
   }
@@ -725,7 +727,8 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
     }
     case UiDisplayingEnum::monitorInteraction: {
       // Disable mouse events
-      notcurses_core_->mouse_disable();
+      // HACK
+      // notcurses_core_->mouse_disable();
       // Reset active interaction index
       currently_editing_index_ = 1;
       // Perform a check for it we are returning from streaming a topic:
@@ -745,7 +748,8 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       // TODO: May want to re-enable this once the selection
       // interface is working
       // Disable mouse events
-      notcurses_core_->mouse_disable();
+      // HACK
+      // notcurses_core_->mouse_disable();
       // Perform a check for it we are returning from streaming a topic:
       ui_helpers::drawHelperBar(
         notcurses_stdplane_.get(), userHelpStrings_.interaction_request_prompt);
@@ -818,7 +822,7 @@ void Ui::resizeUi(const uint & rows, const uint & cols)
 
 bool Ui::offerInputMonitor(MonitorInterface * interface, const ncinput & input)
 {
-  if (input.evtype == ncintype_e::NCTYPE_PRESS || input.id == NCKEY_ENTER) {
+  if ((ui_helpers::mouseClick(input) && checkEventOnPlane(input,interface->get_plane())) || input.id == NCKEY_ENTER) {
     // If we recieve an enter, we neeed to grab the
     // currently selected topic, and view the topic information
     // in a popup window

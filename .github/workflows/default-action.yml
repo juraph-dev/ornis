@@ -33,35 +33,32 @@ jobs:
     container:
       image: ${{ matrix.docker_image }}
     steps:
-      - name: setup ROS environment
+      - name: Setup ROS environment
         uses: ros-tooling/setup-ros@v0.6
         with:
           required-ros-distributions: ${{ matrix.ros_distribution }}
-      - name: build and test ROS 2
+      - name: Install Notcurses deps
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            build-essential \
+            cmake \
+            doctest-dev \
+            ffmpeg \
+            libavdevice-dev \
+            libdeflate-dev \
+            libncurses-dev \
+            libqrcodegen-dev \
+            libswscale-dev \
+            libunistring-dev \
+            pandoc \
+            pkg-config \
+            python3-cffi \
+            python3-dev \
+            python3-setuptools
+      - name: Build ORNIS
         if: ${{ matrix.ros_version == 2 }}
         uses: ros-tooling/action-ros-ci@v0.2
         with:
           target-ros2-distro: ${{ matrix.ros_distribution }}
-          # package-name: YOUR_PACKAGE_HERE MORE_PACKAGES_HERE
-      - name: pull ORNIS
-        run: echo "Running on ros distro"
-
-# name: ORNIS build
-
-# run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-# on: [push]
-# jobs:
-#   Explore-GitHub-Actions:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-#       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-#       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-#       - name: Check out repository code
-#         uses: actions/checkout@v3
-#       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-#       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-#       - name: List files in the repository
-#         run: |
-#           ls ${{ github.workspace }}
-#       - run: echo "🍏 This job's status is ${{ job.status }}."
+          skip-tests: true

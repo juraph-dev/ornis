@@ -573,7 +573,7 @@ inline void writeSelectionTreeToTitledPlane(
     }
 
     // (Unforuanately) Need to ensure we re-set the highlight channel each draw
-    uint64_t highlight_channel;
+    uint64_t highlight_channel = 0;
     if (highlight) {
       ncchannels_set_fg_rgb8(&highlight_channel, 32, 51, 70);
       ncchannels_set_bg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);

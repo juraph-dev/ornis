@@ -103,6 +103,7 @@ void TopicMonitor::interact(
   (void)entry_details;
   (void)entry_name;
   (void)request;
+  (void)response;
 
   // response = "Not yet implemented :(";
 }

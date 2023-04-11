@@ -263,9 +263,11 @@ public:
         const msg_contents msg_array_data = {
           .data_type_ = "Array", .entry_name_ = "[]", .entry_data_ = ""};
         new_node->getChildren().reserve(1);
-        new_node = new_node->addChild(msg_array_data);
+        new_node->addChild(msg_array_data);
+        editable_node_count_++; // An array is editable
+        node_count_++;
       }
-      if (member.type_id_ == ROS_TYPE_MESSAGE) {
+      else if (member.type_id_ == ROS_TYPE_MESSAGE) {
         recursivelyCreateTree(new_node, member.members_);
       } else {
         // Node has no chldren, probably editable
@@ -303,7 +305,9 @@ public:
         const msg_contents msg_array_data = {
           .data_type_ = "Array", .entry_name_ = "[]", .entry_data_ = ""};
         new_node->getChildren().reserve(1);
-        new_node = new_node->addChild(msg_array_data);
+        new_node->addChild(msg_array_data);
+        node_count_++;
+        editable_node_count_++; // an array is editable
       }
       if (member.type_id_ == ROS_TYPE_MESSAGE) {
         uint8_t * sub_member_data = &message_data[member.offset_];

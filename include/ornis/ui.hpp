@@ -52,9 +52,9 @@ private:
 
   struct UserHelpStrings
   {
-    static constexpr auto home_layout_prompt_ = "Press s/t/m to select a type";
+    static constexpr auto home_layout_prompt_ = "Press s/t/m, or use your mouse to select an option";
     static constexpr auto selected_monitor_prompt =
-      "Press Enter for entry information, or Esc/q to go back";
+      "Press Enter for entry information, or Esc/q/mouseclick the background to go back";
     static constexpr auto streamable_entry_prompt = "Press Enter to stream topic, Esc/q to go back";
     static constexpr auto interactable_entry_prompt = "Press Enter to interact, Esc/q to go back";
     static constexpr auto standard_entry_prompt = "Esc/q to go back";
@@ -126,6 +126,9 @@ private:
 
   // Popup Information planes
   std::unique_ptr<ncpp::Plane> monitor_info_plane_;
+
+  // Help menu plane
+  std::unique_ptr<ncpp::Plane> options_plane_;
 
   UiDisplayingEnum ui_displaying_;
 

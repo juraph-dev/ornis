@@ -88,8 +88,7 @@ bool Ui::initialise(
   interface_map_["services"] =
     std::unique_ptr<MonitorInterface>(new MonitorInterface("services", "[s]ervices"));
 
-  // TODO: Think about if I REALLY want the initial locations to be random for the fun factor, or
-  // if they should be placed somewhere reasonable.
+  // Planes spawn in a random location, then zoom to their usual positions.
   std::random_device dev;
   std::mt19937 rng(dev());
   std::uniform_int_distribution<int> width_dist(1, term_width_);
@@ -102,15 +101,24 @@ bool Ui::initialise(
     interface.second->initialiseInterface(y_loc, x_loc, notcurses_stdplane_.get());
   }
 
+  uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+  ncchannels_set_bg_alpha(&popup_channels, NCALPHA_OPAQUE);
+
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);
   // Initialise the popup-window for selecting a monitor entry
   monitor_info_plane_->move_bottom();
   // Give info plane the same background color as main plane
   monitor_info_plane_->set_base("", 0, bgchannels);
-
-  uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
-  ncchannels_set_bg_alpha(&popup_channels, NCALPHA_OPAQUE);
   monitor_info_plane_->set_channels(popup_channels);
+
+  options_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);
+  // YOU ere here:
+  // Create an NCMENU object, and begin testing
+  // Initialise the options menu plane
+  options_plane_->move_bottom();
+  // Give options plane the same background color as main plane
+  options_plane_->set_base("", 0, bgchannels);
+  options_plane_->set_channels(popup_channels);
 
   ui_thread_ = new std::thread([this]() { refreshUi(); });
 
@@ -475,7 +483,7 @@ void Ui::handleInputMonitorSelection(const ncinput & input)
   } else if (downInput(input) || input.id == NCKEY_SCROLL_DOWN)
     if (currently_editing_index_ <= currently_active_trees_->first.node_count_) {
       update_selection = true;
-      // perform a check.for the child cound of the proposed selected node. If it has a single child, we
+      // perform a check for the child count of the proposed selected node. If it has a single child, we
       // should select the child directly, instead of the parent node.
       currently_editing_index_++;
       const auto * proposed_selected_node =
@@ -498,7 +506,7 @@ void Ui::handleInputMonitorInteractionResult(const ncinput & input)
   // TODO: Have a think about whether we should instead return to the interaction screen,
   // allowing the user to quickly send off another request, without having to re-select the
   // monitor entry
-  if (input.id == NCKEY_ESC || input.id == 'q') {
+  if (input.id == NCKEY_ESC || input.id == 'q' || ui_helpers::mouseClick(input)) {
     transitionUiState(UiDisplayingEnum::selectedMonitor);
     return;
   }

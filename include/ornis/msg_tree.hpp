@@ -302,14 +302,25 @@ public:
       MsgTreeNode * new_node = target_node->addChild(msg_data);
 
       if (member.is_array_) {
-        const msg_contents msg_array_data = {
-          .data_type_ = "Array", .entry_name_ = "[]", .entry_data_ = ""};
-        new_node->getChildren().reserve(1);
-        new_node->addChild(msg_array_data);
+        new_node->getValue().entry_data_ += "[";
+        const uint32_t array_size = static_cast<uint32_t>(member.size_function(message_data + member.offset_));
+        for (uint32_t i=0; i < array_size; ++i)
+        {
+          std::string array_element_data;
+          const uint8_t * raw_array_element_data = static_cast<uint8_t *>(member.get_function(message_data + member.offset_, i));
+          introspection::messageDataToString(
+            member, raw_array_element_data, array_element_data);
+          new_node->getValue().entry_data_ += array_element_data;
+          if (i + 1 != array_size)
+          {
+           new_node->getValue().entry_data_  += ", ";
+          }
+        }
+        new_node->getValue().entry_data_ += ']';
         node_count_++;
         editable_node_count_++; // an array is editable
       }
-      if (member.type_id_ == ROS_TYPE_MESSAGE) {
+      else if (member.type_id_ == ROS_TYPE_MESSAGE) {
         uint8_t * sub_member_data = &message_data[member.offset_];
         recursivelyCreateTree(new_node, member.members_, sub_member_data);
       } else {

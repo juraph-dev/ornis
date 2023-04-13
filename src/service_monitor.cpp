@@ -188,7 +188,7 @@ void ServiceMonitor::interact(
   msg_tree::msg_contents response_contents = {
     .data_type_ = "", .entry_name_ = "response", .entry_data_ = ""};
 
-  response.recursivelyCreateTree(response.getRoot(), service_info_.response_type_support, response_data); // = msg_tree::MsgTree(response_contents);
+  response.recursivelyCreateTree(response.getRoot(), service_info_.response_type_support, response_data);
   // Clean up
 }
 

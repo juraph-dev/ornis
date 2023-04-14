@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 #include <ncpp/Plane.hh>
+#include "ncpp/Selector.hh"
 #include <string>
 #include <thread>  // IWYU pragma: keep
 #include <tuple>
@@ -127,8 +128,8 @@ private:
   // Popup Information planes
   std::unique_ptr<ncpp::Plane> monitor_info_plane_;
 
-  // Help menu plane
-  std::unique_ptr<ncpp::Plane> options_plane_;
+  // Help menu options
+  std::shared_ptr<ncpp::Selector> options_menu_;
 
   UiDisplayingEnum ui_displaying_;
 

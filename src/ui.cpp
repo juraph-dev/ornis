@@ -110,35 +110,7 @@ bool Ui::initialise(
   monitor_info_plane_->set_base("", 0, bgchannels);
   monitor_info_plane_->set_channels(popup_channels);
 
-  std::unique_ptr<ncpp::Plane> options_plane = std::make_unique<ncpp::Plane>(notcurses_core_->get_stdplane(), 2, 2, 0, 0);
-
-  // Give options plane the same background color as main plane
-  options_plane->set_base("", 0, bgchannels);
-  options_plane->set_channels(popup_channels);
-
-  static ncselector_item items[] = {{
-        .option = nullptr,
-        .desc = nullptr,
-        }
-      };
-
-  struct ncselector_options sopts;
-  sopts.maxdisplay = 10;
-  sopts.items = items;
-  sopts.defidx = 0;
-  sopts.footer = "";
-  sopts.boxchannels = NCCHANNELS_INITIALIZER(0xe0, 0xe0, 0xe0, 32, 51, 70);
-  sopts.opchannels = NCCHANNELS_INITIALIZER(173, 126, 77, 32, 51, 70);
-  sopts.descchannels = NCCHANNELS_INITIALIZER(204, 145, 109, 32, 51, 70);
-  sopts.footchannels = NCCHANNELS_INITIALIZER(0xe0, 0, 0x40, 0x20, 0, 0);
-  sopts.titlechannels = NCCHANNELS_INITIALIZER(0xff, 0xff, 0xff, 0, 0, 0);
-
-  ncchannels_set_bg_alpha(&sopts.boxchannels, NCALPHA_TRANSPARENT);
-  ncchannels_set_bg_alpha(&sopts.titlechannels, NCALPHA_TRANSPARENT);
-
-  sopts.title = "[O]ptions";
-
-  options_menu_ = std::make_shared<ncpp::Selector>(options_plane.get(), &sopts);
+  options_.initialise(10, 10, notcurses_stdplane_.get());
 
   ui_thread_ = new std::thread([this]() { refreshUi(); });
 

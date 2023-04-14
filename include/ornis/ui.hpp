@@ -15,6 +15,7 @@
 
 #include "notcurses/notcurses.h"
 #include "ornis/msg_tree.hpp"
+#include "ornis/options.hpp"
 
 class Channel;
 class MonitorInterface;
@@ -129,7 +130,7 @@ private:
   std::unique_ptr<ncpp::Plane> monitor_info_plane_;
 
   // Help menu options
-  std::shared_ptr<ncpp::Selector> options_menu_;
+  OptionsMenu options_;
 
   UiDisplayingEnum ui_displaying_;
 

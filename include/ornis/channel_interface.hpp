@@ -15,7 +15,7 @@
 class Channel
 {
 public:
-  Channel(){};
+  Channel() : request_pending_(false), ui_data_current_(false){};
   ~Channel(){};
 
   enum class RequestEnum {
@@ -31,7 +31,7 @@ public:
   // Object controller
   RequestEnum request_type_;
   std::string response_string_;
-  std::atomic<bool> request_pending_ = false;
+  std::atomic<bool> request_pending_;
   std::condition_variable condition_variable_;
   std::map<std::string, std::string> request_details_;
 
@@ -43,7 +43,7 @@ public:
   std::map<std::string, std::vector<std::pair<std::string, std::string>>> latest_monitor_data_;
   // Flag to allow the UI to check if the monitor data has been updated since
   // last check.
-  std::atomic<bool> ui_data_current_ = false;
+  std::atomic<bool> ui_data_current_;
 };
 
 #endif  // CHANNEL_INTERFACE_H_

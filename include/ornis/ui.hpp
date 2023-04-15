@@ -48,19 +48,21 @@ private:
     monitorInteraction,
     monitorSelection,
     monitorInteractionResult,
-    streamingTopic
+    streamingTopic,
+    optionsMenu
   };
   enum class UiLayoutEnum { Vertical, Horizontal, HorizontalClipped };
 
   struct UserHelpStrings
   {
-    static constexpr auto home_layout_prompt_ = "Press s/t/m, or use your mouse to select an option";
+    static constexpr auto home_layout_prompt_ = "Press s/t/m/o, or use your mouse to select an option";
     static constexpr auto selected_monitor_prompt =
       "Press Enter for entry information, or Esc/q/mouseclick the background to go back";
     static constexpr auto streamable_entry_prompt = "Press Enter to stream topic, Esc/q to go back";
     static constexpr auto interactable_entry_prompt = "Press Enter to interact, Esc/q to go back";
     static constexpr auto standard_entry_prompt = "Esc/q to go back";
     static constexpr auto stream_prompt = "Esc/q to to go back";
+    static constexpr auto options_prompt = "";
     static constexpr auto interaction_request_prompt =
       "Type to enter data, Enter to send, Tab to change fields, Esc to give up";
   };
@@ -89,6 +91,7 @@ private:
     const msg_tree::msg_contents & message_contents);
   void refreshUi();
 
+  void handleInputOptions(const ncinput & input);
   void handleInputMonitors(const ncinput & input);
   void handleInputSelected(const ncinput & input);
   void handleInputMonitorEntry(const ncinput & input);

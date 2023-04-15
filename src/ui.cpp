@@ -56,7 +56,7 @@ bool Ui::initialise(
     .margin_r = 0,
     .margin_b = 0,
     .margin_l = 0,
-    .flags = NCOPTION_SUPPRESS_BANNERS  // | NCOPTION_NO_ALTERNATE_SCREEN
+    .flags = NCOPTION_SUPPRESS_BANNERS  | NCOPTION_NO_ALTERNATE_SCREEN
                                         // Use if need cout
   };
 
@@ -110,7 +110,7 @@ bool Ui::initialise(
   monitor_info_plane_->set_base("", 0, bgchannels);
   monitor_info_plane_->set_channels(popup_channels);
 
-  options_.initialise(10, 10, notcurses_stdplane_.get());
+  options_.initialise(term_width_, term_height_, notcurses_stdplane_.get());
 
   ui_thread_ = new std::thread([this]() { refreshUi(); });
 
@@ -353,6 +353,10 @@ void Ui::refreshUi()
           handleInputStreaming(nc_input);
           break;
         }
+        case UiDisplayingEnum::optionsMenu: {
+          handleInputOptions(nc_input);
+          break;
+        }
         default:
           std::cerr << "Attempted to handle input without a state: " << __LINE__ << '\n';
       }
@@ -360,6 +364,16 @@ void Ui::refreshUi()
 
     notcurses_core_->render();
     std::this_thread::sleep_for(0.01s);
+  }
+}
+
+void Ui::handleInputOptions(const ncinput & input)
+{
+  if (input.id == 'q' || input.id == NCKEY_ESC || (ui_helpers::mouseClick(input) && !checkEventOnPlane(input, options_.get_plane() ))) {
+    transitionUiState(UiDisplayingEnum::monitors);
+    return;
+  } else {
+    //
   }
 }
 
@@ -515,7 +529,6 @@ void Ui::handleInputStreaming(const ncinput & input)
 
 void Ui::handleInputMonitors(const ncinput & input)
 {
-  // std::cout << "had input: " << input.id << std::endl;
   // TODO: handle user clicking on monitor entry, without
   // first selecting a behaviour. No reason why we shouldn't
   // allow that
@@ -529,6 +542,9 @@ void Ui::handleInputMonitors(const ncinput & input)
   } else if (input.id == 's'|| (ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface_map_["services"]->get_plane())))  {
     selected_monitor_ = "services";
     transitionUiState(UiDisplayingEnum::selectedMonitor);
+  }
+  else if (input.id == 'o'|| (ui_helpers::mouseClick(input) && checkEventOnPlane(input, options_.minimised_plane_.get())))  {
+    transitionUiState(UiDisplayingEnum::optionsMenu);
   }
 }
 
@@ -595,6 +611,10 @@ void Ui::renderHomeLayout()
   }
 
   plane_loc_vector.push_back(std::tuple<const ncpp::Plane *, int, int>(
+    options_.get_plane(), term_width_ / 2 - options_.get_plane()->get_dim_x() / 2,
+    - options_.get_plane()->get_dim_y()));
+
+  plane_loc_vector.push_back(std::tuple<const ncpp::Plane *, int, int>(
     interface_map_.at("topics")->get_plane(), topic_x, topic_y));
 
   plane_loc_vector.push_back(std::tuple<const ncpp::Plane *, int, int>(
@@ -603,6 +623,7 @@ void Ui::renderHomeLayout()
   plane_loc_vector.push_back(std::tuple<const ncpp::Plane *, int, int>(
     interface_map_.at("services")->get_plane(), service_x, service_y));
   movePlanesAnimated(plane_loc_vector);
+  options_.minimised_plane_->move(1, term_width_ / 2 - (options_.minimised_plane_->get_dim_x()) / 2);
 }
 
 void Ui::renderSelectedMonitor()
@@ -749,8 +770,7 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       // TODO: May want to re-enable this once the selection
       // interface is working
       // Disable mouse events
-      // HACK
-      // notcurses_core_->mouse_disable();
+      // HACK notcurses_core_->mouse_disable();
       // Perform a check for it we are returning from streaming a topic:
       ui_helpers::drawHelperBar(
         notcurses_stdplane_.get(), userHelpStrings_.interaction_request_prompt);
@@ -768,6 +788,13 @@ void Ui::transitionUiState(const UiDisplayingEnum & desired_state)
       openStream(selected_entry, selected_path, selected_node->getValue());
       ui_helpers::drawHelperBar(notcurses_stdplane_.get(), userHelpStrings_.stream_prompt);
       ui_displaying_ = UiDisplayingEnum::monitorEntry;
+      break;
+    }
+    case UiDisplayingEnum::optionsMenu: {
+      ui_helpers::drawHelperBar(
+        notcurses_stdplane_.get(), userHelpStrings_.options_prompt);
+      renderOptions();
+      ui_displaying_ = UiDisplayingEnum::optionsMenu;
       break;
     }
     default: {
@@ -864,5 +891,38 @@ Ui::UiLayoutEnum Ui::calcMonitorLayout()
   // and requires resizing
 }
 
-// TBW
-void Ui::renderOptions() {}
+void Ui::renderOptions() {
+  options_.get_plane()->move(3, term_width_ / 2 - options_.get_plane()->get_dim_x() / 2);
+  options_.minimised_plane_->move(-3, term_width_/2);
+
+  std::vector<std::tuple<const ncpp::Plane *, const int, const int>> planes_locations;
+
+  std::random_device dev;
+  std::mt19937 rng(dev());
+  std::uniform_int_distribution<int> edge(0, 1); // Pick one of the 2 horizontal edges to place the monitor onto
+  std::uniform_int_distribution<int> mon_scale(1, 10); // Select
+
+  // Initialise planes
+  for (const auto & interface : interface_map_) {
+    const int x = edge(rng)? 1 : term_width_ - 3;
+    const int y = mon_scale(rng) * (term_height_/10);
+
+  planes_locations.push_back(
+    std::tuple<const ncpp::Plane *, int, int>(interface.second->get_plane(), x, y));
+  }
+
+  planes_locations.push_back(std::tuple<const ncpp::Plane *, int, int>(
+    options_.get_plane(), term_width_ / 2 - options_.get_plane()->get_dim_x() / 2,
+    term_height_ / 2 - options_.get_plane()->get_dim_y() / 2));
+
+  // animated Move monitor planes to their locations (Blocking)
+  movePlanesAnimated(planes_locations);
+
+  for (const auto & interface : interface_map_) {
+  // Place minimised monitors on edge, for 'a e s t h e t i c s'
+  const int x = interface.second->get_plane()->get_x();
+  const int y = interface.second->get_plane()->get_y();
+  interface.second->minimised_plane_->move(y, x);
+  interface.second->get_plane()->move(y >= (int)term_height_/2 ? -40: term_height_ + 40 , x == 1 ? -40 : term_width_ + 40);
+  }
+}

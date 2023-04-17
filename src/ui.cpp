@@ -372,8 +372,12 @@ void Ui::handleInputOptions(const ncinput & input)
   if (input.id == 'q' || input.id == NCKEY_ESC || (ui_helpers::mouseClick(input) && !checkEventOnPlane(input, options_.get_plane() ))) {
     transitionUiState(UiDisplayingEnum::monitors);
     return;
-  } else {
-    //
+  } else if (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input)){
+    options_.handleInput(input);
+  }
+  else{
+    // Allow the selector to handle scrolling and arbitrary inputs
+    options_.selector_->offer_input(&input);
   }
 }
 

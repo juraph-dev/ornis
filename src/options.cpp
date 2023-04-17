@@ -1,4 +1,6 @@
 #include "ornis/options.hpp"
+#include "notcurses/nckeys.h"
+#include "notcurses/notcurses.h"
 #include <iostream>
 #include <ostream>
 
@@ -21,11 +23,9 @@ void OptionsMenu::initialise(const int &x, const int &y,
   options_plane->set_base("", 0, bgchannels);
   options_plane->set_channels(bgchannels);
 
-  static ncselector_item items[] = {{"Color scheme", ""}, {nullptr, nullptr}};
-
   struct ncselector_options sopts;
   sopts.maxdisplay = 10;
-  sopts.items = items;
+  sopts.items = home_options_;
   sopts.defidx = 0;
   sopts.footer = "";
   sopts.boxchannels = NCCHANNELS_INITIALIZER(0xe0, 0xe0, 0xe0, 32, 51, 70);
@@ -53,5 +53,63 @@ void OptionsMenu::initialise(const int &x, const int &y,
 
   for (uint i = 0; i < options_title.size(); i++) {
     minimised_plane_->putc(1, i + 1, options_title[i]);
+  }
+}
+
+void OptionsMenu::handleInput(const ncinput &input) {
+  // Currently, only input is a selector
+  // Handle transition (Enter)
+  if (input.id == NCKEY_ENTER && input.evtype == NCTYPE_PRESS) {
+    switch (current_menu_) {
+    case MenuEnum::baseOptions: {
+      transitionMenu(MenuEnum::colourMenu);
+      break;
+    }
+    case MenuEnum::colourMenu: {
+      selectColour();
+      transitionMenu(MenuEnum::baseOptions);
+      break;
+    }
+    }
+  }
+}
+
+void OptionsMenu::selectColour() {
+  const auto currently_selected = selector_->get_selected();
+}
+
+void OptionsMenu::transitionMenu(const MenuEnum &new_state) {
+  switch (new_state) {
+  case MenuEnum::colourMenu: {
+    for (const auto &t : home_options_) {
+      if (t.option != nullptr) {
+        selector_->delitem(t.option);
+      }
+    }
+    for (const auto &t : colour_menu_) {
+      if (t.option != nullptr) {
+        selector_->additem(&t);
+      }
+    }
+    current_menu_ = MenuEnum::colourMenu;
+    break;
+  }
+  case MenuEnum::baseOptions: {
+    for (const auto &t : colour_menu_) {
+      if (t.option != nullptr) {
+        selector_->delitem(t.option);
+      }
+    }
+    for (const auto &t : home_options_) {
+      if (t.option != nullptr) {
+        selector_->additem(&t);
+      }
+    }
+    current_menu_ = MenuEnum::baseOptions;
+    break;
+  }
+  default: {
+    std::cout << "Attempted to change options menu without valid state!\n";
+  }
   }
 }

@@ -929,4 +929,11 @@ void Ui::renderOptions() {
   interface.second->minimised_plane_->move(y, x);
   interface.second->get_plane()->move(y >= (int)term_height_/2 ? -40: term_height_ + 40 , x == 1 ? -40 : term_width_ + 40);
   }
+
+}
+
+void Ui::updateColours()
+{
+  // Update Selectors
+
 }

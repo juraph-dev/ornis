@@ -37,6 +37,8 @@ public:
 
   std::atomic_bool spin_ = true;
 
+  Ui ui_;
+
 private:
   // Initialises the user interface
   bool initialiseUserInterface();
@@ -51,7 +53,6 @@ private:
   // Timed callback for collecting general ros statistics
   void heartBeat();
 
-  Ui ui_;
 
   std::map<std::string, std::vector<std::pair<std::string, std::string>>> previous_monitor_info_;
 

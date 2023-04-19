@@ -5,7 +5,18 @@
 #include "ornis/config.hpp"
 #include "ornis/object_controller.hpp"
 
+ObjectController object_controller;
+
+void intHandler(int dum) {
+  std::cout << "[Ornis] Recieved Signal, shutting down: " << dum << '\n';
+  object_controller.ui_.screen_loop_ = false;
+  // rclcpp::shutdown();
+  // exit(0);
+}
+
 int main(int argc, char *argv[]) {
+
+  signal(SIGINT, intHandler);
 
   // Print version information
   if (argc == 2 && std::string{argv[1]} == "--version") {
@@ -15,7 +26,6 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  ObjectController object_controller;
   const int obj_ret = object_controller.spin();
 
   if (obj_ret == 1) {

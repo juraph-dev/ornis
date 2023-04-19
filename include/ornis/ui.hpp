@@ -113,6 +113,8 @@ private:
   bool checkEventOnPlane(const ncinput & input, const ncpp::Plane * plane) const;
   bool offerInputMonitor(MonitorInterface * interface, const ncinput & input);
 
+  void updateColours();
+
   std::thread * ui_thread_;
 
   std::map<std::string, std::vector<std::pair<std::string, std::string>>> monitor_data_;
@@ -133,7 +135,7 @@ private:
   std::unique_ptr<ncpp::Plane> monitor_info_plane_;
 
   // Help menu options
-  OptionsMenu options_;
+  Options::OptionsMenu options_;
 
   UiDisplayingEnum ui_displaying_;
 

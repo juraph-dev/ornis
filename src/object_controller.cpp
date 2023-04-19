@@ -24,11 +24,6 @@
 #include "ornis/topic_monitor.hpp"
 #include "ornis/topic_streamer.hpp"
 
-void intHandler(int dum) {
-  std::cout << "[Ornis] Recieved Signal, shutting down: " << dum << '\n';
-  rclcpp::shutdown();
-  exit(0);
-}
 
 ObjectController::ObjectController() {
   interface_channel_ = std::make_shared<Channel>();
@@ -207,7 +202,6 @@ void ObjectController::checkUiRequests() {
       const std::string topic_type = it->second;
 
 
-
       // Currently, the interface map isn't used for anything, but will likely
       // be used in the future if the streamer needs to make ui scaling requests
       // (Both to and from)
@@ -245,7 +239,6 @@ int ObjectController::spin() {
   // even when executed simultaneously within the launch file.
   // setvbuf(stdout, NULL, _IONBF, BUFSIZ);
   // Set up handle to handle ctrl+c killing of software
-  signal(SIGINT, intHandler);
 
   char **argv = NULL;
   context_ = rcl_get_zero_initialized_context();
@@ -293,5 +286,7 @@ int ObjectController::spin() {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(0.1s);
   }
+
+  rclcpp::shutdown();
   return rcl_node_options_fini(&node_options);
 }

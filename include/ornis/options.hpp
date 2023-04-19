@@ -7,6 +7,16 @@
 #include <ncpp/Selector.hh>
 #include <vector>
 
+namespace Options {
+struct rgb {
+  int r;
+  int b;
+  int g;
+};
+
+// {Color Name, fg, bg, highlight, lowlight}
+using color_scheme = std::tuple<std::string, rgb, rgb, rgb, rgb>;
+
 class OptionsMenu {
 public:
   OptionsMenu();
@@ -17,6 +27,8 @@ public:
   ncpp::Plane *get_plane() const { return selector_->get_plane(); }
 
   void handleInput(const ncinput &input);
+
+  void loadConfiguration();
 
   std::shared_ptr<ncpp::Selector> selector_;
 
@@ -32,6 +44,10 @@ private:
   void transitionMenu(const MenuEnum &new_state);
   void selectColour();
 
+  // Currently saves configuration to
+  // ~/.config/ornis/config
+  void saveConfiguration();
+
   unsigned rgb_;
 
   constexpr static ncselector_item home_options_[] = {{"Color scheme", ""},
@@ -41,18 +57,22 @@ private:
       {"Native", "Recommended for wal-nuts"},
       {nullptr, nullptr}};
 
-  struct rgb {
-    int r;
-    int b;
-    int g;
-  };
+  const std::vector<color_scheme> available_colour_list = {
+      {"Bluejay",
+       {255, 255, 255},
+       {32, 51, 70},
+       {173, 126, 77},
+       {204, 145, 109}},
+      {"Native", {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
 
-  // {Color Name, fg, bg, highlight, lowlight}
-  std::vector<std::tuple<std::string, rgb, rgb, rgb, rgb>>
-      available_colour_list = {
-          {"Bluejay", {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}},
-          {"Native", {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}
+  // Hard coded default scheme for now
+  color_scheme current_scheme_ = available_colour_list[0];
+
+  // Application configuration, currently very simple, and
+  // option storage reflects that
+  std::map<std::string, std::string> current_configuration_;
 };
-};
+
+} // namespace Options
 
 #endif // OPTIONS_H_

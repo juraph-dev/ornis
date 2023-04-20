@@ -59,14 +59,12 @@ private:
 
   const std::vector<color_scheme> available_colour_list = {
       {"Bluejay",
-       {255, 255, 255},
-       {32, 51, 70},
-       {173, 126, 77},
-       {204, 145, 109}},
-      {"Native", {1, 1, 1}, {1, 1, 1}, {1, 1, 1}, {1, 1, 1}}};
+       {255, 255, 255}, {32, 51, 70}, {173, 126, 77}, {204, 145, 109}},
+      //FIXME Have native pull in the colours from the terminal
+      {"Native", {32, 0, 100}, {1, 80, 228}, {200, 30, 0}, {0, 30, 200}}};
 
   // Hard coded default scheme for now
-  color_scheme current_scheme_ = available_colour_list[0];
+  color_scheme current_scheme_; // = available_colour_list[0];
 
   // Application configuration, currently very simple, and
   // option storage reflects that

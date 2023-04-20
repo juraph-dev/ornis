@@ -17,6 +17,10 @@ void OptionsMenu::initialise(const int &x, const int &y,
 
   (void)y; // Unused for now.
 
+  // Load the configuration from the
+  // ornis/config file
+  loadConfiguration();
+
   std::unique_ptr<ncpp::Plane> options_plane =
       std::make_unique<ncpp::Plane>(std_plane, 2, 2, -100, -100);
 
@@ -24,24 +28,24 @@ void OptionsMenu::initialise(const int &x, const int &y,
   const auto bg = std::get<2>(current_scheme_);
   const auto hl = std::get<3>(current_scheme_);
   const auto ll = std::get<4>(current_scheme_);
-  // uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b,
-  // bg.g); ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
-  // ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+  ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
+  ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
 
   // Give options plane the same background color as main plane
-  // options_plane->set_base("", 0, bgchannels);
-  // options_plane->set_channels(bgchannels);
+  options_plane->set_base("", 0, bgchannels);
+  options_plane->set_channels(bgchannels);
 
   struct ncselector_options sopts;
   sopts.maxdisplay = 10;
   sopts.items = home_options_;
   sopts.defidx = 0;
   sopts.footer = "";
-  // sopts.boxchannels = NCCHANNELS_INITIALIZER(0xe0, 0xe0, 0xe0, bg.r, bg.b,
-  // bg.g); sopts.opchannels = NCCHANNELS_INITIALIZER(hl.r, hl.b, hl.g, bg.r,
-  // bg.b, bg.g); sopts.descchannels = NCCHANNELS_INITIALIZER(ll.r, ll.b, ll.g,
-  // bg.r, bg.b, bg.g); sopts.titlechannels = NCCHANNELS_INITIALIZER(fg.r, fg.b,
-  // fg.g, 0, 0, 0);
+
+  sopts.boxchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, 0, 0, 0);
+  sopts.opchannels = NCCHANNELS_INITIALIZER(hl.r, hl.b, hl.g, bg.r, bg.b, bg.g);
+  sopts.descchannels = NCCHANNELS_INITIALIZER(ll.r, ll.b, ll.g, bg.r, bg.b, bg.g);
+  sopts.titlechannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, 0x0e, 0x0e, 0x0e);
 
   ncchannels_set_bg_alpha(&sopts.boxchannels, NCALPHA_TRANSPARENT);
   ncchannels_set_bg_alpha(&sopts.titlechannels, NCALPHA_TRANSPARENT);
@@ -56,7 +60,7 @@ void OptionsMenu::initialise(const int &x, const int &y,
       std::make_shared<ncpp::Plane>(std_plane, 3, options_title.size() + 2, 1,
                                     x / 2 - (options_title.size() + 2) / 2);
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+  uint64_t channel = NCCHANNELS_INITIALIZER(hl.r, hl.b, hl.g, bg.r, bg.b, bg.g);
   minimised_plane_->set_base("", 0, channel);
   minimised_plane_->perimeter_rounded(0, channel, 0);
 
@@ -68,11 +72,7 @@ void OptionsMenu::initialise(const int &x, const int &y,
 void OptionsMenu::handleInput(const ncinput &input) {
   // Currently, only input is a selector
   // Handle transition (Enter)
-  std::cout << "input\n";
-  ncpp::Palette new_palette;
-  new_palette.set(1, 230, 0, 40);
-
-  if (input.id == NCKEY_ENTER && input.evtype == NCTYPE_PRESS) {
+  if (input.id == NCKEY_ENTER) {
     switch (current_menu_) {
     case MenuEnum::baseOptions: {
       transitionMenu(MenuEnum::colourMenu);
@@ -99,8 +99,6 @@ void OptionsMenu::selectColour() {
   // Should write to current config here
   current_configuration_["Theme"] =
       std::get<0>(available_colour_list[desired_index]);
-  std::cout << "Selected: " << std::get<0>(available_colour_list[desired_index])
-            << '\n';
   // Save Configuration:
   saveConfiguration();
 }
@@ -108,29 +106,29 @@ void OptionsMenu::selectColour() {
 void OptionsMenu::transitionMenu(const MenuEnum &new_state) {
   switch (new_state) {
   case MenuEnum::colourMenu: {
+    for (const auto &t : colour_menu_) {
+      if (t.option != nullptr) {
+        selector_->additem(&t);
+      }
     for (const auto &t : home_options_) {
       if (t.option != nullptr) {
         selector_->delitem(t.option);
       }
     }
-    for (const auto &t : colour_menu_) {
-      if (t.option != nullptr) {
-        selector_->additem(&t);
-      }
     }
     current_menu_ = MenuEnum::colourMenu;
     break;
   }
   case MenuEnum::baseOptions: {
+    for (const auto &t : home_options_) {
+      if (t.option != nullptr) {
+        selector_->additem(&t);
+      }
     for (const auto &t : colour_menu_) {
       if (t.option != nullptr) {
         selector_->delitem(t.option);
       }
     }
-    for (const auto &t : home_options_) {
-      if (t.option != nullptr) {
-        selector_->additem(&t);
-      }
     }
     current_menu_ = MenuEnum::baseOptions;
     break;
@@ -142,13 +140,23 @@ void OptionsMenu::transitionMenu(const MenuEnum &new_state) {
 }
 
 void OptionsMenu::loadConfiguration() {
-  std::map<std::string, std::string> configuration;
-  std::ifstream inputFile("~/.config/ornis/config");
+
+  std::cout << "Loading configuration\n";
+  current_configuration_.clear();
+
+  const char *home_dir = std::getenv("HOME");
+  if (home_dir == nullptr) {
+    std::cerr << "Error: could not get home directory\n";
+    return;
+  }
+
+  std::string config_dir = std::string(home_dir) + "/.config/ornis/config";
+  std::ifstream inputFile(config_dir);
 
   if (inputFile.is_open()) {
     std::string line;
     while (std::getline(inputFile, line)) {
-      std::size_t pos = line.find(":");
+      size_t pos = line.find(":");
       if (pos != std::string::npos) {
         std::string key = line.substr(0, pos);
         std::string value = line.substr(pos + 1);
@@ -162,6 +170,15 @@ void OptionsMenu::loadConfiguration() {
               << "~/.config/ornis/config"
               << "\"\n";
   }
+
+  size_t desired_index = 0;
+  for (size_t i = 0; i < available_colour_list.size(); ++i) {
+    if (strcmp(colour_menu_[i].option, current_configuration_["Theme"].c_str()) == 0) {
+      desired_index = i;
+      break;
+    }
+  }
+  current_scheme_ = available_colour_list[desired_index];
 }
 
 void OptionsMenu::saveConfiguration() {

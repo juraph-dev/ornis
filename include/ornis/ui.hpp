@@ -1,6 +1,7 @@
 #ifndef UI_H_
 #define UI_H_
 
+#include <atomic>
 #include <sys/types.h>
 
 #include <map>
@@ -36,7 +37,7 @@ public:
 
   // Re-draw flag, for updated value, or changed console dimensions
   bool redraw_flag_;
-  bool screen_loop_;
+  std::atomic_bool screen_loop_;
 
 private:
   // Class to for storing the current ui state

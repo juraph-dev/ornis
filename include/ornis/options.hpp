@@ -18,7 +18,6 @@ struct rgb
 
 enum class CommandEnum
 {
-
   noAction,  // No action required after command
   reboot     // UI re-initialisation required
 };

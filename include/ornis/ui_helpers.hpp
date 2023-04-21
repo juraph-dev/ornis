@@ -830,25 +830,6 @@ inline bool mouseClick(const ncinput& input)
   return (input.id == NCKEY_BUTTON1 && input.evtype == NCTYPE_RELEASE);
 }
 
-inline void colouriseSelector(ncpp::Selector& selector, const Options::color_scheme& colour_scheme)
-{
-  auto plane = selector.get_plane();
-
-  const auto fg = std::get<1>(colour_scheme);
-  const auto bg = std::get<2>(colour_scheme);
-  const auto hl = std::get<3>(colour_scheme);
-  const auto ll = std::get<4>(colour_scheme);
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
-  ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
-  ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
-
-  plane->set_base("", 0, bgchannels);
-  plane->set_channels(bgchannels);
-
-  // LOoking like you're going to need to destroy and re-create the selector here
-  // selector.get_
-}
-
 }  // namespace ui_helpers
 
 #endif  // UI_HELPERS_H_

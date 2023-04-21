@@ -1,5 +1,6 @@
 #include "ornis/object_controller.hpp"
 
+#include <cstdint>
 #include <rclcpp/utilities.hpp>
 #include <signal.h>
 #include <stdlib.h>
@@ -251,13 +252,21 @@ int ObjectController::spin()
     return 2;
   }
 
+  while (spinUi() != 1)
+    ;
+
+  return rcl_node_options_fini(&node_options);
+}
+
+uint8_t ObjectController::spinUi()
+{
   if (initialiseUserInterface())
   {
     initialiseMonitors();
   }
   else
   {
-    return 0;
+    return 1;
   }
 
   while (ui_.screen_loop_)
@@ -266,9 +275,19 @@ int ObjectController::spin()
     // Check if the monitor has any pending data requests
     checkUiRequests();
 
+    if (ui_.reboot_required_)
+    {
+      (&ui_)->~Ui();
+      new (&ui_) Ui();
+
+      monitor_map_["nodes"].reset();
+      monitor_map_["topics"].reset();
+      monitor_map_["services"].reset();
+      return 0;
+    }
+
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(0.1s);
   }
-
-  return rcl_node_options_fini(&node_options);
+  return 1;
 }

@@ -37,6 +37,9 @@ public:
   // Re-draw flag, for updated value, or changed console dimensions
   bool redraw_flag_;
   std::atomic_bool screen_loop_;
+  // If the UI wants to restart, for example to change colour scheme,
+  // param is checked by, and acted upon by the object controller.
+  std::atomic_bool reboot_required_;
 
 private:
   // Class to for storing the current ui state

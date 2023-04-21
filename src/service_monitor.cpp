@@ -23,6 +23,7 @@ ServiceMonitor::ServiceMonitor(std::shared_ptr<rcl_node_t> ros_interface_node)
 }
 ServiceMonitor::~ServiceMonitor()
 {
+  spin_ = false;
   if (thread_ != nullptr)
   {
     thread_->join();

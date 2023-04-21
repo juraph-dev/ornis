@@ -21,6 +21,7 @@ NodeMonitor::NodeMonitor(std::shared_ptr<rcl_node_t> ros_interface_node)
 }
 NodeMonitor::~NodeMonitor()
 {
+  spin_ = false;
   if (thread_ != nullptr)
   {
     thread_->join();

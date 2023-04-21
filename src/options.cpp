@@ -15,6 +15,7 @@ OptionsMenu::OptionsMenu()
 }
 OptionsMenu::~OptionsMenu()
 {
+  selector_.reset();
 }
 
 void OptionsMenu::initialise(const int& x, const int& y, const ncpp::Plane* std_plane)
@@ -68,7 +69,7 @@ void OptionsMenu::initialise(const int& x, const int& y, const ncpp::Plane* std_
   }
 }
 
-void OptionsMenu::handleInput(const ncinput& input)
+CommandEnum OptionsMenu::handleInput(const ncinput& input)
 {
   // Currently, only input is a selector
   // Handle transition (Enter)
@@ -78,12 +79,12 @@ void OptionsMenu::handleInput(const ncinput& input)
     {
       case MenuEnum::baseOptions: {
         transitionMenu(MenuEnum::colourMenu);
-        break;
+        return CommandEnum::noAction;
       }
       case MenuEnum::colourMenu: {
         selectColour();
         transitionMenu(MenuEnum::baseOptions);
-        break;
+        return CommandEnum::reboot;
       }
     }
   }
@@ -153,10 +154,14 @@ void OptionsMenu::transitionMenu(const MenuEnum& new_state)
   }
 }
 
+void OptionsMenu::createDefaultConfiguration()
+{
+  current_configuration_["Theme"] = "Native";
+  saveConfiguration();
+}
+
 void OptionsMenu::loadConfiguration()
 {
-  // FIXME Create a defualt config if none found
-
   const char* home_dir = std::getenv("HOME");
   if (home_dir == nullptr)
   {
@@ -165,6 +170,14 @@ void OptionsMenu::loadConfiguration()
   }
 
   std::string config_dir = std::string(home_dir) + "/.config/ornis/config";
+
+  // If the configuration doesn't exist, create a default.
+  if (!std::filesystem::exists(config_dir))
+  {
+    createDefaultConfiguration();
+    return;
+  }
+
   std::ifstream inputFile(config_dir);
 
   if (inputFile.is_open())

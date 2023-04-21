@@ -16,6 +16,13 @@ struct rgb
   int g;
 };
 
+enum class CommandEnum
+{
+
+  noAction,  // No action required after command
+  reboot     // UI re-initialisation required
+};
+
 // {Color Name, fg, bg, highlight, lowlight}
 using color_scheme = std::tuple<std::string, rgb, rgb, rgb, rgb>;
 
@@ -32,7 +39,7 @@ public:
     return selector_->get_plane();
   }
 
-  void handleInput(const ncinput& input);
+  CommandEnum handleInput(const ncinput& input);
 
   void loadConfiguration();
 
@@ -53,6 +60,8 @@ private:
 
   void transitionMenu(const MenuEnum& new_state);
   void selectColour();
+
+  void createDefaultConfiguration();
 
   // Currently saves configuration to
   // ~/.config/ornis/config

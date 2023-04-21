@@ -38,6 +38,7 @@ TopicStreamer::TopicStreamer(const std::string& topic_name, const std::string& t
 }
 TopicStreamer::~TopicStreamer()
 {
+  stream_open_ = false;
   if (thread_ != nullptr)
   {
     thread_->join();

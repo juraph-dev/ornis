@@ -21,6 +21,7 @@ TopicMonitor::TopicMonitor(std::shared_ptr<rcl_node_t> ros_interface_node)
 }
 TopicMonitor::~TopicMonitor()
 {
+  spin_ = false;
   if (thread_ != nullptr)
   {
     thread_->join();

@@ -19,6 +19,7 @@
 #include "ornis/channel_interface.hpp"
 #include "ornis/helper_functions.hpp"
 #include "ornis/monitor_interface.hpp"
+#include "ornis/options.hpp"
 #include "ornis/stream_interface.hpp"
 #include "ornis/ui_helpers.hpp"
 
@@ -27,15 +28,13 @@ using ui_helpers::upInput;
 
 using namespace std::chrono_literals;
 
-Ui::Ui() : redraw_flag_(true), screen_loop_(true), msg_node_being_edited_(nullptr)
+Ui::Ui() : redraw_flag_(true), screen_loop_(true), reboot_required_(false), msg_node_being_edited_(nullptr)
 {
 }
 
 Ui::~Ui()
 {
   screen_loop_ = false;
-  notcurses_core_->stop();
-
   if (ui_thread_ != nullptr)
   {
     ui_thread_->join();
@@ -62,7 +61,7 @@ bool Ui::initialise(std::shared_ptr<Channel> interface_channel,
     .margin_r = 0,
     .margin_b = 0,
     .margin_l = 0,
-    .flags = NCOPTION_SUPPRESS_BANNERS // | NCOPTION_NO_ALTERNATE_SCREEN
+    .flags = NCOPTION_SUPPRESS_BANNERS  // | NCOPTION_NO_ALTERNATE_SCREEN
   };
 
   notcurses_core_ = std::make_unique<ncpp::NotCurses>(nopts);
@@ -385,7 +384,11 @@ void Ui::handleInputOptions(const ncinput& input)
   }
   else if (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input))
   {
-    options_.handleInput(input);
+    const auto action = options_.handleInput(input);
+    if (action == Options::CommandEnum::reboot)
+    {
+      reboot_required_ = true;
+    }
   }
   else
   {

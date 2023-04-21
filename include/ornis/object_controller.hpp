@@ -1,6 +1,7 @@
 #ifndef OBJECT_CONTROLLER_H_
 #define OBJECT_CONTROLLER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <rcl/rcl.h>
@@ -50,6 +51,8 @@ private:
   void updateMonitors();
   // Check if the UI is wating for any information
   void checkUiRequests();
+  // Dedicated ui loop function
+  uint8_t spinUi();
   // Timed callback for collecting general ros statistics
   void heartBeat();
 

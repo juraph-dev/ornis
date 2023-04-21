@@ -7,22 +7,21 @@
 #include <iostream>
 #include <ostream>
 
-namespace Options {
+namespace Options
+{
 
-OptionsMenu::OptionsMenu() {}
-OptionsMenu::~OptionsMenu() {}
+OptionsMenu::OptionsMenu()
+{
+}
+OptionsMenu::~OptionsMenu()
+{
+}
 
-void OptionsMenu::initialise(const int &x, const int &y,
-                             const ncpp::Plane *std_plane) {
+void OptionsMenu::initialise(const int& x, const int& y, const ncpp::Plane* std_plane)
+{
+  (void)y;  // Unused for now.
 
-  (void)y; // Unused for now.
-
-  // Load the configuration from the
-  // ornis/config file
-  loadConfiguration();
-
-  std::unique_ptr<ncpp::Plane> options_plane =
-      std::make_unique<ncpp::Plane>(std_plane, 2, 2, -100, -100);
+  std::unique_ptr<ncpp::Plane> options_plane = std::make_unique<ncpp::Plane>(std_plane, 2, 2, -100, -100);
 
   const auto fg = std::get<1>(current_scheme_);
   const auto bg = std::get<2>(current_scheme_);
@@ -57,95 +56,110 @@ void OptionsMenu::initialise(const int &x, const int &y,
   selector_ = std::make_shared<ncpp::Selector>(options_plane.get(), &sopts);
 
   minimised_plane_ =
-      std::make_shared<ncpp::Plane>(std_plane, 3, options_title.size() + 2, 1,
-                                    x / 2 - (options_title.size() + 2) / 2);
+      std::make_shared<ncpp::Plane>(std_plane, 3, options_title.size() + 2, 1, x / 2 - (options_title.size() + 2) / 2);
 
   uint64_t channel = NCCHANNELS_INITIALIZER(hl.r, hl.b, hl.g, bg.r, bg.b, bg.g);
   minimised_plane_->set_base("", 0, channel);
   minimised_plane_->perimeter_rounded(0, channel, 0);
 
-  for (uint i = 0; i < options_title.size(); i++) {
+  for (uint i = 0; i < options_title.size(); i++)
+  {
     minimised_plane_->putc(1, i + 1, options_title[i]);
   }
 }
 
-void OptionsMenu::handleInput(const ncinput &input) {
+void OptionsMenu::handleInput(const ncinput& input)
+{
   // Currently, only input is a selector
   // Handle transition (Enter)
-  if (input.id == NCKEY_ENTER) {
-    switch (current_menu_) {
-    case MenuEnum::baseOptions: {
-      transitionMenu(MenuEnum::colourMenu);
-      break;
-    }
-    case MenuEnum::colourMenu: {
-      selectColour();
-      transitionMenu(MenuEnum::baseOptions);
-      break;
-    }
+  if (input.id == NCKEY_ENTER && input.evtype == NCTYPE_PRESS)
+  {
+    switch (current_menu_)
+    {
+      case MenuEnum::baseOptions: {
+        transitionMenu(MenuEnum::colourMenu);
+        break;
+      }
+      case MenuEnum::colourMenu: {
+        selectColour();
+        transitionMenu(MenuEnum::baseOptions);
+        break;
+      }
     }
   }
 }
 
-void OptionsMenu::selectColour() {
+void OptionsMenu::selectColour()
+{
   const auto currently_selected = selector_->get_selected();
   size_t desired_index = 0;
-  for (size_t i = 0; i < available_colour_list.size(); ++i) {
-    if (strcmp(colour_menu_[i].option, currently_selected) == 0) {
+  for (size_t i = 0; i < available_colour_list.size(); ++i)
+  {
+    if (strcmp(colour_menu_[i].option, currently_selected) == 0)
+    {
       desired_index = i;
       break;
     }
   }
   // Should write to current config here
-  current_configuration_["Theme"] =
-      std::get<0>(available_colour_list[desired_index]);
+  current_configuration_["Theme"] = std::get<0>(available_colour_list[desired_index]);
   // Save Configuration:
   saveConfiguration();
 }
 
-void OptionsMenu::transitionMenu(const MenuEnum &new_state) {
-  switch (new_state) {
-  case MenuEnum::colourMenu: {
-    for (const auto &t : colour_menu_) {
-      if (t.option != nullptr) {
-        selector_->additem(&t);
+void OptionsMenu::transitionMenu(const MenuEnum& new_state)
+{
+  switch (new_state)
+  {
+    case MenuEnum::colourMenu: {
+      for (const auto& t : colour_menu_)
+      {
+        if (t.option != nullptr)
+        {
+          selector_->additem(&t);
+        }
+        for (const auto& t : home_options_)
+        {
+          if (t.option != nullptr)
+          {
+            selector_->delitem(t.option);
+          }
+        }
       }
-    for (const auto &t : home_options_) {
-      if (t.option != nullptr) {
-        selector_->delitem(t.option);
+      current_menu_ = MenuEnum::colourMenu;
+      break;
+    }
+    case MenuEnum::baseOptions: {
+      for (const auto& t : home_options_)
+      {
+        if (t.option != nullptr)
+        {
+          selector_->additem(&t);
+        }
+        for (const auto& t : colour_menu_)
+        {
+          if (t.option != nullptr)
+          {
+            selector_->delitem(t.option);
+          }
+        }
       }
+      current_menu_ = MenuEnum::baseOptions;
+      break;
     }
+    default: {
+      std::cerr << "Attempted to change options menu without valid state!\n";
     }
-    current_menu_ = MenuEnum::colourMenu;
-    break;
-  }
-  case MenuEnum::baseOptions: {
-    for (const auto &t : home_options_) {
-      if (t.option != nullptr) {
-        selector_->additem(&t);
-      }
-    for (const auto &t : colour_menu_) {
-      if (t.option != nullptr) {
-        selector_->delitem(t.option);
-      }
-    }
-    }
-    current_menu_ = MenuEnum::baseOptions;
-    break;
-  }
-  default: {
-    std::cout << "Attempted to change options menu without valid state!\n";
-  }
   }
 }
 
-void OptionsMenu::loadConfiguration() {
+void OptionsMenu::loadConfiguration()
+{
+  // FIXME Create a defualt config if none found
 
-  std::cout << "Loading configuration\n";
-  current_configuration_.clear();
-
-  const char *home_dir = std::getenv("HOME");
-  if (home_dir == nullptr) {
+  const char* home_dir = std::getenv("HOME");
+  if (home_dir == nullptr)
+  {
     std::cerr << "Error: could not get home directory\n";
     return;
   }
@@ -153,18 +167,23 @@ void OptionsMenu::loadConfiguration() {
   std::string config_dir = std::string(home_dir) + "/.config/ornis/config";
   std::ifstream inputFile(config_dir);
 
-  if (inputFile.is_open()) {
+  if (inputFile.is_open())
+  {
     std::string line;
-    while (std::getline(inputFile, line)) {
+    while (std::getline(inputFile, line))
+    {
       size_t pos = line.find(":");
-      if (pos != std::string::npos) {
+      if (pos != std::string::npos)
+      {
         std::string key = line.substr(0, pos);
         std::string value = line.substr(pos + 1);
         current_configuration_[key] = value;
       }
     }
     inputFile.close();
-  } else {
+  }
+  else
+  {
     // Else, load default config
     std::cerr << "Error: could not open file \""
               << "~/.config/ornis/config"
@@ -172,8 +191,10 @@ void OptionsMenu::loadConfiguration() {
   }
 
   size_t desired_index = 0;
-  for (size_t i = 0; i < available_colour_list.size(); ++i) {
-    if (strcmp(colour_menu_[i].option, current_configuration_["Theme"].c_str()) == 0) {
+  for (size_t i = 0; i < available_colour_list.size(); ++i)
+  {
+    if (strcmp(colour_menu_[i].option, current_configuration_["Theme"].c_str()) == 0)
+    {
       desired_index = i;
       break;
     }
@@ -181,33 +202,38 @@ void OptionsMenu::loadConfiguration() {
   current_scheme_ = available_colour_list[desired_index];
 }
 
-void OptionsMenu::saveConfiguration() {
-
-  const char *home_dir = std::getenv("HOME");
-  if (home_dir == nullptr) {
+void OptionsMenu::saveConfiguration()
+{
+  const char* home_dir = std::getenv("HOME");
+  if (home_dir == nullptr)
+  {
     std::cerr << "Error: could not get home directory\n";
     return;
   }
 
   std::string config_dir = std::string(home_dir) + "/.config/ornis";
 
-  if (!std::filesystem::is_directory(config_dir)) {
+  if (!std::filesystem::is_directory(config_dir))
+  {
     // Directory does not exist, create it
-    try {
+    try
+    {
       std::filesystem::create_directories(config_dir);
-    } catch (const std::filesystem::filesystem_error &e) {
-      std::cerr << "Error: could not create directory \"" << config_dir
-                << "\": " << e.what() << "\n";
+    }
+    catch (const std::filesystem::filesystem_error& e)
+    {
+      std::cerr << "Error: could not create directory \"" << config_dir << "\": " << e.what() << "\n";
     }
   }
 
   std::ofstream outputFile(config_dir + "/config");
 
   // Iterate through and save configuration
-  for (const auto &option : current_configuration_) {
+  for (const auto& option : current_configuration_)
+  {
     outputFile << option.first << ":" << option.second << "\n";
   }
 
   outputFile.close();
 }
-} // namespace Options
+}  // namespace Options

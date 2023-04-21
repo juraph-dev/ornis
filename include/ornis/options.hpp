@@ -7,8 +7,10 @@
 #include <ncpp/Selector.hh>
 #include <vector>
 
-namespace Options {
-struct rgb {
+namespace Options
+{
+struct rgb
+{
   int r;
   int b;
   int g;
@@ -17,16 +19,20 @@ struct rgb {
 // {Color Name, fg, bg, highlight, lowlight}
 using color_scheme = std::tuple<std::string, rgb, rgb, rgb, rgb>;
 
-class OptionsMenu {
+class OptionsMenu
+{
 public:
   OptionsMenu();
   ~OptionsMenu();
 
-  void initialise(const int &x, const int &y, const ncpp::Plane *std_plane);
+  void initialise(const int& x, const int& y, const ncpp::Plane* std_plane);
 
-  ncpp::Plane *get_plane() const { return selector_->get_plane(); }
+  ncpp::Plane* get_plane() const
+  {
+    return selector_->get_plane();
+  }
 
-  void handleInput(const ncinput &input);
+  void handleInput(const ncinput& input);
 
   void loadConfiguration();
 
@@ -37,11 +43,15 @@ public:
   std::shared_ptr<ncpp::Plane> minimised_plane_;
 
 private:
-  enum class MenuEnum { baseOptions, colourMenu };
+  enum class MenuEnum
+  {
+    baseOptions,
+    colourMenu
+  };
 
   MenuEnum current_menu_;
 
-  void transitionMenu(const MenuEnum &new_state);
+  void transitionMenu(const MenuEnum& new_state);
   void selectColour();
 
   // Currently saves configuration to
@@ -50,27 +60,25 @@ private:
 
   unsigned rgb_;
 
-  constexpr static ncselector_item home_options_[] = {{"Color scheme", ""},
-                                                      {nullptr, nullptr}};
-  constexpr static ncselector_item colour_menu_[] = {
-      {"Bluejay (Default)", "A tasteful white on blue"},
-      {"Native", "Recommended for wal-nuts"},
-      {nullptr, nullptr}};
+  constexpr static ncselector_item home_options_[] = { { "Color scheme", "" }, { nullptr, nullptr } };
+  constexpr static ncselector_item colour_menu_[] = { { "Bluejay (Default)", "A tasteful white on blue" },
+                                                      { "Native", "Recommended for wal-nuts" },
+                                                      { nullptr, nullptr } };
 
   const std::vector<color_scheme> available_colour_list = {
-      {"Bluejay",
-       {255, 255, 255}, {32, 51, 70}, {173, 126, 77}, {204, 145, 109}},
-      //FIXME Have native pull in the colours from the terminal
-      {"Native", {32, 0, 100}, {1, 80, 228}, {200, 30, 0}, {0, 30, 200}}};
+    { "Bluejay", { 255, 255, 255 }, { 32, 51, 70 }, { 173, 126, 77 }, { 204, 145, 109 } },
+    // FIXME Have native pull in the colours from the terminal
+    { "Native", { 32, 0, 100 }, { 1, 80, 228 }, { 200, 30, 0 }, { 0, 30, 200 } }
+  };
 
   // Hard coded default scheme for now
-  color_scheme current_scheme_; // = available_colour_list[0];
+  color_scheme current_scheme_;  // = available_colour_list[0];
 
   // Application configuration, currently very simple, and
   // option storage reflects that
   std::map<std::string, std::string> current_configuration_;
 };
 
-} // namespace Options
+}  // namespace Options
 
-#endif // OPTIONS_H_
+#endif  // OPTIONS_H_

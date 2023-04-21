@@ -5,7 +5,7 @@
 #include <mutex>
 #include <queue>
 #include <atomic>
-#include <thread> // IWYU pragma: keep
+#include <thread>  // IWYU pragma: keep
 #include <iostream>
 #include <optional>
 #include <condition_variable>
@@ -15,7 +15,9 @@
 class StreamChannel
 {
 public:
-  explicit StreamChannel(const std::string & topic_name) : topic_name_(topic_name), stream_open_(false) {}
+  explicit StreamChannel(const std::string& topic_name) : topic_name_(topic_name), stream_open_(false)
+  {
+  }
 
   StreamChannel(){};
   ~StreamChannel(){};

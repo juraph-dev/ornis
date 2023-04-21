@@ -18,15 +18,13 @@ public:
   NodeMonitor(std::shared_ptr<rcl_node_t> ros_interface_node);
   ~NodeMonitor();
 
-  void getEntryInfo(
-    const std::string & entry_name, const std::string & entry_details,
-    std::map<std::string, std::vector<std::string>> & entry_info);
+  void getEntryInfo(const std::string& entry_name, const std::string& entry_details,
+                    std::map<std::string, std::vector<std::string>>& entry_info);
 
-  void getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form);
+  void getInteractionForm(const std::string& entry_details, msg_tree::MsgTree& form);
 
-  void interact(
-  const std::string & entry_name, const std::string & entry_details,
-  const msg_tree::MsgTree & request, msg_tree::MsgTree & response);
+  void interact(const std::string& entry_name, const std::string& entry_details, const msg_tree::MsgTree& request,
+                msg_tree::MsgTree& response);
 
 private:
   static constexpr auto ros2_list_string_ = "ros2 node list";
@@ -35,11 +33,10 @@ private:
   void spin();
   void updateValue();
 
-  void namesAndTypesToMap(
-    const std::string & entry_name, const rcl_names_and_types_t & names_and_types,
-    std::map<std::string, std::vector<std::string>> & entry_map);
+  void namesAndTypesToMap(const std::string& entry_name, const rcl_names_and_types_t& names_and_types,
+                          std::map<std::string, std::vector<std::string>>& entry_map);
 
-  std::thread * thread_;
+  std::thread* thread_;
 
   std::shared_ptr<rcl_node_t> ros_interface_node_;
 };

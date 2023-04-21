@@ -11,13 +11,17 @@ template <typename T>
 class DataBuffer
 {
 public:
-  DataBuffer(const int n) : n_(n), filled_(false) { buffer.resize(n_); }
+  DataBuffer(const int n) : n_(n), filled_(false)
+  {
+    buffer.resize(n_);
+  }
 
   void step(T xn)
   {
     buffer[i_] = xn;
     i_++;
-    if (i_ == n_) {
+    if (i_ == n_)
+    {
       filled_ = true;
       i_ = 0;
     }
@@ -33,20 +37,21 @@ public:
 class TopicVisualiser
 {
 public:
-  TopicVisualiser(ncpp::Plane * plane, uint height, uint width, std::vector<uint32_t> entry_path)
-  : height_(height), width_(width), entry_path_(entry_path), plane_(plane)
+  TopicVisualiser(ncpp::Plane* plane, uint height, uint width, std::vector<uint32_t> entry_path)
+    : height_(height), width_(width), entry_path_(entry_path), plane_(plane)
   {
   }
-  virtual ~TopicVisualiser() {}
+  virtual ~TopicVisualiser()
+  {
+  }
 
-  virtual void renderData(
-    const rosidl_typesupport_introspection_cpp::MessageMembers * members, uint8_t * data) = 0;
+  virtual void renderData(const rosidl_typesupport_introspection_cpp::MessageMembers* members, uint8_t* data) = 0;
 
   uint height_, width_;
 
   std::vector<uint32_t> entry_path_;
 
-  ncpp::Plane * plane_;
+  ncpp::Plane* plane_;
 };
 
 #endif  // TOPIC_VISUALISER_H_

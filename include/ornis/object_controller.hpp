@@ -35,7 +35,7 @@ public:
   // Communication channel between the object controller and the user interface
   std::shared_ptr<Channel> interface_channel_;
 
-  std::atomic_bool spin_ = true;
+  std::atomic_bool spin_;
 
   Ui ui_;
 
@@ -52,7 +52,6 @@ private:
   void checkUiRequests();
   // Timed callback for collecting general ros statistics
   void heartBeat();
-
 
   std::map<std::string, std::vector<std::pair<std::string, std::string>>> previous_monitor_info_;
 

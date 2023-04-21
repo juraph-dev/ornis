@@ -1,29 +1,28 @@
 #include "ornis/monitor_interface.hpp"
 
-MonitorInterface::MonitorInterface(
-  const std::string & monitor_name, const std::string & selector_title)
-: monitor_name_(monitor_name), selector_title_(selector_title)
+MonitorInterface::MonitorInterface(const std::string& monitor_name, const std::string& selector_title)
+  : monitor_name_(monitor_name), selector_title_(selector_title)
 {
 }
 
-MonitorInterface::~MonitorInterface() {}
+MonitorInterface::~MonitorInterface()
+{
+}
 
-void MonitorInterface::initialiseInterface(
-  const int & x, const int & y, const ncpp::Plane * std_plane)
+void MonitorInterface::initialiseInterface(const int& x, const int& y, const ncpp::Plane* std_plane)
 {
   ncpp::Plane selector_plane = ncpp::Plane(std_plane, 2, 2, x, y);
 
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255 , 32, 51, 70);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
   selector_plane.set_base("", 0, bgchannels);
 
-
   // Blank item array for selector, which needs an items object upon creation
   ncselector_item items[] = {
     {
-      nullptr,
-      nullptr,
+        nullptr,
+        nullptr,
     },
   };
 
@@ -54,22 +53,24 @@ void MonitorInterface::initialiseInterface(
   minimised_plane_->perimeter_rounded(0, channel, 0);
 
   // configure minimised plane
-  for (uint i = 0; i < monitor_name_.size(); i++) {
+  for (uint i = 0; i < monitor_name_.size(); i++)
+  {
     minimised_plane_->putc(i + 1, 1, monitor_name_[i]);
   }
-
 }
 
-void MonitorInterface::updateEntries(
-  std::vector<ncselector_item> & new_vector, std::vector<ncselector_item> & add_values,
-  std::vector<ncselector_item> & delete_values)
+void MonitorInterface::updateEntries(std::vector<ncselector_item>& new_vector, std::vector<ncselector_item>& add_values,
+                                     std::vector<ncselector_item>& delete_values)
 {
-  if (entries_.empty()) {  // If we have no entries currently in selector, add all in new vector
+  if (entries_.empty())
+  {  // If we have no entries currently in selector, add all in new vector
     entries_ = new_vector;
     add_values = new_vector;
     lines_ = new_vector.size();
     return;
-  } else if (new_vector.empty()) {  // If new entry list is empty, delete all entries in selector
+  }
+  else if (new_vector.empty())
+  {  // If new entry list is empty, delete all entries in selector
     delete_values = entries_;
     lines_ = 0;
     return;
@@ -82,17 +83,14 @@ void MonitorInterface::updateEntries(
 
   // Populate add values for items not found in list
   std::copy_if(
-    new_vector.begin(), new_vector.end(), std::back_inserter(add_values),
-    [&t_vec](const ncselector_item & item) {
-      return (std::find(t_vec.begin(), t_vec.end(), item) == t_vec.end());
-    });
+      new_vector.begin(), new_vector.end(), std::back_inserter(add_values),
+      [&t_vec](const ncselector_item& item) { return (std::find(t_vec.begin(), t_vec.end(), item) == t_vec.end()); });
 
   // Populate delete_values for values no longer in the vector list
-  std::copy_if(
-    t_vec.begin(), t_vec.end(), std::back_inserter(delete_values),
-    [&new_vector](const ncselector_item & item) {
-      return (std::find(new_vector.begin(), new_vector.end(), item) == new_vector.end());
-    });
+  std::copy_if(t_vec.begin(), t_vec.end(), std::back_inserter(delete_values),
+               [&new_vector](const ncselector_item& item) {
+                 return (std::find(new_vector.begin(), new_vector.end(), item) == new_vector.end());
+               });
 
   lines_ = new_vector.size();
   entries_ = new_vector;

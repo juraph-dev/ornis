@@ -24,23 +24,22 @@ class StreamChannel;
 class TopicStreamer
 {
 public:
-  TopicStreamer(
-    const std::string & topic_name, const std::string & topic_entry, const std::string & topic_type,
-    const std::string & entry_type, const std::string & entry_path, std::shared_ptr<StreamChannel> & interface_channel,
-    std::shared_ptr<rcl_node_t> ros_interface_node, rcl_context_t context);
+  TopicStreamer(const std::string& topic_name, const std::string& topic_entry, const std::string& topic_type,
+                const std::string& entry_type, const std::string& entry_path,
+                std::shared_ptr<StreamChannel>& interface_channel, std::shared_ptr<rcl_node_t> ros_interface_node,
+                rcl_context_t context);
   ~TopicStreamer();
 
   void closeStream();
 
 private:
   void updateValue();
-  void streamEntry(std::string & stream_frame);
+  void streamEntry(std::string& stream_frame);
   void waitUntilUiReady();
   void initialise();
-  void callback(
-    rcl_subscription_t & subscription, const rosidl_message_type_support_t * type_support);
+  void callback(rcl_subscription_t& subscription, const rosidl_message_type_support_t* type_support);
 
-  std::thread * thread_;
+  std::thread* thread_;
 
   const std::string topic_name_;
   // TODO: May be able to remove topic_entry

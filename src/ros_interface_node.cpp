@@ -3,13 +3,13 @@
 
 #include "ornis/ros_interface_node.hpp"
 
-namespace rclcpp {
+namespace rclcpp
+{
 class NodeOptions;
 }  // namespace rclcpp
 
-RosInterfaceNode::RosInterfaceNode(
-  const std::string & node_name, const rclcpp::NodeOptions & options)
-: Node(node_name)
+RosInterfaceNode::RosInterfaceNode(const std::string& node_name, const rclcpp::NodeOptions& options)
+  : Node(node_name), spin_(true)
 {
   (void)options;
 }
@@ -17,9 +17,13 @@ RosInterfaceNode::RosInterfaceNode(
 void RosInterfaceNode::spin()
 {
   rclcpp::Rate rate(1);
-  while (rclcpp::ok()) {
+  while (spin_)
+  {
     rate.sleep();
   }
+  rclcpp::shutdown();
 }
 
-RosInterfaceNode::~RosInterfaceNode() {}
+RosInterfaceNode::~RosInterfaceNode()
+{
+}

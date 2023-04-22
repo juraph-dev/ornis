@@ -10,7 +10,6 @@
 #include "ornis/monitor.hpp"
 #include "ornis/ros_interface_node.hpp"
 
-
 class RosInterfaceNode;
 
 class TopicMonitor : public Monitor
@@ -19,17 +18,15 @@ public:
   TopicMonitor(std::shared_ptr<rcl_node_t> ros_interface_node);
   ~TopicMonitor();
 
-  void getEntryInfo(
-    const std::string & entry_name, const std::string & entry_details,
-    std::map<std::string, std::vector<std::string>> & entry_info);
+  void getEntryInfo(const std::string& entry_name, const std::string& entry_details,
+                    std::map<std::string, std::vector<std::string>>& entry_info);
 
-  void getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form);
+  void getInteractionForm(const std::string& entry_details, msg_tree::MsgTree& form);
 
-  void getInteractionTree(const std::string message_type, msg_tree::MsgTree & message_tree);
+  void getInteractionTree(const std::string message_type, msg_tree::MsgTree& message_tree);
 
-  void interact(
-  const std::string & entry_name, const std::string & entry_details,
-  const msg_tree::MsgTree & request, msg_tree::MsgTree & response);
+  void interact(const std::string& entry_name, const std::string& entry_details, const msg_tree::MsgTree& request,
+                msg_tree::MsgTree& response);
 
 private:
   static constexpr auto ros2_list_string_ = "ros2 topic list";
@@ -38,10 +35,9 @@ private:
   void spin();
   void updateValue();
 
-  std::thread * thread_;
+  std::thread* thread_;
 
   std::shared_ptr<rcl_node_t> ros_interface_node_;
-
 };
 
 #endif  // TOPIC_MONITOR_H_

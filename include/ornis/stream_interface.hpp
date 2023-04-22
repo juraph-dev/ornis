@@ -5,7 +5,7 @@
 #include <mutex>
 #include <queue>
 #include <atomic>
-#include <thread> // IWYU pragma: keep
+#include <thread>  // IWYU pragma: keep
 #include <iostream>
 #include <optional>
 #include <condition_variable>
@@ -15,7 +15,9 @@
 class StreamChannel
 {
 public:
-  explicit StreamChannel(const std::string & topic_name) : topic_name_(topic_name) {}
+  explicit StreamChannel(const std::string& topic_name) : topic_name_(topic_name), stream_open_(false)
+  {
+  }
 
   StreamChannel(){};
   ~StreamChannel(){};
@@ -28,7 +30,7 @@ public:
 
   // Flag for whether the stream is currently open in the UI.
   // Object controller checks this flag for whether to kill the stream thread
-  std::atomic<bool> stream_open_ = false;
+  std::atomic<bool> stream_open_;
 
   // Plane that gets written to directly from the streamer
   std::shared_ptr<ncpp::Plane> stream_plane_;

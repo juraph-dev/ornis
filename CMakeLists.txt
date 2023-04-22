@@ -130,6 +130,11 @@ install(TARGETS ${PROJECT_NAME}-lib
     RUNTIME DESTINATION bin
 )
 
+file(GLOB_RECURSE AMENT_LINT_AUTO_FILE_EXCLUDE
+  # Don't lint external submodules
+  external/*
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

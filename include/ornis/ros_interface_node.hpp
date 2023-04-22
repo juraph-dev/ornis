@@ -6,21 +6,26 @@
 #include <rclcpp/node.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-namespace rclcpp {
+namespace rclcpp
+{
 class NodeOptions;
 }  // namespace rclcpp
 
 class RosInterfaceNode : public rclcpp::Node
 {
 public:
-  explicit RosInterfaceNode(const rclcpp::NodeOptions & options) : Node("ornis", options) {}
+  explicit RosInterfaceNode(const rclcpp::NodeOptions& options) : Node("ornis", options)
+  {
+  }
 
   // Constructor
-  RosInterfaceNode(const std::string & node_name, const rclcpp::NodeOptions & options);
+  RosInterfaceNode(const std::string& node_name, const rclcpp::NodeOptions& options);
 
   ~RosInterfaceNode();
 
   void spin();
+
+  std::atomic<bool> spin_;
 };
 
 #endif  // ROS_INTERFACE_NODE_H_

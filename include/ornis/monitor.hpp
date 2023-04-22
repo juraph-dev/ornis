@@ -23,22 +23,25 @@
 class Monitor
 {
 public:
-  Monitor() : spin_(true), last_read_current_(false) {}
-  virtual ~Monitor() {}
-
-  virtual void getEntryInfo(
-    const std::string & entry_name, const std::string & entry_details,
-    std::map<std::string, std::vector<std::string>> & entry_info) = 0;
-
-  virtual void getInteractionForm(const std::string & entry_details, msg_tree::MsgTree & form) = 0;
-
-  virtual void interact(
-  const std::string & entry_name, const std::string & entry_details,
-  const msg_tree::MsgTree & request, msg_tree::MsgTree & response) = 0;
-
-  bool getValue(std::vector<std::pair<std::string, std::string>> & value)
+  Monitor() : spin_(true), last_read_current_(false)
   {
-    if (last_read_current_.load()) {
+  }
+  virtual ~Monitor()
+  {
+  }
+
+  virtual void getEntryInfo(const std::string& entry_name, const std::string& entry_details,
+                            std::map<std::string, std::vector<std::string>>& entry_info) = 0;
+
+  virtual void getInteractionForm(const std::string& entry_details, msg_tree::MsgTree& form) = 0;
+
+  virtual void interact(const std::string& entry_name, const std::string& entry_details,
+                        const msg_tree::MsgTree& request, msg_tree::MsgTree& response) = 0;
+
+  bool getValue(std::vector<std::pair<std::string, std::string>>& value)
+  {
+    if (last_read_current_.load())
+    {
       return false;
     }
     std::unique_lock<std::mutex> lk(data_mutex_);
@@ -51,18 +54,23 @@ public:
 
 protected:
   // Function to interface with the command line (eg: ros2 topic info)
-  std::string callConsole(const std::string & cmd)
+  std::string callConsole(const std::string& cmd)
   {
     std::string result = "";
     const std::string cmd_pipe = cmd + " 2>&1";
-    FILE * pipe = popen(cmd_pipe.c_str(), "r");
-    if (!pipe) throw std::runtime_error("popen() failed!");
-    try {
+    FILE* pipe = popen(cmd_pipe.c_str(), "r");
+    if (!pipe)
+      throw std::runtime_error("popen() failed!");
+    try
+    {
       char buffer[128];
-      while (fgets(buffer, sizeof buffer, pipe) != NULL) {
+      while (fgets(buffer, sizeof buffer, pipe) != NULL)
+      {
         result += buffer;
       }
-    } catch (...) {
+    }
+    catch (...)
+    {
       pclose(pipe);
       throw;
     }

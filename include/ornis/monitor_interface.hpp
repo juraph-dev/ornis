@@ -7,13 +7,14 @@
 #include <iterator>
 #include <memory>
 #include <mutex>
+#include <ncpp/NotCurses.hh>
 #include <ncpp/Plane.hh>
 #include <ncpp/Selector.hh>
-#include <ncpp/NotCurses.hh>
 #include <stdexcept>
 #include <string>
 #include <thread>  // IWYU pragma: keep
 #include <vector>
+#include "ornis/options.hpp"
 
 inline bool operator==(const ncselector_item A, const ncselector_item B)
 {
@@ -23,22 +24,40 @@ inline bool operator==(const ncselector_item A, const ncselector_item B)
 class MonitorInterface
 {
 public:
-  MonitorInterface(const std::string & monitor_name, const std::string & selector_title);
+  MonitorInterface(const std::string& monitor_name, const std::string& selector_title);
   ~MonitorInterface();
-  void initialiseInterface(const int &x, const int &y, const ncpp::Plane *std_plane);
+  void initialiseInterface(const int& x, const int& y, const ncpp::Plane* std_plane,
+                           const Options::color_scheme& theme);
 
-  unsigned getLines() const { return lines_; }
+  unsigned getLines() const
+  {
+    return lines_;
+  }
 
-  void updateEntries(
-    std::vector<ncselector_item> & new_vector, std::vector<ncselector_item> & add_values,
-    std::vector<ncselector_item> & delete_values);
+  void updateEntries(std::vector<ncselector_item>& new_vector, std::vector<ncselector_item>& add_values,
+                     std::vector<ncselector_item>& delete_values);
 
-  ncpp::Plane * get_plane() const { return selector_->get_plane(); }
-  void addLine() { ++lines_; }
+  ncpp::Plane* get_plane() const
+  {
+    return selector_->get_plane();
+  }
+  void addLine()
+  {
+    ++lines_;
+  }
 
-  std::vector<ncselector_item> getEntries() { return entries_; }
-  int getIdx() const { return idx_; }
-  unsigned getRGB() const { return rgb_; }
+  std::vector<ncselector_item> getEntries()
+  {
+    return entries_;
+  }
+  int getIdx() const
+  {
+    return idx_;
+  }
+  unsigned getRGB() const
+  {
+    return rgb_;
+  }
 
   const std::string monitor_name_;
 

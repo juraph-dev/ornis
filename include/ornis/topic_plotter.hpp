@@ -3,27 +3,27 @@
 
 #include <vector>
 
+#include "ornis/options.hpp"
 #include "ornis/topic_visualiser.hpp"
 
 class TopicPlotter : public TopicVisualiser
 {
 public:
-  TopicPlotter(ncpp::Plane * plane, uint height, uint width, std::vector<uint32_t> entry_path);
+  TopicPlotter(ncpp::Plane* plane, uint height, uint width, std::vector<uint32_t> entry_path,
+               const Options::color_scheme theme);
   ~TopicPlotter();
 
-  void renderData(
-    const rosidl_typesupport_introspection_cpp::MessageMembers * members, uint8_t * data);
+  void renderData(const rosidl_typesupport_introspection_cpp::MessageMembers* members, uint8_t* data);
 
 private:
   void drawPlot();
-  void drawSlice(
-    const uint64_t & curr_point, const uint64_t & next_point, const uint64_t & horizontal_loc);
+  void drawSlice(const uint64_t& curr_point, const uint64_t& next_point, const uint64_t& horizontal_loc);
 
   DataBuffer<double> data_buffer_;  // Storage of actual message data
 
   unsigned long timestep_;
   DataBuffer<int> scaled_data_buffer_;  // Storage of scaled message data.
-    // Gets rescaled upon recieving a datapoint beyond previous bounds
+                                        // Gets rescaled upon recieving a datapoint beyond previous bounds
 
   double highest_value_, lowest_value_;
 

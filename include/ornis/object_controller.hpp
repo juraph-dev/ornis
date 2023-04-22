@@ -1,6 +1,7 @@
 #ifndef OBJECT_CONTROLLER_H_
 #define OBJECT_CONTROLLER_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <rcl/rcl.h>
@@ -35,7 +36,9 @@ public:
   // Communication channel between the object controller and the user interface
   std::shared_ptr<Channel> interface_channel_;
 
-  std::atomic_bool spin_ = true;
+  std::atomic_bool spin_;
+
+  Ui ui_;
 
 private:
   // Initialises the user interface
@@ -48,10 +51,10 @@ private:
   void updateMonitors();
   // Check if the UI is wating for any information
   void checkUiRequests();
+  // Dedicated ui loop function
+  uint8_t spinUi();
   // Timed callback for collecting general ros statistics
   void heartBeat();
-
-  Ui ui_;
 
   std::map<std::string, std::vector<std::pair<std::string, std::string>>> previous_monitor_info_;
 

@@ -1,4 +1,5 @@
 #include "ornis/monitor_interface.hpp"
+#include "ornis/options.hpp"
 
 MonitorInterface::MonitorInterface(const std::string& monitor_name, const std::string& selector_title)
   : monitor_name_(monitor_name), selector_title_(selector_title)
@@ -9,11 +10,17 @@ MonitorInterface::~MonitorInterface()
 {
 }
 
-void MonitorInterface::initialiseInterface(const int& x, const int& y, const ncpp::Plane* std_plane)
+void MonitorInterface::initialiseInterface(const int& x, const int& y, const ncpp::Plane* std_plane,
+                                           const Options::color_scheme& theme)
 {
+  const auto &fg = std::get<1>(theme);
+  const auto &bg = std::get<2>(theme);
+  const auto &hl = std::get<3>(theme);
+  const auto &ll = std::get<4>(theme);
+
   ncpp::Plane selector_plane = ncpp::Plane(std_plane, 2, 2, x, y);
 
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
   selector_plane.set_base("", 0, bgchannels);
@@ -31,11 +38,10 @@ void MonitorInterface::initialiseInterface(const int& x, const int& y, const ncp
   sopts.maxdisplay = 10;
   sopts.items = items;
   sopts.defidx = 0;
-  sopts.boxchannels = NCCHANNELS_INITIALIZER(0xe0, 0xe0, 0xe0, 32, 51, 70);
-  sopts.opchannels = NCCHANNELS_INITIALIZER(173, 126, 77, 32, 51, 70);
-  sopts.descchannels = NCCHANNELS_INITIALIZER(204, 145, 109, 32, 51, 70);
-  sopts.footchannels = NCCHANNELS_INITIALIZER(0xe0, 0, 0x40, 0x20, 0, 0);
-  sopts.titlechannels = NCCHANNELS_INITIALIZER(0xff, 0xff, 0xff, 0, 0, 0);
+  sopts.boxchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, 0, 0, 0);
+  sopts.opchannels = NCCHANNELS_INITIALIZER(hl.r, hl.b, hl.g, bg.r, bg.b, bg.g);
+  sopts.descchannels = NCCHANNELS_INITIALIZER(ll.r, ll.b, ll.g, bg.r, bg.b, bg.g);
+  sopts.titlechannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, 0x0e, 0x0e, 0x0e);
 
   ncchannels_set_bg_alpha(&sopts.boxchannels, NCALPHA_TRANSPARENT);
   ncchannels_set_bg_alpha(&sopts.titlechannels, NCALPHA_TRANSPARENT);
@@ -47,8 +53,7 @@ void MonitorInterface::initialiseInterface(const int& x, const int& y, const ncp
   // Create minimised plane (With a border and some text, out of view of the window)
   minimised_plane_ = std::make_shared<ncpp::Plane>(std_plane, monitor_name_.size() + 2, 3, -10, 0);
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
-
+  uint64_t channel = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
   minimised_plane_->set_base("", 0, channel);
   minimised_plane_->perimeter_rounded(0, channel, 0);
 

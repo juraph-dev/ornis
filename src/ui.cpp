@@ -49,6 +49,11 @@ bool Ui::initialise(std::shared_ptr<Channel> interface_channel,
   // (Will also create a default config if none found)
   options_.loadConfiguration();
 
+  const auto fg = std::get<1>(options_.current_scheme_);
+  const auto bg = std::get<2>(options_.current_scheme_);
+  // const auto hl = std::get<3>(options_.current_scheme_);
+  // const auto ll = std::get<4>(options_.current_scheme_);
+
   ui_displaying_ = UiDisplayingEnum::monitors;
 
   interface_channel_ = std::move(interface_channel);
@@ -77,7 +82,7 @@ bool Ui::initialise(std::shared_ptr<Channel> interface_channel,
 
   notcurses_stdplane_ = std::shared_ptr<ncpp::Plane>(notcurses_core_->get_stdplane());
 
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
   notcurses_stdplane_->set_base("", 0, bgchannels);
@@ -100,10 +105,10 @@ bool Ui::initialise(std::shared_ptr<Channel> interface_channel,
   {
     const int x_loc = width_dist(rng);
     const int y_loc = height_dist(rng);
-    interface.second->initialiseInterface(y_loc, x_loc, notcurses_stdplane_.get());
+    interface.second->initialiseInterface(y_loc, x_loc, notcurses_stdplane_.get(), options_.current_scheme_);
   }
 
-  uint64_t popup_channels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+  uint64_t popup_channels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
   ncchannels_set_bg_alpha(&popup_channels, NCALPHA_OPAQUE);
 
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);

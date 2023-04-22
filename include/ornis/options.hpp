@@ -48,6 +48,9 @@ public:
   // wants to display a smaller version of the plane.
   std::shared_ptr<ncpp::Plane> minimised_plane_;
 
+  // Currently selected theme.
+  color_scheme current_scheme_;
+
 private:
   enum class MenuEnum
   {
@@ -79,8 +82,6 @@ private:
     { "Native", { 32, 0, 100 }, { 1, 80, 228 }, { 200, 30, 0 }, { 0, 30, 200 } }
   };
 
-  // Hard coded default scheme for now
-  color_scheme current_scheme_;  // = available_colour_list[0];
 
   // Application configuration, currently very simple, and
   // option storage reflects that

@@ -14,6 +14,7 @@
 #include <string>
 #include <thread>  // IWYU pragma: keep
 #include <vector>
+#include "ornis/options.hpp"
 
 inline bool operator==(const ncselector_item A, const ncselector_item B)
 {
@@ -25,7 +26,8 @@ class MonitorInterface
 public:
   MonitorInterface(const std::string& monitor_name, const std::string& selector_title);
   ~MonitorInterface();
-  void initialiseInterface(const int& x, const int& y, const ncpp::Plane* std_plane);
+  void initialiseInterface(const int& x, const int& y, const ncpp::Plane* std_plane,
+                           const Options::color_scheme& theme);
 
   unsigned getLines() const
   {

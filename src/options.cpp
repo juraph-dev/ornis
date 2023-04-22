@@ -24,10 +24,10 @@ void OptionsMenu::initialise(const int& x, const int& y, const ncpp::Plane* std_
 
   std::unique_ptr<ncpp::Plane> options_plane = std::make_unique<ncpp::Plane>(std_plane, 2, 2, -100, -100);
 
-  const auto fg = std::get<1>(current_scheme_);
-  const auto bg = std::get<2>(current_scheme_);
-  const auto hl = std::get<3>(current_scheme_);
-  const auto ll = std::get<4>(current_scheme_);
+  const auto &fg = std::get<1>(current_scheme_);
+  const auto &bg = std::get<2>(current_scheme_);
+  const auto &hl = std::get<3>(current_scheme_);
+  const auto &ll = std::get<4>(current_scheme_);
   uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
@@ -59,7 +59,7 @@ void OptionsMenu::initialise(const int& x, const int& y, const ncpp::Plane* std_
   minimised_plane_ =
       std::make_shared<ncpp::Plane>(std_plane, 3, options_title.size() + 2, 1, x / 2 - (options_title.size() + 2) / 2);
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(hl.r, hl.b, hl.g, bg.r, bg.b, bg.g);
+  uint64_t channel = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
   minimised_plane_->set_base("", 0, channel);
   minimised_plane_->perimeter_rounded(0, channel, 0);
 

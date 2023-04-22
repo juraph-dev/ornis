@@ -15,7 +15,6 @@ OptionsMenu::OptionsMenu()
 }
 OptionsMenu::~OptionsMenu()
 {
-  selector_.reset();
 }
 
 void OptionsMenu::initialise(const int& x, const int& y, const ncpp::Plane* std_plane)
@@ -73,7 +72,7 @@ CommandEnum OptionsMenu::handleInput(const ncinput& input)
 {
   // Currently, only input is a selector
   // Handle transition (Enter)
-  if (input.id == NCKEY_ENTER && input.evtype == NCTYPE_PRESS)
+  if (input.id == NCKEY_ENTER)// && input.evtype == NCTYPE_PRESS)
   {
     switch (current_menu_)
     {
@@ -88,6 +87,7 @@ CommandEnum OptionsMenu::handleInput(const ncinput& input)
       }
     }
   }
+  return CommandEnum::noAction;
 }
 
 void OptionsMenu::selectColour()

@@ -82,7 +82,6 @@ private:
     { "Native", { 32, 0, 100 }, { 1, 80, 228 }, { 200, 30, 0 }, { 0, 30, 200 } }
   };
 
-
   // Application configuration, currently very simple, and
   // option storage reflects that
   std::map<std::string, std::string> current_configuration_;

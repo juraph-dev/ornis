@@ -22,7 +22,9 @@ using namespace std::chrono_literals;
 TopicStreamer::TopicStreamer(const std::string& topic_name, const std::string& topic_entry,
                              const std::string& topic_type, const std::string& entry_type,
                              const std::string& entry_path, std::shared_ptr<StreamChannel>& interface_channel,
-                             std::shared_ptr<rcl_node_t> ros_interface_node, rcl_context_t context)
+                             std::shared_ptr<rcl_node_t> ros_interface_node, rcl_context_t context,
+                             const Options::color_scheme& theme)
+
   : topic_name_(topic_name)
   , topic_entry_(topic_entry)
   , topic_type_(topic_type)
@@ -30,6 +32,7 @@ TopicStreamer::TopicStreamer(const std::string& topic_name, const std::string& t
   , entry_path_(entry_path)
   , ros_interface_node_(std::move(ros_interface_node))
   , context_(context)
+  , theme_(theme)
 {
   stream_open_ = true;
   interface_channel_ = interface_channel;
@@ -128,7 +131,7 @@ void TopicStreamer::initialise()
   if (entry_type_ == "Msg" || entry_type_.empty())
   {
     topic_visualiser_ =
-        std::make_unique<TopicPrinter>(TopicPrinter(interface_channel_->stream_plane_.get(), 20, 80, offset_));
+        std::make_unique<TopicPrinter>(TopicPrinter(interface_channel_->stream_plane_.get(), 20, 80, offset_, theme_));
   }
   else
   {
@@ -138,12 +141,12 @@ void TopicStreamer::initialise()
     if (introspection::parsableAsNumeric(found_member))
     {
       topic_visualiser_ =
-          std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80, offset_));
+          std::make_unique<TopicPlotter>(TopicPlotter(interface_channel_->stream_plane_.get(), 20, 80, offset_, theme_));
     }
     else
     {
       topic_visualiser_ = std::make_unique<TopicStringViewer>(
-          TopicStringViewer(interface_channel_->stream_plane_.get(), 20, 80, offset_));
+          TopicStringViewer(interface_channel_->stream_plane_.get(), 20, 80, offset_, theme_));
     }
   }
 

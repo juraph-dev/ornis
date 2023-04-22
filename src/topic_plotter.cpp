@@ -8,15 +8,18 @@
 #include "ornis/introspection_functions.hpp"
 #include "ornis/ui_helpers.hpp"
 
-TopicPlotter::TopicPlotter(ncpp::Plane* plane, uint height, uint width, std::vector<uint32_t> entry_path)
-  : TopicVisualiser(plane, height, width, entry_path)
+TopicPlotter::TopicPlotter(ncpp::Plane* plane, uint height, uint width, std::vector<uint32_t> entry_path,
+                           const Options::color_scheme theme)
+  : TopicVisualiser(plane, height, width, entry_path, theme)
   , data_buffer_(width - 3)
   , scaled_data_buffer_(width - 3)
   , entry_offset_(0)
 {
+  const auto& fg = std::get<1>(theme);
+  const auto& bg = std::get<2>(theme);
   timestep_ = 0;
   plane_->resize(height_, width_);
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_OPAQUE);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_OPAQUE);
   plane_->set_channels(bgchannels);

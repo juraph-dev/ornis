@@ -48,11 +48,10 @@ bool Ui::initialise(std::shared_ptr<Channel> interface_channel,
   // Get the saved options from the saved config file
   // (Will also create a default config if none found)
   options_.loadConfiguration();
+  current_scheme_ = options_.current_scheme_;
 
   const auto fg = std::get<1>(options_.current_scheme_);
   const auto bg = std::get<2>(options_.current_scheme_);
-  // const auto hl = std::get<3>(options_.current_scheme_);
-  // const auto ll = std::get<4>(options_.current_scheme_);
 
   ui_displaying_ = UiDisplayingEnum::monitors;
 
@@ -387,7 +386,7 @@ void Ui::handleInputOptions(const ncinput& input)
     transitionUiState(UiDisplayingEnum::monitors);
     return;
   }
-  else if (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input))
+  else if (ui_helpers::selectInput(input) || ui_helpers::mouseClick(input))
   {
     const auto action = options_.handleInput(input);
     if (action == Options::CommandEnum::reboot)
@@ -424,11 +423,11 @@ void Ui::handleInputMonitorEntry(const ncinput& input)
     transitionUiState(UiDisplayingEnum::selectedMonitor);
   }
   // TODO Clear up once you're done implementing the new topic streaming methods
-  else if (selected_monitor_ == "topics" && (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input)))
+  else if (selected_monitor_ == "topics" && (ui_helpers::selectInput(input) || ui_helpers::mouseClick(input)))
   {
     transitionUiState(UiDisplayingEnum::monitorSelection);
   }
-  else if (selected_monitor_ == "services" && (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input)))
+  else if (selected_monitor_ == "services" && (ui_helpers::selectInput(input) || ui_helpers::mouseClick(input)))
   {
     transitionUiState(UiDisplayingEnum::monitorInteraction);
     // FIXME: Shouldn't have to send a fake input
@@ -451,7 +450,7 @@ void Ui::handleInputMonitorInteraction(const ncinput& input)
     return;
   }
 
-  if (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input))
+  if (ui_helpers::selectInput(input) || ui_helpers::mouseClick(input))
   {
     // Send the interaction string to the interface.
     renderMonitorInteractionResult(interface_map_[selected_monitor_].get());
@@ -521,7 +520,7 @@ void Ui::handleInputMonitorSelection(const ncinput& input)
     return;
   }
 
-  else if (input.id == NCKEY_ENTER || ui_helpers::mouseClick(input))
+  else if (ui_helpers::selectInput(input) || ui_helpers::mouseClick(input))
   {
     transitionUiState(UiDisplayingEnum::streamingTopic);
     return;
@@ -922,7 +921,7 @@ void Ui::resizeUi(const uint& rows, const uint& cols)
 
 bool Ui::offerInputMonitor(MonitorInterface* interface, const ncinput& input)
 {
-  if ((ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface->get_plane())) || input.id == NCKEY_ENTER)
+  if ((ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface->get_plane())) || ui_helpers::selectInput(input))
   {
     // If we recieve an enter, we neeed to grab the
     // currently selected topic, and view the topic information

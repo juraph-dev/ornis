@@ -41,6 +41,8 @@ public:
   // param is checked by, and acted upon by the object controller.
   std::atomic_bool reboot_required_;
 
+  Options::color_scheme current_scheme_;
+
 private:
   // Class to for storing the current ui state
   // TODO: Rename monitorInteraction. That's a silly name.
@@ -140,9 +142,6 @@ private:
   // Popup Information planes
   std::unique_ptr<ncpp::Plane> monitor_info_plane_;
 
-  // Help menu options
-  Options::OptionsMenu options_;
-
   UiDisplayingEnum ui_displaying_;
 
   // Storage for the monitor that has been selected to be interacted with by the
@@ -164,6 +163,9 @@ private:
   // Number of frames to use for anmations
   // TODO: re-write as a parameter for the user to configure
   int transition_time_ = 50;
+
+  // Help menu options
+  Options::OptionsMenu options_;
 };
 
 #endif  // UI_H_

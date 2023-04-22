@@ -9,6 +9,7 @@
 #include <string>
 #include <thread>  // IWYU pragma: keep
 
+#include "ornis/options.hpp"
 #include "ornis/stream_interface.hpp"
 #include "ornis/topic_visualiser.hpp"
 
@@ -27,7 +28,7 @@ public:
   TopicStreamer(const std::string& topic_name, const std::string& topic_entry, const std::string& topic_type,
                 const std::string& entry_type, const std::string& entry_path,
                 std::shared_ptr<StreamChannel>& interface_channel, std::shared_ptr<rcl_node_t> ros_interface_node,
-                rcl_context_t context);
+                rcl_context_t context, const Options::color_scheme& theme);
   ~TopicStreamer();
 
   void closeStream();
@@ -59,6 +60,8 @@ private:
   std::atomic<bool> stream_open_;
 
   std::unique_ptr<TopicVisualiser> topic_visualiser_;
+
+  const Options::color_scheme theme_;
 };
 
 #endif  // TOPIC_STREAMER_H_

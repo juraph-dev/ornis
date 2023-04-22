@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ncpp/Plane.hh"
+#include "ornis/options.hpp"
 
 template <typename T>
 class DataBuffer
@@ -37,8 +38,8 @@ public:
 class TopicVisualiser
 {
 public:
-  TopicVisualiser(ncpp::Plane* plane, uint height, uint width, std::vector<uint32_t> entry_path)
-    : height_(height), width_(width), entry_path_(entry_path), plane_(plane)
+  TopicVisualiser(ncpp::Plane* plane, uint height, uint width, std::vector<uint32_t> entry_path, const Options::color_scheme& theme)
+    : height_(height), width_(width), entry_path_(entry_path), plane_(plane), theme_(theme)
   {
   }
   virtual ~TopicVisualiser()
@@ -52,6 +53,8 @@ public:
   std::vector<uint32_t> entry_path_;
 
   ncpp::Plane* plane_;
+
+  const Options::color_scheme theme_;
 };
 
 #endif  // TOPIC_VISUALISER_H_

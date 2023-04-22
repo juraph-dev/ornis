@@ -3,12 +3,14 @@
 
 #include <vector>
 
+#include "ornis/options.hpp"
 #include "ornis/topic_visualiser.hpp"
 
 class TopicPlotter : public TopicVisualiser
 {
 public:
-  TopicPlotter(ncpp::Plane* plane, uint height, uint width, std::vector<uint32_t> entry_path);
+  TopicPlotter(ncpp::Plane* plane, uint height, uint width, std::vector<uint32_t> entry_path,
+               const Options::color_scheme theme);
   ~TopicPlotter();
 
   void renderData(const rosidl_typesupport_introspection_cpp::MessageMembers* members, uint8_t* data);

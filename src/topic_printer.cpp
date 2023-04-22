@@ -3,11 +3,14 @@
 #include "ornis/introspection_functions.hpp"
 #include "ornis/ui_helpers.hpp"
 
-TopicPrinter::TopicPrinter(ncpp::Plane* plane, uint height, uint width, std::vector<uint32_t> entry_path)
-  : TopicVisualiser(plane, height, width, entry_path), longest_string_(0)
+TopicPrinter::TopicPrinter(ncpp::Plane* plane, uint height, uint width, std::vector<uint32_t> entry_path,
+                           const Options::color_scheme theme)
+  : TopicVisualiser(plane, height, width, entry_path, theme), longest_string_(0)
 {
   plane_->resize(height_, width_);
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(255, 255, 255, 32, 51, 70);
+  const auto& fg = std::get<1>(theme);
+  const auto& bg = std::get<2>(theme);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_OPAQUE);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_OPAQUE);
   plane_->set_channels(bgchannels);

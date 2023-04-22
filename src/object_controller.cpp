@@ -194,7 +194,8 @@ void ObjectController::checkUiRequests()
         // Create the stream thread
         stream_map_[topic_name] =
             std::make_shared<TopicStreamer>(topic_name, topic_entry, topic_type, entry_type, entry_path,
-                                            stream_interface_map_[topic_name], ros_interface_node_, context_);
+                                            stream_interface_map_[topic_name], ros_interface_node_, context_,
+                                            ui_.current_scheme_);
         interface_channel_->request_pending_ = false;
         interface_channel_->condition_variable_.notify_all();
         break;

@@ -1,6 +1,8 @@
 #include "ornis/object_controller.hpp"
 
 #include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <rclcpp/utilities.hpp>
 #include <signal.h>
 #include <stdlib.h>
@@ -192,10 +194,9 @@ void ObjectController::checkUiRequests()
         // (Both to and from)
         stream_interface_map_[topic_name] = std::make_shared<StreamChannel>(topic_name);
         // Create the stream thread
-        stream_map_[topic_name] =
-            std::make_shared<TopicStreamer>(topic_name, topic_entry, topic_type, entry_type, entry_path,
-                                            stream_interface_map_[topic_name], ros_interface_node_, context_,
-                                            ui_.current_scheme_);
+        stream_map_[topic_name] = std::make_shared<TopicStreamer>(topic_name, topic_entry, topic_type, entry_type,
+                                                                  entry_path, stream_interface_map_[topic_name],
+                                                                  ros_interface_node_, context_, ui_.current_scheme_);
         interface_channel_->request_pending_ = false;
         interface_channel_->condition_variable_.notify_all();
         break;
@@ -220,14 +221,17 @@ void ObjectController::checkUiRequests()
 int ObjectController::spin()
 {
   char** argv = NULL;
-  context_ = rcl_get_zero_initialized_context();
   rcl_init_options_t options = rcl_get_zero_initialized_init_options();
+
   rcl_ret_t ret = rcl_init_options_init(&options, rcl_get_default_allocator());
+
+  context_ = rcl_get_zero_initialized_context();
+
   ret = rcl_init(0, argv, &options, &context_);
 
   if (ret != RCL_RET_OK)
   {
-    std::cerr << "FAILED RCL INIT" << ret << '\n';
+    std::cerr << "Failed rcl init: " << ret << '\n';
   }
 
   rcl_node_options_t node_options = rcl_node_get_default_options();
@@ -236,8 +240,15 @@ int ObjectController::spin()
 
   if (ret != RCL_RET_OK)
   {
-    std::cerr << "FAILED TO INITIALISE RCL NODE, ERROR: " << ret << '\n';
-    return 1;
+    std::cerr << "Failed to initialise rcl node, error: " << ret << '\n';
+    return -1;
+  }
+
+  if (!strcmp("rmw_fastrtps_cpp", rmw_get_implementation_identifier()))
+  {
+    rclcpp::shutdown();
+    ret = rcl_node_options_fini(&node_options);
+    return 2;
   }
 
   const auto ts = introspection::getMessageTypeSupport("std_msgs/msg/String",
@@ -245,17 +256,15 @@ int ObjectController::spin()
 
   if (!ts)
   {
-    // If TS fails to initialise
+    rclcpp::shutdown();
+    ret = rcl_node_options_fini(&node_options);
     return 1;
-  }
-  else if (ts->typesupport_identifier != rosidl_typesupport_introspection_cpp::typesupport_identifier)
-  {
-    return 2;
   }
 
   while (spinUi() != 1)
     ;
 
+  rclcpp::shutdown();
   return rcl_node_options_fini(&node_options);
 }
 

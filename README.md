@@ -23,9 +23,13 @@ https://user-images.githubusercontent.com/28330806/230512415-6c214e54-f59b-49c7-
 ### Prerequisites
 [Notcurses](https://github.com/dankamongmen/notcurses) \
 [ROS2 Humble or above](https://docs.ros.org/en/humble/index.html) \
-[Cyclone DDS](https://github.com/ros2/rmw_cyclonedds)
 
-FastRTPS isn't supported, as there doesn't appear to be introspection support for it [like there is for cyclonedds](https://github.com/ros2/rmw_cyclonedds/blob/2bbb80929e32d36a9e938c1ecb40f3fbf271b9f3/rmw_cyclonedds_cpp/src/TypeSupport.cpp), although it [appears to be in the works](https://github.com/ros2/rosidl_dynamic_typesupport_fastrtps), and I plan on adding support for it as soon as I get a chance. 
+FastRTPS's default configuration doesn't work, so you're going to need to do the following if you're using it:
+```sh
+apt-get install ros-${distro}-rmw-fastrtps-dynamic-cpp
+echo 'alias ornis="RMW_IMPLEMENTATION=rmw_fastrtps_dynamic_cpp ornis" >> ~/.bashrc
+```
+CycloneDDS works out of the box, so no extra config required.
 
 Windows and mac also aren't currently supported. Mac might work, feel free to try it and let me know how it goes. 
 

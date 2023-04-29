@@ -175,7 +175,6 @@ void OptionsMenu::loadConfiguration()
   if (!std::filesystem::exists(config_dir))
   {
     createDefaultConfiguration();
-    return;
   }
 
   std::ifstream inputFile(config_dir);

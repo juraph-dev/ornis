@@ -29,19 +29,26 @@ int main(int argc, char* argv[])
     return 0;
   }
 
-  const int obj_ret = object_controller.spin();
+  int obj_ret = object_controller.spin();
 
+  if (obj_ret == -1)
+  {
+    (&object_controller)->~ObjectController();
+    new (&object_controller) ObjectController();
+    obj_ret = object_controller.spin();
+  }
   if (obj_ret == 1)
   {
     std::cerr << "Failed to get typesupport for std_msgs. Ensure your ros workspace is sourced\n";
   }
   else if (obj_ret == 2)
   {
-    std::cerr << "The ROS DDS does not appear to be configured to use typesupport introspection, \n \
-      If you're using fastrtps, export RMW_IMPLEMENTATION=rmw_fastrtps_cpp\n \
+    std::cerr << "Hello there, it looks like you're using fastrtps without dynamic typesupport, \n \
+      You can launch ORNIS with this functionality using: $RMW_IMPLEMENTATION=rmw_fastrtps_dynamic_cpp ornis\n \
      (You may also need to install the package: \n "
               << "#apt install ros-" << std::getenv("ROS_DISTRO") << "-rmw-fastrtps-dynamic-cpp)\n \
-      See this issue: https://gitlab.com/juraph/ornis/-/issues/5 for more information. \n Exiting...\n";
+      Maybe a handy alias: \"alias ornis=RMW_IMPLEMENTATION=rmw_fastrtps_dynamic_cpp ornis\" in the ~/.bashrc?\
+      \n Exiting...\n";
   }
 
   exit(0);

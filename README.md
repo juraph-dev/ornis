@@ -27,7 +27,7 @@ https://user-images.githubusercontent.com/28330806/230512415-6c214e54-f59b-49c7-
 FastRTPS's default configuration doesn't work, so you're going to need to do the following if you're using it:
 ```sh
 apt-get install ros-${distro}-rmw-fastrtps-dynamic-cpp
-echo 'alias ornis="RMW_IMPLEMENTATION=rmw_fastrtps_dynamic_cpp ornis" >> ~/.bashrc
+echo 'alias ornis="RMW_IMPLEMENTATION=rmw_fastrtps_dynamic_cpp ornis"' >> ~/.bashrc
 ```
 CycloneDDS works out of the box, so no extra config required.
 

@@ -460,18 +460,36 @@ bool populateMessage(uint8_t* message_data, const rosidl_typesupport_introspecti
   return true;
 }
 
+const std::string sanitiseNumericData(const std::string &data)
+{
+  // Ensure String is not empty,
+  // And if it isn't, ensure it's a valid number
+  const auto is_numeric = data.find_first_not_of("-.0123456789");
+  if (data.empty() || !is_numeric )
+  {
+    return "0";
+  }
+  else
+  {
+    return data;
+  }
+}
+
 void stringToMessageData(uint8_t* message_data, const rosidl_typesupport_introspection_cpp::MessageMember& member_info,
-                         const std::string& data)
+                         std::string& data)
 {
   switch (member_info.type_id_)
   {
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_FLOAT:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<float*>(message_data + member_info.offset_) = std::stof(data);
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_DOUBLE:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<double*>(message_data + member_info.offset_) = std::stod(data);
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_LONG_DOUBLE:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<long double*>(message_data + member_info.offset_) = std::stold(data);
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_CHAR:
@@ -481,6 +499,7 @@ void stringToMessageData(uint8_t* message_data, const rosidl_typesupport_introsp
       *reinterpret_cast<wchar_t*>(message_data + member_info.offset_) = data.at(0);
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_BOOLEAN:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<bool*>(message_data + member_info.offset_) =
           (strcasecmp(data.c_str(), "true") == 0 || atoi(data.c_str()) != 0);
       break;
@@ -488,27 +507,35 @@ void stringToMessageData(uint8_t* message_data, const rosidl_typesupport_introsp
       // FIXME: Write this
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT8:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<uint8_t*>(message_data + member_info.offset_) = static_cast<uint8_t>(std::stoul(data));
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT8:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<int8_t*>(message_data + member_info.offset_) = static_cast<int8_t>(std::stoi(data));
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT16:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<uint16_t*>(message_data + member_info.offset_) = static_cast<uint16_t>(std::stoul(data));
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT16:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<int16_t*>(message_data + member_info.offset_) = static_cast<int16_t>(std::stoi(data));
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT32:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<uint32_t*>(message_data + member_info.offset_) = static_cast<uint32_t>(std::stoul(data));
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT32:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<int32_t*>(message_data + member_info.offset_) = stoi(data);
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_UINT64:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<uint64_t*>(message_data + member_info.offset_) = stoull(data);
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_INT64:
+      data = sanitiseNumericData(data);
       *reinterpret_cast<int64_t*>(message_data + member_info.offset_) = static_cast<int64_t>(std::stoll(data));
       break;
     case rosidl_typesupport_introspection_cpp::ROS_TYPE_STRING:

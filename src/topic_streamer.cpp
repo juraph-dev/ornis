@@ -79,7 +79,7 @@ void TopicStreamer::callback(rcl_subscription_t& subscription, const rosidl_mess
   {
     // TODO: Test to make sure this fail string actually writes
     const std::string error = "Failed to read message! Error: " + std::to_string(rc);
-    ui_helpers::writeStringToPlane(*interface_channel_->stream_plane_, error);
+    ui_helpers::writeStringToPlane(*interface_channel_->stream_plane_, error, theme_);
   }
 }
 
@@ -98,7 +98,7 @@ void TopicStreamer::initialise()
   // Ornis moves to support multiple streams, this will cause issues.
 
   // Make the stream plane pretty
-  ui_helpers::writeStringToTitledPlane(*interface_channel_->stream_plane_, topic_name_, "Waiting for message");
+  ui_helpers::writeStringToTitledPlane(*interface_channel_->stream_plane_, topic_name_, "Waiting for message", theme_);
 
   const auto type_support = introspection::getMessageTypeSupport(
       topic_type_.c_str(), rosidl_typesupport_introspection_cpp::typesupport_identifier);
@@ -175,7 +175,7 @@ void TopicStreamer::initialise()
     if (ret == RCL_RET_TIMEOUT)
     {
       ui_helpers::writeStringToTitledPlane(*interface_channel_->stream_plane_, topic_name_,
-                                           "Timed out waiting for message!");
+                                           "Timed out waiting for message!", theme_);
       std::this_thread::sleep_for(std::chrono::seconds(2));
       continue;
     }

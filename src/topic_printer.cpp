@@ -10,7 +10,7 @@ TopicPrinter::TopicPrinter(ncpp::Plane* plane, uint height, uint width, std::vec
   plane_->resize(height_, width_);
   const auto& fg = std::get<1>(theme);
   const auto& bg = std::get<2>(theme);
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, bg.r, bg.g, bg.b);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_OPAQUE);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_OPAQUE);
   plane_->set_channels(bgchannels);
@@ -53,5 +53,5 @@ void TopicPrinter::renderData(const rosidl_typesupport_introspection_cpp::Messag
 
   msg_tree::MsgTree topic_msg(topic_contents);
   topic_msg.recursivelyCreateTree(topic_msg.getRoot(), typesupport, member_data);
-  ui_helpers::writeDetailedTreeToTitledPlane(*plane_, topic_char, topic_msg);
+  ui_helpers::writeDetailedTreeToTitledPlane(*plane_, topic_char, topic_msg, theme_);
 }

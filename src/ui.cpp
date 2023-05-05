@@ -332,7 +332,8 @@ void Ui::refreshUi()
     ncinput nc_input;
     // If we have an input
     notcurses_core_->get(false, &nc_input);
-    if (nc_input.id != (uint32_t)-1 && nc_input.id != 0)
+    // Drop unwanted inputs
+    if (nc_input.id != (uint32_t)-1 && nc_input.id != 0 && ui_helpers::isPress(nc_input))
     {
       switch (ui_displaying_)
       {

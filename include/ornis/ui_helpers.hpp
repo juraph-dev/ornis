@@ -828,7 +828,7 @@ inline bool upInput(const ncinput& input)
 
 inline bool mouseClick(const ncinput& input)
 {
-  return (input.id == NCKEY_BUTTON1 && input.evtype == NCTYPE_RELEASE);
+  return (input.id == NCKEY_BUTTON1);
 }
 
 // Case for confirmation selections
@@ -836,7 +836,14 @@ inline bool selectInput(const ncinput& input)
 {
   // Kitty terminal will send both a press, and release input,
   // we create a wrapper here to prevent duplicate inputs
-  return (input.id == NCKEY_ENTER && input.evtype != NCTYPE_RELEASE);
+  return (input.id == NCKEY_ENTER);
+}
+
+inline bool isPress(const ncinput& input)
+{
+  // Kitty terminal will send both a press, and release input,
+  // Add a lil' diddy here to prevent keys from being sent twice
+  return (input.evtype != NCTYPE_RELEASE);
 }
 
 }  // namespace ui_helpers

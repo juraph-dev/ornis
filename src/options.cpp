@@ -72,7 +72,7 @@ CommandEnum OptionsMenu::handleInput(const ncinput& input)
 {
   // Currently, only input is a selector
   // Handle transition (Enter)
-  if (input.id == NCKEY_ENTER)// && input.evtype == NCTYPE_PRESS)
+  if (input.id == NCKEY_ENTER)
   {
     switch (current_menu_)
     {

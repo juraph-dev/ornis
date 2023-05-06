@@ -14,9 +14,9 @@ TopicStringViewer::TopicStringViewer(ncpp::Plane* plane, uint height, uint width
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_OPAQUE);
 
   // Step values for fading string history
-  r_step_ = (255 - 32) / height_;
-  g_step_ = (255 - 51) / height_;
-  b_step_ = (255 - 70) / height_;
+  r_step_ = (fg.r - bg.r) / height_;
+  g_step_ = (fg.g - bg.g) / height_;
+  b_step_ = (fg.b - bg.b) / height_;
 
   plane_->set_channels(bgchannels);
   plane->move_top();

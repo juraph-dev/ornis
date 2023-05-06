@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
 
 #include <atomic>
 #include <chrono>
@@ -81,7 +82,7 @@ bool Ui::initialise(std::shared_ptr<Channel> interface_channel,
 
   notcurses_stdplane_ = std::shared_ptr<ncpp::Plane>(notcurses_core_->get_stdplane());
 
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, bg.r, bg.g, bg.b);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
   notcurses_stdplane_->set_base("", 0, bgchannels);
@@ -107,7 +108,7 @@ bool Ui::initialise(std::shared_ptr<Channel> interface_channel,
     interface.second->initialiseInterface(y_loc, x_loc, notcurses_stdplane_.get(), options_.current_scheme_);
   }
 
-  uint64_t popup_channels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+  uint64_t popup_channels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, bg.r, bg.g, bg.b);
   ncchannels_set_bg_alpha(&popup_channels, NCALPHA_OPAQUE);
 
   monitor_info_plane_ = std::make_unique<ncpp::Plane>(notcurses_stdplane_.get(), 1, 1, 0, 0);
@@ -162,7 +163,8 @@ void Ui::renderMonitorInfo(MonitorInterface* interface)
   interface_channel_->condition_variable_.wait_for(data_request_lock, 4s,
                                                    [this] { return !interface_channel_->request_pending_.load(); });
 
-  ui_helpers::writeMapToTitledPlane(*monitor_info_plane_, item, interface_channel_->response_map_);
+  ui_helpers::writeMapToTitledPlane(*monitor_info_plane_, item, interface_channel_->response_map_,
+                                    options_.current_scheme_);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(term_height_ / 2 - monitor_info_plane_->get_dim_y() / 2,
@@ -192,8 +194,8 @@ void Ui::renderMonitorInteractionResult(MonitorInterface* interface)
   // const std::string reply = interface_channel_->response_string_;
 
   // ui_helpers::writeStringToTitledPlane(*monitor_info_plane_, item, reply);
-  ui_helpers::writeDetailedTreeToTitledPlane(*monitor_info_plane_, item,
-                                             interface_channel_->request_response_trees_->second);
+  ui_helpers::writeDetailedTreeToTitledPlane(
+      *monitor_info_plane_, item, interface_channel_->request_response_trees_->second, options_.current_scheme_);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move((term_height_ / 2) - (monitor_info_plane_->get_dim_y() / 2),
@@ -227,7 +229,7 @@ void Ui::renderMonitorSelection(MonitorInterface* interface)
 
   // Once we get the information, open the window for selecting the topic to render
   ui_helpers::writeSelectionTreeToTitledPlane(*monitor_info_plane_, item, currently_active_trees_->first,
-                                              currently_editing_index_);
+                                              currently_editing_index_, options_.current_scheme_);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(term_height_ / 2 - monitor_info_plane_->get_dim_y() / 2,
@@ -261,7 +263,8 @@ void Ui::renderMonitorInteraction(MonitorInterface* interface)
                                                    [this] { return !interface_channel_->request_pending_.load(); });
 
   // Once we get the information, open the window for editing the text, and we can edit from there
-  ui_helpers::writeEditingTreeToTitledPlane(*monitor_info_plane_, item, currently_active_trees_->first);
+  ui_helpers::writeEditingTreeToTitledPlane(*monitor_info_plane_, item, currently_active_trees_->first,
+                                            options_.current_scheme_);
 
   // Place the monitor info plane in the center of the screen
   monitor_info_plane_->move(term_height_ / 2 - monitor_info_plane_->get_dim_y() / 2,
@@ -332,7 +335,8 @@ void Ui::refreshUi()
     ncinput nc_input;
     // If we have an input
     notcurses_core_->get(false, &nc_input);
-    if (nc_input.id != (uint32_t)-1 && nc_input.id != 0)
+    // Drop unwanted inputs
+    if (nc_input.id != (uint32_t)-1 && nc_input.id != 0 && ui_helpers::isPress(nc_input))
     {
       switch (ui_displaying_)
       {
@@ -370,6 +374,26 @@ void Ui::refreshUi()
         }
         default:
           std::cerr << "Attempted to handle input without a state: " << __LINE__ << '\n';
+      }
+    }
+    // Handle re-draws in case of no input
+    else
+    {
+      if (ui_displaying_ == UiDisplayingEnum::streamingTopic)
+      {
+        // While we're here, peform a check on our
+        // stream plane, make sure it's centered
+        // While we're here, we also want to center the stream plane
+        const auto x = stream_map_->begin()->second->stream_plane_->get_x();
+        const auto y = stream_map_->begin()->second->stream_plane_->get_y();
+        const auto dim_x = stream_map_->begin()->second->stream_plane_->get_dim_x();
+        const auto dim_y = stream_map_->begin()->second->stream_plane_->get_dim_y();
+        const auto des_y = term_height_ / 2 - dim_y / 2;
+        const auto des_x = term_width_ / 2 - dim_x / 2;
+        if (std::abs(int(x - des_x)) >= 3 || std::abs(int(y - des_y)) >= 3)
+        {
+          stream_map_->begin()->second->stream_plane_->move(des_y, des_x);
+        }
       }
     }
 
@@ -508,7 +532,7 @@ void Ui::handleInputMonitorInteraction(const ncinput& input)
   // Update the cursor as well as plane
   ui_helpers::writeEditingTreeToTitledPlane(*monitor_info_plane_,
                                             interface_map_[selected_monitor_]->selector_->get_selected(),
-                                            currently_active_trees_->first);
+                                            currently_active_trees_->first, options_.current_scheme_);
 }
 
 void Ui::handleInputMonitorSelection(const ncinput& input)
@@ -559,9 +583,9 @@ void Ui::handleInputMonitorSelection(const ncinput& input)
   if (update_selection)
   {
     // Update the cursor as well as plane
-    ui_helpers::writeSelectionTreeToTitledPlane(*monitor_info_plane_,
-                                                interface_map_[selected_monitor_]->selector_->get_selected(),
-                                                currently_active_trees_->first, currently_editing_index_);
+    ui_helpers::writeSelectionTreeToTitledPlane(
+        *monitor_info_plane_, interface_map_[selected_monitor_]->selector_->get_selected(),
+        currently_active_trees_->first, currently_editing_index_, options_.current_scheme_);
   }
 }
 
@@ -921,7 +945,8 @@ void Ui::resizeUi(const uint& rows, const uint& cols)
 
 bool Ui::offerInputMonitor(MonitorInterface* interface, const ncinput& input)
 {
-  if ((ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface->get_plane())) || ui_helpers::selectInput(input))
+  if ((ui_helpers::mouseClick(input) && checkEventOnPlane(input, interface->get_plane())) ||
+      ui_helpers::selectInput(input))
   {
     // If we recieve an enter, we neeed to grab the
     // currently selected topic, and view the topic information

@@ -12,8 +12,8 @@ namespace Options
 struct rgb
 {
   int r;
-  int b;
   int g;
+  int b;
 };
 
 enum class CommandEnum

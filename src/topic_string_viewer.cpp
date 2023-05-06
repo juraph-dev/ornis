@@ -9,14 +9,14 @@ TopicStringViewer::TopicStringViewer(ncpp::Plane* plane, uint height, uint width
   plane_ = plane;
   const auto &fg = std::get<1>(theme);
   const auto &bg = std::get<2>(theme);
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, bg.r, bg.g, bg.b);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_OPAQUE);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_OPAQUE);
 
   // Step values for fading string history
-  r_step_ = (255 - 32) / height_;
-  g_step_ = (255 - 51) / height_;
-  b_step_ = (255 - 70) / height_;
+  r_step_ = (fg.r - bg.r) / height_;
+  g_step_ = (fg.g - bg.g) / height_;
+  b_step_ = (fg.b - bg.b) / height_;
 
   plane_->set_channels(bgchannels);
   plane->move_top();
@@ -49,7 +49,7 @@ void TopicStringViewer::drawStrings()
                                                    (int)(fg.b - b_step_ * (data_buffer_.i_ - i)), bg.r, bg.g, bg.b);
       plane_->set_channels(bgchannels);
       plane_->putstr(height_ - 1 - data_buffer_.i_ + i, 1, data_buffer_.buffer[i].c_str());
-      bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+      bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, bg.r, bg.g, bg.b);
       plane_->set_channels(bgchannels);
     }
   }
@@ -62,7 +62,7 @@ void TopicStringViewer::drawStrings()
                                                    (int)(bg.b + b_step_ * (i - data_buffer_.i_ + 2)), bg.r, bg.g, bg.b);
       plane_->set_channels(bgchannels);
       plane_->putstr(1 + i - data_buffer_.i_, 1, data_buffer_.buffer[i].c_str());
-      bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+      bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, bg.r, bg.g, bg.b);
       plane_->set_channels(bgchannels);
     }
     for (size_t i = 0; i < data_buffer_.i_; i++)
@@ -72,7 +72,7 @@ void TopicStringViewer::drawStrings()
                                                    (int)(fg.b - b_step_ * (data_buffer_.i_ - i)), bg.r, bg.g, bg.b);
       plane_->set_channels(bgchannels);
       plane_->putstr(height_ - 1 + i - data_buffer_.i_, 1, data_buffer_.buffer[i].c_str());
-      bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+      bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, bg.r, bg.g, bg.b);
       plane_->set_channels(bgchannels);
     }
   }

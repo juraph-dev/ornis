@@ -1,6 +1,7 @@
 #ifndef UI_HELPERS_H_
 #define UI_HELPERS_H_
 
+#include <algorithm>
 #include <codecvt>
 #include <cstring>
 #include <functional>
@@ -17,8 +18,10 @@
 
 namespace ui_helpers
 {
-inline void sizePlaneToString(ncpp::Plane& plane, const std::string& content)
+inline void sizePlaneToString(ncpp::Plane& plane, const std::string& content, const Options::color_scheme &color_scheme)
 {
+  const auto bg = std::get<2>(color_scheme);
+
   int row = 1;
   int col = 1;
   int longest_col = 0;
@@ -53,14 +56,16 @@ inline void sizePlaneToString(ncpp::Plane& plane, const std::string& content)
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
-  c.set_bg_rgb8(32, 51, 70);
-  c.set_fg_rgb8(32, 51, 70);
+  c.set_bg_rgb8(bg.r, bg.g, bg.b);
+  c.set_fg_rgb8(bg.r, bg.g, bg.b);
   plane.polyfill(row, longest_col, c);
 }
 
 inline void sizePlaneToMap(ncpp::Plane& plane, const std::string& title,
-                           const std::map<std::string, std::vector<std::string>>& content_map)
+                           const std::map<std::string, std::vector<std::string>>& content_map,
+                           const Options::color_scheme &color_scheme)
 {
+  const auto bg = std::get<2>(color_scheme);
   size_t row = 1;
   size_t col = 1;
   size_t longest_col = 0;
@@ -106,8 +111,8 @@ inline void sizePlaneToMap(ncpp::Plane& plane, const std::string& title,
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
-  c.set_bg_rgb8(32, 51, 70);
-  c.set_fg_rgb8(32, 51, 70);
+  c.set_bg_rgb8(bg.r, bg.g, bg.b);
+  c.set_fg_rgb8(bg.r, bg.g, bg.b);
   plane.polyfill(row, longest_col, c);
 }
 
@@ -125,8 +130,9 @@ inline void sizeTree(const msg_tree::MsgTreeNode& node, size_t& rows, size_t& lo
 }
 
 inline void sizePlaneToTree(ncpp::Plane& plane, const std::string& title, const msg_tree::MsgTree& tree,
-                            const bool skip_root = true)
+                            const Options::color_scheme &color_scheme, const bool skip_root = true)
 {
+  const auto bg = std::get<2>(color_scheme);
   size_t rows = 1;
   size_t longest_col = 0;
 
@@ -140,15 +146,16 @@ inline void sizePlaneToTree(ncpp::Plane& plane, const std::string& title, const 
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
-  c.set_bg_rgb8(32, 51, 70);
-  c.set_fg_rgb8(32, 51, 70);
+  c.set_bg_rgb8(bg.r, bg.g, bg.b);
+  c.set_fg_rgb8(bg.r, bg.g, bg.b);
   plane.polyfill(rows, longest_col, c);
 }
 
 // Overload to allow for functions to specify how much white space they want around the string
 inline void sizePlaneToString(ncpp::Plane& plane, const std::string& content, const int& row_buffer,
-                              const int& col_buffer)
+                              const int& col_buffer, const Options::color_scheme &color_scheme)
 {
+  const auto bg = std::get<2>(color_scheme);
   int row = 1;
   int col = 1;
   int longest_col = 0;
@@ -185,17 +192,17 @@ inline void sizePlaneToString(ncpp::Plane& plane, const std::string& content, co
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
-  c.set_bg_rgb8(32, 51, 70);
-  c.set_fg_rgb8(32, 51, 70);
+  c.set_bg_rgb8(bg.r, bg.g, bg.b);
+  c.set_fg_rgb8(bg.r, bg.g, bg.b);
   plane.polyfill(row, longest_col, c);
 }
 
-inline void writeStringToPlane(ncpp::Plane& plane, const std::string& content)
+inline void writeStringToPlane(ncpp::Plane& plane, const std::string& content, const Options::color_scheme &color_scheme)
 {
   plane.erase();
   plane.move_top();
 
-  ui_helpers::sizePlaneToString(plane, content);
+  ui_helpers::sizePlaneToString(plane, content, color_scheme);
 
   int row = 1;
   int col = 1;
@@ -223,13 +230,13 @@ inline void writeStringToPlane(ncpp::Plane& plane, const std::string& content)
 }
 
 // Identical to previous, but renders a cursor at index
-inline void writeStringToPlane(ncpp::Plane& plane, const std::string& content, const int& cursor_index)
+inline void writeStringToPlane(ncpp::Plane& plane, const std::string& content, const int& cursor_index, const Options::color_scheme &color_scheme)
 {
   // Cursor index is a location in string. If -1, place at end of string
   plane.erase();
   plane.move_top();
   // As we have a cursor (And therefore expect to be editing the string), we add a horizontal buffer
-  ui_helpers::sizePlaneToString(plane, content, 0, 2);
+  ui_helpers::sizePlaneToString(plane, content, 0, 2, color_scheme);
 
   int string_index = 0;
   int row = 1;
@@ -263,14 +270,14 @@ inline void writeStringToPlane(ncpp::Plane& plane, const std::string& content, c
   plane.perimeter_rounded(0, channel, 0);
 }
 
-inline void writeStringToTitledPlane(ncpp::Plane& plane, const std::string& title, const std::string& content)
+inline void writeStringToTitledPlane(ncpp::Plane& plane, const std::string& title, const std::string& content, const Options::color_scheme &color_scheme)
 {
   plane.erase();
   plane.move_top();
 
   // Add some white space to the front and end of the title string.
-  title.size() > content.size() ? ui_helpers::sizePlaneToString(plane, title) :
-                                  ui_helpers::sizePlaneToString(plane, content);
+  title.size() > content.size() ? ui_helpers::sizePlaneToString(plane, title, color_scheme) :
+                                  ui_helpers::sizePlaneToString(plane, content, color_scheme);
 
   int row = 1;
   int col = 1;
@@ -309,8 +316,10 @@ inline void writeStringToTitledPlane(ncpp::Plane& plane, const std::string& titl
 }
 
 inline void writeStringVectorToTitledPlane(ncpp::Plane& plane, const std::string& title,
-                                           const std::vector<std::string>& content)
+                                           const std::vector<std::string>& content,  const Options::color_scheme &color_scheme)
 {
+  const auto bg = std::get<2>(color_scheme);
+
   plane.erase();
   plane.move_top();
 
@@ -319,8 +328,8 @@ inline void writeStringVectorToTitledPlane(ncpp::Plane& plane, const std::string
   const auto longest_entry = std::max_element(content.begin(), content.end(),
                                               [](const auto& a, const auto& b) { return a.size() < b.size(); });
 
-  title.size() > longest_entry->size() ? ui_helpers::sizePlaneToString(plane, title) :
-                                         ui_helpers::sizePlaneToString(plane, *longest_entry);
+  title.size() > longest_entry->size() ? ui_helpers::sizePlaneToString(plane, title, color_scheme) :
+                                         ui_helpers::sizePlaneToString(plane, *longest_entry, color_scheme);
 
   const uint col_count = title.size() > longest_entry->size() ? title.size() : longest_entry->size();
   // Add one to longest col to account for border
@@ -328,8 +337,8 @@ inline void writeStringVectorToTitledPlane(ncpp::Plane& plane, const std::string
 
   // Fill plane, ensures we don't have a transparent background
   ncpp::Cell c(' ');
-  c.set_bg_rgb8(32, 51, 70);
-  c.set_fg_rgb8(32, 51, 70);
+  c.set_fg_rgb8(bg.r, bg.g, bg.b);
+  c.set_bg_rgb8(bg.r, bg.g, bg.b);
   plane.polyfill(row_count, col_count, c);
 
   int row = 1;
@@ -366,14 +375,14 @@ inline void writeStringVectorToTitledPlane(ncpp::Plane& plane, const std::string
 
 // Identical to previous, but renders a cursor at index
 inline void writeStringToTitledPlane(ncpp::Plane& plane, const std::string& title, const std::string& content,
-                                     const int& cursor_index)
+                                     const int& cursor_index, const Options::color_scheme &color_scheme)
 {
   plane.erase();
   plane.move_top();
 
   // Add some white space to the front and end of the title string.
-  title.size() > content.size() ? ui_helpers::sizePlaneToString(plane, title, 0, 2) :
-                                  ui_helpers::sizePlaneToString(plane, content, 0, 2);
+  title.size() > content.size() ? ui_helpers::sizePlaneToString(plane, title, 0, 2, color_scheme) :
+                                  ui_helpers::sizePlaneToString(plane, content, 0, 2, color_scheme);
 
   int row = 1;
   int col = 1;
@@ -418,7 +427,7 @@ inline void writeStringToTitledPlane(ncpp::Plane& plane, const std::string& titl
 }
 
 inline void writeMapToTitledPlane(ncpp::Plane& plane, const std::string& title,
-                                  std::map<std::string, std::vector<std::string>>& content)
+                                  std::map<std::string, std::vector<std::string>>& content, const Options::color_scheme &color_scheme)
 {
   plane.erase();
   plane.move_top();
@@ -433,7 +442,7 @@ inline void writeMapToTitledPlane(ncpp::Plane& plane, const std::string& title,
     }
   }
 
-  ui_helpers::sizePlaneToMap(plane, title, content);
+  ui_helpers::sizePlaneToMap(plane, title, content, color_scheme);
 
   const int bar_length = plane.get_dim_x();
   const auto fill_char = "─";
@@ -490,12 +499,15 @@ inline void writeMapToTitledPlane(ncpp::Plane& plane, const std::string& title,
 
 // Almost identical to writeDetailedTree, but draws a cursor, as well as a different background color for editable
 // fields
-inline void writeEditingTreeToTitledPlane(ncpp::Plane& plane, const std::string& title, const msg_tree::MsgTree& tree)
+inline void writeEditingTreeToTitledPlane(ncpp::Plane& plane, const std::string& title, const msg_tree::MsgTree& tree, const Options::color_scheme &color_scheme)
 {
+  const auto bg = std::get<2>(color_scheme);
+  const auto fg = std::get<1>(color_scheme);
+
   plane.erase();
   plane.move_top();
 
-  ui_helpers::sizePlaneToTree(plane, title, tree);
+  ui_helpers::sizePlaneToTree(plane, title, tree, color_scheme);
 
   size_t row = 1;
   int col = 1;
@@ -548,8 +560,8 @@ inline void writeEditingTreeToTitledPlane(ncpp::Plane& plane, const std::string&
       if (node.isEditable())
       {
         uint64_t highlight = 0;
-        ncchannels_set_fg_rgb8(&highlight, 0xff, 0xff, 0xff);
-        ncchannels_set_bg_rgb8(&highlight, 72, 91, 120);
+        ncchannels_set_fg_rgb8(&highlight, fg.r, fg.g, fg.b);
+        ncchannels_set_bg_rgb8(&highlight, bg.r, bg.g, bg.b);
         ncchannels_set_bg_alpha(&highlight, ncpp::Cell::AlphaOpaque);
         plane.stain(row, col - t.entry_data_.size(), 1, t.entry_data_.size() + 1, highlight, highlight, highlight,
                     highlight);
@@ -592,12 +604,16 @@ inline void writeEditingTreeToTitledPlane(ncpp::Plane& plane, const std::string&
 }
 
 inline void writeSelectionTreeToTitledPlane(ncpp::Plane& plane, const std::string& title, const msg_tree::MsgTree& tree,
-                                            const uint& selected_index)
+                                            const uint& selected_index, const Options::color_scheme &color_scheme)
 {
+  const auto bg = std::get<2>(color_scheme);
+  const auto fg = std::get<1>(color_scheme);
+  const auto hl = std::get<3>(color_scheme);
+
   plane.erase();
   plane.move_top();
 
-  ui_helpers::sizePlaneToTree(plane, title, tree, false);
+  ui_helpers::sizePlaneToTree(plane, title, tree, color_scheme, false);
 
   size_t row = 1;
   int col = 1;
@@ -638,17 +654,18 @@ inline void writeSelectionTreeToTitledPlane(ncpp::Plane& plane, const std::strin
       node_line[prefix.length() - 1] = L'└';
     }
 
-    // (Unforuanately) Need to ensure we re-set the highlight channel each draw
+    // (Unfortuanately) Need to ensure we re-set the highlight channel each draw
     uint64_t highlight_channel = 0;
+;
     if (highlight)
     {
-      ncchannels_set_fg_rgb8(&highlight_channel, 32, 51, 70);
-      ncchannels_set_bg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
+      ncchannels_set_fg_rgb8(&highlight_channel, fg.r, fg.g, fg.b);
+      ncchannels_set_bg_rgb8(&highlight_channel, hl.r, hl.g, hl.b);
     }
     else
     {
-      ncchannels_set_fg_rgb8(&highlight_channel, 0xff, 0xff, 0xff);
-      ncchannels_set_bg_rgb8(&highlight_channel, 32, 51, 70);
+      ncchannels_set_fg_rgb8(&highlight_channel, fg.r, fg.g, fg.b);
+      ncchannels_set_bg_rgb8(&highlight_channel, bg.r, bg.g, bg.b);
     }
     ncchannels_set_bg_alpha(&highlight_channel, ncpp::Cell::AlphaOpaque);
 
@@ -695,12 +712,12 @@ inline void writeSelectionTreeToTitledPlane(ncpp::Plane& plane, const std::strin
   }
 }
 
-inline void writeDetailedTreeToTitledPlane(ncpp::Plane& plane, const std::string& title, const msg_tree::MsgTree& tree)
+inline void writeDetailedTreeToTitledPlane(ncpp::Plane& plane, const std::string& title, const msg_tree::MsgTree& tree, const Options::color_scheme &color_scheme)
 {
   plane.erase();
   plane.move_top();
 
-  ui_helpers::sizePlaneToTree(plane, title, tree);
+  ui_helpers::sizePlaneToTree(plane, title, tree, color_scheme);
 
   size_t row = 1;
   int col = 1;
@@ -828,7 +845,7 @@ inline bool upInput(const ncinput& input)
 
 inline bool mouseClick(const ncinput& input)
 {
-  return (input.id == NCKEY_BUTTON1 && input.evtype == NCTYPE_RELEASE);
+  return (input.id == NCKEY_BUTTON1);
 }
 
 // Case for confirmation selections
@@ -836,7 +853,14 @@ inline bool selectInput(const ncinput& input)
 {
   // Kitty terminal will send both a press, and release input,
   // we create a wrapper here to prevent duplicate inputs
-  return (input.id == NCKEY_ENTER && input.evtype != NCTYPE_RELEASE);
+  return (input.id == NCKEY_ENTER);
+}
+
+inline bool isPress(const ncinput& input)
+{
+  // Kitty terminal will send both a press, and release input,
+  // Add a lil' diddy here to prevent keys from being sent twice
+  return (input.evtype != NCTYPE_RELEASE);
 }
 
 }  // namespace ui_helpers

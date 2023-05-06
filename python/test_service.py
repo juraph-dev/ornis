@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from example_interfaces.srv import AddTwoInts, AddTwoFloats, AddTwoStrings
+from example_interfaces.srv import AddTwoInts
 
 import rclpy
 from rclpy.node import Node
@@ -10,8 +10,6 @@ class MinimalService(Node):
     def __init__(self):
         super().__init__('minimal_service')
         self.int_srv = self.create_service(AddTwoInts, 'add_two_ints', self.add_two_ints_callback)
-        self.floats_srv = self.create_service(AddTwoFloats, 'add_two_floats', self.add_two_floats_callback)
-        self.string_srv = self.create_service(AddTwoStrings, 'add_two_strings', self.add_two_strings_callback)
 
     def add_two_ints_callback(self, request, response):
         self.get_logger().info('[Int] Incoming request\na: %d b: %d' % (request.a, request.b))

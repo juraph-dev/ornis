@@ -222,6 +222,10 @@ public:
 
   MsgTreeNode* getNthNode(const uint& n)
   {
+    if (n == 0)
+    {
+     return this;
+    }
     uint search_index = 1;
     return findNthNode(n, search_index);
   }

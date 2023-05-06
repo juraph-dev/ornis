@@ -20,11 +20,11 @@ public:
 
   enum class RequestEnum
   {
-    monitorEntryInformation,
-    monitorEntryInteraction,
-    monitorEntryInteractionResult,
-    topicStreamer,
-    closeStream
+    monitorEntryInformation = 0,
+    monitorEntryInteraction = 1,
+    monitorEntryInteractionResult = 2,
+    topicStreamer = 3,
+    closeStream = 4
   };
 
   std::mutex access_mutex_;

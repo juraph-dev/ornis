@@ -27,7 +27,7 @@ void OptionsMenu::initialise(const int& x, const int& y, const ncpp::Plane* std_
   const auto &bg = std::get<2>(current_scheme_);
   const auto &hl = std::get<3>(current_scheme_);
   const auto &ll = std::get<4>(current_scheme_);
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, bg.r, bg.g, bg.b);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_BLEND);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_BLEND);
 
@@ -41,10 +41,10 @@ void OptionsMenu::initialise(const int& x, const int& y, const ncpp::Plane* std_
   sopts.defidx = 0;
   sopts.footer = "";
 
-  sopts.boxchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, 0, 0, 0);
-  sopts.opchannels = NCCHANNELS_INITIALIZER(hl.r, hl.b, hl.g, bg.r, bg.b, bg.g);
-  sopts.descchannels = NCCHANNELS_INITIALIZER(ll.r, ll.b, ll.g, bg.r, bg.b, bg.g);
-  sopts.titlechannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, 0x0e, 0x0e, 0x0e);
+  sopts.boxchannels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, 0, 0, 0);
+  sopts.opchannels = NCCHANNELS_INITIALIZER(hl.r, hl.g, hl.b, bg.r, bg.g, bg.b);
+  sopts.descchannels = NCCHANNELS_INITIALIZER(ll.r, ll.g, ll.b, bg.r, bg.g, bg.b);
+  sopts.titlechannels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, 0x0e, 0x0e, 0x0e);
 
   ncchannels_set_bg_alpha(&sopts.boxchannels, NCALPHA_TRANSPARENT);
   ncchannels_set_bg_alpha(&sopts.titlechannels, NCALPHA_TRANSPARENT);
@@ -58,7 +58,7 @@ void OptionsMenu::initialise(const int& x, const int& y, const ncpp::Plane* std_
   minimised_plane_ =
       std::make_shared<ncpp::Plane>(std_plane, 3, options_title.size() + 2, 1, x / 2 - (options_title.size() + 2) / 2);
 
-  uint64_t channel = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+  uint64_t channel = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, bg.r, bg.g, bg.b);
   minimised_plane_->set_base("", 0, channel);
   minimised_plane_->perimeter_rounded(0, channel, 0);
 
@@ -72,7 +72,7 @@ CommandEnum OptionsMenu::handleInput(const ncinput& input)
 {
   // Currently, only input is a selector
   // Handle transition (Enter)
-  if (input.id == NCKEY_ENTER)// && input.evtype == NCTYPE_PRESS)
+  if (input.id == NCKEY_ENTER)
   {
     switch (current_menu_)
     {

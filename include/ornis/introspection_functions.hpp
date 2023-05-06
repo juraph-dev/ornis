@@ -59,8 +59,10 @@ void writeDataToMessage(uint8_t* message_data, const rosidl_typesupport_introspe
 bool populateMessage(uint8_t* message_data, const rosidl_typesupport_introspection_cpp::MessageMembers* members,
                      const std::string& data);
 
+const std::string sanitiseNumericData(const std::string &data);
+
 void stringToMessageData(uint8_t* message_data, const rosidl_typesupport_introspection_cpp::MessageMember& member,
-                         const std::string& data);
+                         std::string& data);
 
 std::vector<uint32_t> getEntryOffset(std::vector<std::string> entry_path, const std::string& member_type_id,
                                      const rosidl_typesupport_introspection_cpp::MessageMembers* message_members);

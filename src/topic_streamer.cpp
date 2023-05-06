@@ -34,7 +34,7 @@ TopicStreamer::TopicStreamer(const std::string& topic_name, const std::string& t
   , context_(context)
   , theme_(theme)
 {
-  stream_open_ = true;
+  stream_open_.store(true);
   interface_channel_ = interface_channel;
 
   thread_ = new std::thread([this]() { initialise(); });

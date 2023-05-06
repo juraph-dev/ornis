@@ -43,6 +43,10 @@ public:
 
   Options::color_scheme current_scheme_;
 
+  // Stores the width of the terminal at startup, and when recieving sigwinch. Used for scaling the ui
+  uint term_width_;
+  uint term_height_;
+
 private:
   // Class to for storing the current ui state
   // TODO: Rename monitorInteraction. That's a silly name.
@@ -79,9 +83,6 @@ private:
   };
 
   UserHelpStrings userHelpStrings_;
-  // Stores the width of the terminal at startup, and when recieving sigwinch. Used for scaling the ui
-  uint term_width_;
-  uint term_height_;
 
   void updateMonitor(std::vector<std::pair<std::string, std::string>> updated_values,
                      const std::unique_ptr<MonitorInterface>& interface);

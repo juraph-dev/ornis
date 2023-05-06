@@ -19,7 +19,7 @@ TopicPlotter::TopicPlotter(ncpp::Plane* plane, uint height, uint width, std::vec
   const auto& bg = std::get<2>(theme);
   timestep_ = 0;
   plane_->resize(height_, width_);
-  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.b, fg.g, bg.r, bg.b, bg.g);
+  uint64_t bgchannels = NCCHANNELS_INITIALIZER(fg.r, fg.g, fg.b, bg.r, bg.g, bg.b);
   ncchannels_set_fg_alpha(&bgchannels, NCALPHA_OPAQUE);
   ncchannels_set_bg_alpha(&bgchannels, NCALPHA_OPAQUE);
   plane_->set_channels(bgchannels);

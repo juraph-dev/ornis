@@ -18,9 +18,8 @@ build:
    - apt-get update -y
 
   script:
-    - . /opt/ros/galactic/setup.sh
-    - git submodule init
-    - git submodule update
+    - . /opt/ros/humble/setup.sh
+    - git submodule update --init --recursive
     - colcon build --event-handlers console_direct+
   variables:
     GIT_STRATEGY: clone

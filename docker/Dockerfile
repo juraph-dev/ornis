@@ -2,7 +2,7 @@ FROM ros:humble-ros-base
 
 # Add ornis user
 RUN useradd -ms /bin/bash ornis
-WORKDIR /home/ornis
+WORKDIR /home/ornis/ornis_ws/ornis/
 
 RUN apt-get update \
   && apt-get upgrade -y \
